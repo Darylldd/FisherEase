@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>🐟 Record Your Harvest</h2>
+    <form action="/harvest/add" method="POST">
+        <label>Fish Type:</label>
+        <input type="text" name="fishType" required>
+    
+        <label>Weight (kg):</label>
+        <input type="number" name="weight" step="0.01" required>
+    
+        <label>Location:</label>
+        <input type="text" name="location" required>
+    
+        <label>Date Harvested:</label>
+        <input type="date" name="dateHarvested" required>
+    
+        <button type="submit">Submit</button>
+    </form>
+    
+
+</body>
+</html>

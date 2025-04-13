@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>📊 All Reported Harvests</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Fish Type</th>
+            <th>Weight (kg)</th>
+           
+            <th>Location</th>
+            <th>Date Harvested</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if (harvests.length > 0) { %>
+            <% harvests.forEach(harvest => { %>
+                <tr>
+                    <td><%= harvest.user_id %></td>
+                    <td><%= harvest.fish_type %></td>
+                    <td><%= harvest.weight %></td>
+                
+                    <td><%= harvest.location %></td>
+                    <td><%= new Date(harvest.date_harvested).toLocaleDateString() %></td>
+                </tr>
+            <% }) %>
+        <% } else { %>
+            <tr><td colspan="6">No harvest records available.</td></tr>
+        <% } %>
+    </tbody>
+</table>
+
+</body>
+</html>

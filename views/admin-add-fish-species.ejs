@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Add Fish Species</h2>
+<form action="/admin/fish-species/add" method="POST" enctype="multipart/form-data">
+    <label>Common Name:</label>
+    <input type="text" name="common_name" required>
+    
+    <label>Scientific Name:</label>
+    <input type="text" name="scientific_name" required>
+    <label>Description:</label>
+<textarea name="description" required></textarea>
+    <label>Habitat:</label>
+    <textarea name="habitat"></textarea>
+    
+    <label>Fishing Method:</label>
+    <textarea name="fishing_method"></textarea>
+    
+    <label>Regulations:</label>
+    <textarea name="regulations"></textarea>
+
+    <label>Image:</label>
+    <input type="file" name="image" accept="image/*">
+
+    <button type="submit">Add Species</button>
+</form>
+
+</body>
+</html>

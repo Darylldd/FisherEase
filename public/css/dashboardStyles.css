@@ -1,0 +1,82 @@
+#forecast-cards {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping for mobile */
+    justify-content: space-between;
+    opacity: 0; /* Initially hide the cards */
+    transition: opacity 0.5s ease-out; /* Smooth transition */
+  }
+
+  .forecast-card {
+    flex: 1 1 0;
+    min-width: 0;
+    animation: fadeInUp 1s ease-out;
+  }
+
+  .forecast-card .card {
+    height: 100%;
+    min-height: 160px; /* Ensure equal height */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .forecast-card .card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .forecast-card .card .card-title {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .forecast-card .card .card-text {
+    font-size: 1em;
+  }
+
+  /* Animation for card */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Weather icons size */
+  .weather-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  /* Prevent scrollbar while loading */
+  body {
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+  }
+
+  @media (max-width: 1200px) {
+    .forecast-card .card {
+      font-size: 14px;
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .forecast-card .card {
+      font-size: 12px;
+    }
+
+    .weather-icon {
+      font-size: 30px;
+    }
+  }

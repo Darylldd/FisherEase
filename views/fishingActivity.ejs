@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fishing Activity Tracking</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">FMO Admin</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+          </li>
+          <!-- Registration Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Register
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
+              <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
+              <li><a class="dropdown-item" href="/aquaculture/register">Aquaculture Facility Registration</a></li>
+              <li><a class="dropdown-item" href="/logs">Audit Logs & Activity Tracking</a></li>
+            </ul>
+          </li>
+
+          <!-- Reports & Tracking Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Reports & Tracking
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+              <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-log">Fishing Activity Tracking</a></li>
+              <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
+              <li><a class="dropdown-item" href="/violation-notification-system">Violation Notification System</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+ <!-- Logout Confirmation Modal -->
+ <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to log out?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/auth/logout" class="btn btn-danger">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="container mt-4">
+    <h1>Fishing Activity Tracking</h1>
+    <!-- Filter and Sorting Form -->
+    <form method="GET" action="/fishing-activity-tracking" class="mb-4">
+      <div class="row">
+        <div class="col-md-4">
+          <label for="date" class="form-label">Date</label>
+          <input type="date" id="date" name="date" class="form-control" value="<%= filters.date %>">
+        </div>
+        <div class="col-md-4">
+          <label for="location" class="form-label">Location</label>
+          <input type="text" id="location" name="location" class="form-control" placeholder="Enter location" value="<%= filters.location %>">
+        </div>
+        <div class="col-md-4">
+          <label for="activity" class="form-label">Activity</label>
+          <input type="text" id="activity" name="activity" class="form-control" placeholder="Enter activity" value="<%= filters.activity %>">
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-4">
+          <label for="sortBy" class="form-label">Sort By</label>
+          <select id="sortBy" name="sortBy" class="form-select">
+            <option value="date" <%= filters.sortBy === 'date' ? 'selected' : '' %>>Date</option>
+            <option value="time" <%= filters.sortBy === 'time' ? 'selected' : '' %>>Time</option>
+            <option value="location" <%= filters.sortBy === 'location' ? 'selected' : '' %>>Location</option>            
+          </select>
+        </div>
+        <div class="col-md-4 align-self-end">
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+      </div>
+    </form>
+ <!-- Fishing Activity Table -->
+<div class="card mt-4">
+  <div class="card-header">Fishing Activity Logs</div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Trip Duration (Minutes)</th>
+          <th>Location</th>
+          <th>Method</th>
+          <th>Weather</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (activities.length > 0) { %>
+          <% activities.forEach((activity, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= activity.date %></td>
+              <td><%= activity.start_time %></td>
+              <td><%= activity.end_time %></td>
+              <td><%= activity.trip_duration %></td>
+              <td><%= activity.location %></td>
+              <td><%= activity.method %></td>
+              <td><%= activity.weather %></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="8" class="text-center">No fishing activities recorded.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

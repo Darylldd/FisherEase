@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <title><%= title %></title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #fff8dc;
+      scroll-behavior: smooth;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    nav{
+      background-color: #000;
+    }
+    .navbar-brand {
+      margin-left: 50px;
+      font-size: 30px;
+      color: #ffffff !important;
+    }
+    .nav-link {
+      font-size: 15px;
+      color: #ffffff !important;
+    }
+    .nav-link:hover {
+      color: #ddd !important;
+    }
+
+    .signin {
+        padding: 5px 15px 5px 15px;
+        margin-right: 15px;
+        transition: 0.3s;
+    }
+      .signin:hover {
+        color: #000;
+    }
+
+    .signup {
+        padding: 5px 15px 5px 15px;
+        margin-right: 25px;
+        transition: 0.3s;
+    }
+      .signup:hover {
+        color: #000;
+    }
+
+    .menu{
+        font-size: 15px;
+        padding-left: 18%;
+    }
+    .menu li{
+        padding-left: 20px;
+    }
+
+   /* .signin {
+        border: 1px solid #000;
+        border-radius: 50px;
+        padding: 5px 15px 5px 15px;
+        margin-right: 15px;
+        transition: 0.3s;
+    }
+      .signin:hover {
+        background-color: white;
+        color: #000;
+    }
+
+    .signup {
+        border: 1px solid white;
+        border-radius: 50px;
+        padding: 5px 15px 5px 15px;
+        margin-right: 25px;
+        transition: 0.3s;
+    }
+      .signup:hover {
+        background-color: white;
+        color: #000;
+    }*/
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class=" navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="/landing">FMO</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+
+       <!-- <li class="nav-item">   
+          <a class="nav-link" href="/landing">Home</a>
+        </li>   -->
+
+        <li class="nav-item signin">
+          <a class="nav-link" href="/auth/login">Sign In</a>
+        </li>
+          
+        <li class="nav-item signup">
+          <a class="nav-link" href="/auth/signup">Sign Up</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Bootstrap JS & Dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

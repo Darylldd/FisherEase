@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/climateLoss/report" method="POST">
+        <select name="eventType" required>
+            <option value="Storm">Storm</option>
+            <option value="Typhoon">Typhoon</option>
+            <option value="Flood">Flood</option>
+            <option value="Red Tide">Red Tide</option>
+        </select>
+        <input type="date" name="date" required>
+        <textarea name="description" placeholder="Describe the loss"></textarea>
+        <button type="submit">Report Loss</button>
+    </form>
+    
+</body>
+</html>

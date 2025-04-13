@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Best Time for Catch Predictions</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">FMO User</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catch-report/predictions">Predict Best Catch Time</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catch-report">Report Daily Catch</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Welcome, <%= user.name %></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h2 class="text-center">Best Time for Catch Predictions</h2>
+            </div>
+            <div class="card-body">
+                <% if (predictions.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Species</th>
+                                    <th>Predicted Best Time</th>
+                                    <th>Quantity</th>
+                                    <th>Confidence</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% predictions.forEach(prediction => { %>
+                                    <tr>
+                                        <td><%= prediction.species %></td>
+                                        <td><%= prediction.predicted_best_time %></td>
+                                        <td><%= prediction.predicted_quantity %> kg</td>
+                                        <td><%= (prediction.confidence * 100).toFixed(2) %>%</td>
+                                        <td><%= prediction.date %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Chart Section -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <canvas id="quantityChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="confidenceChart"></canvas>
+                        </div>
+                    </div>
+
+                <% } else { %>
+                    <p class="text-center text-danger">No predictions available.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+    // Data Extraction from EJS
+    let species = <%- JSON.stringify(predictions.map(p => p.species)) %>;
+    let confidenceLevels = <%- JSON.stringify(predictions.map(p => p.confidence * 100)) %>;
+    let dates = <%- JSON.stringify(predictions.map(p => p.date)) %>;
+    let bestTimes = <%- JSON.stringify(predictions.map(p => p.predicted_best_time)) %>;
+
+    // Convert Time (e.g., "06:30 AM" → 6.5)
+    function convertTimeToHours(timeStr) {
+        let match = timeStr.match(/(\d+):(\d+) (\w{2})/); // Match HH:MM AM/PM format
+        if (!match) return null;
+
+        let hours = parseInt(match[1]);
+        let minutes = parseInt(match[2]);
+        let period = match[3]; // AM or PM
+
+        if (period === "PM" && hours !== 12) hours += 12;
+        if (period === "AM" && hours === 12) hours = 0;
+
+        return hours + (minutes / 60); // Convert to decimal (e.g., 6:30 AM → 6.5)
+    }
+
+    // Convert all predicted best times
+    let bestTimeNumeric = bestTimes.map(time => convertTimeToHours(time));
+
+    // Bar Chart: Confidence Level per Species
+    new Chart(document.getElementById("quantityChart"), {
+        type: "bar",
+        data: {
+            labels: species,
+            datasets: [{
+                label: "Confidence Level (%)",
+                data: confidenceLevels,
+                backgroundColor: "rgba(255, 99, 132, 0.6)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Line Chart: Predicted Best Time Over Date
+    new Chart(document.getElementById("confidenceChart"), {
+        type: "line",
+        data: {
+            labels: dates,
+            datasets: [{
+                label: "Predicted Best Time (Hours)",
+                data: bestTimeNumeric,
+                fill: false,
+                borderColor: "rgba(54, 162, 235, 1)",
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    title: { display: true, text: "Time of Day (Hours)" },
+                    min: 0,
+                    max: 24
+                },
+                x: {
+                    title: { display: true, text: "Date" }
+                }
+            }
+        }
+    });
+});
+
+    </script>
+    
+</body>
+</html>

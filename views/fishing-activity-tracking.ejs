@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Activity</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">FMO User</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="/">Dashboard</a>
+                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catch-report/predictions">Predict Best Catch Time</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catch-report">Report Daily Catch</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/fishing-activity-tracking">Log Fishing Activity</a>
+                  </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Welcome, <%= user.name %></a>
+                    </li>
+                   
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+                      </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<div class="card mb-4">
+    <div class="card-header">Add Fishing Activity</div>
+    <div class="card-body">
+        <form action="/fishing-activity-tracking/add" method="POST">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+        
+            <label for="start_time">Start Time:</label>
+            <input type="time" id="start_time" name="start_time" required>
+        
+            <label for="end_time">End Time:</label>
+            <input type="time" id="end_time" name="end_time" required>
+        
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" required>
+        
+            <label for="method">Method:</label>
+            <input type="text" id="method" name="method" required>
+        
+            <label for="weather">Weather Conditions:</label>
+            <input type="text" id="weather" name="weather" required>
+        
+            <button type="submit">Add Fishing Activity</button>
+        </form>
+        
+    </div>
+  </div>
+   <!-- Logout Confirmation Modal -->
+ <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

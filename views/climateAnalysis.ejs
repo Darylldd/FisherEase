@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Climate Event Damage Analysis</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Severity</th>
+                <th>Estimated Damage (PHP)</th>
+                <th>Affected Area</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% climateData.forEach(event => { %>
+            <tr>
+                <td><%= event.event_name %></td>
+                <td><%= event.event_type %></td>
+                <td><%= event.event_date %></td>
+                <td><%= event.severity %></td>
+                <td>₱<%= event.estimated_damage.toLocaleString() %></td>
+                <td><%= event.affected_area %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <canvas id="climateChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        try {
+            let climateData = <%- JSON.stringify(climateData) %>; // Safely insert JSON data
+    
+            console.log("Climate Data for Chart:", climateData); // Debugging
+    
+            if (!Array.isArray(climateData)) {
+                console.error("climateData is not an array", climateData);
+                return;
+            }
+    
+            var ctx = document.getElementById("climateChart").getContext("2d");
+    
+            var chartData = {
+                labels: climateData.map(e => e.event_name),
+                datasets: [{
+                    label: "Estimated Damage (PHP)",
+                    data: climateData.map(e => Number(e.estimated_damage)), // Ensure numbers
+                    backgroundColor: "rgba(255, 99, 132, 0.5)"
+                }]
+            };
+    
+            new Chart(ctx, {
+                type: "bar",
+                data: chartData
+            });
+    
+        } catch (error) {
+            console.error("Error parsing climateData:", error);
+        }
+    });
+    </script>
+    
+    
+
+</body>
+</html>

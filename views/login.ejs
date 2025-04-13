@@ -1,0 +1,115 @@
+<%- include('partials/header', { title: 'Log In' }) %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Centered Login Container */
+        .login-container {
+            position: relative;
+            margin: 5% auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+        /* Title Styling */
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        /* Login Button */
+        .btn-primary {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            background-color: #000;
+            color: #fff8dc;
+            border: 1px solid #000;
+        }
+        .btn-primary:hover {
+            background: #2f312f;
+            color: #ffffff;
+        }
+        /* Forgot Password Link */
+        .forgot-password {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #000;
+            text-decoration: none;
+        }
+        /* Sign-up Link */
+        form p {
+            margin-top: 20px;
+            text-align: center;
+        }
+        form p a {
+            text-decoration: none;
+            color: #000;
+        }
+        /* Close (X) Button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: #ff0000;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <a href="/landing" class="close-btn">&times;</a>
+
+    <h2>Log In</h2>
+
+    <% if (success_msg.length > 0) { %>
+        <div class="alert alert-success"><%= success_msg %></div>
+    <% } %>
+    
+    <% if (error_msg.length > 0) { %>
+        <div class="alert alert-danger"><%= error_msg %></div>
+    <% } %>
+    
+
+    <form action="/auth/login" method="POST">
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" name="email" placeholder="Enter email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Password" required>
+        </div>
+        <a href="/auth/forgot-password" class="forgot-password">Forgot Password?</a>
+        <button type="submit" class="btn btn-primary mt-3">Log In</button>
+
+        <p>Don't have an account? <a href="/auth/signup" class="signup">Sign Up</a></p>
+    </form>
+</div>
+
+</body>
+</html>
+
+<%- include('partials/footer') %>

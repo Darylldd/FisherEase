@@ -1,0 +1,15 @@
+<h2>Fish Species Information</h2>
+<form action="/fish-species/search" method="GET">
+    <input type="text" name="q" placeholder="Search fish species...">
+    <button type="submit">Search</button>
+</form>
+
+<ul>
+    <% speciesList.forEach(species => { %>
+        <li>
+            <a href="/fish-species/<%= species.id %>">
+                <%= species.common_name %> (<i><%= species.scientific_name %></i>)
+            </a>
+        </li>
+    <% }); %>
+</ul>

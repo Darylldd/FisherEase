@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch Report Review</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+      body {
+      overflow: hidden; /* Prevent scrolling */
+    }
+    .container {
+      max-width: 95vw; /* Adjust width to fit screen */
+      padding-top: 10px;
+    }
+    .filters-container {
+      font-size: 14px;
+    }
+    .filters-container .form-control, 
+    .filters-container .form-select {
+      font-size: 13px;
+      padding: 5px;
+    }
+    .table-container {
+      max-height: 60vh; /* Ensure table fits within the viewport */
+      overflow-y: auto; /* Enable scrolling inside the table only */
+    }
+    table {
+      font-size: 14px;
+    }
+    th, td {
+      white-space: nowrap; /* Prevent text wrapping */
+      padding: 5px 10px;
+    }
+    .btn-sm {
+      font-size: 12px;
+      padding: 3px 8px;
+    }
+    .dropdown-menu {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">FMO Admin</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/dashboard/admin">Dashboard</a></li>
+
+          <!-- Registration Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown">
+              Register
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
+              <li><a class="dropdown-item" href="/aquaculture/register">Aquaculture Facility Registration</a></li>
+              <li><a class="dropdown-item" href="/logs">Audit Logs & Activity Tracking</a></li>
+            </ul>
+          </li>
+
+          <!-- Reports Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown">
+              Reports & Tracking
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-tracking">Fishing Activity Tracking</a></li>
+              <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
+              <li><a class="dropdown-item" href="/violation-notification-system">Violation Notification System</a></li>
+            </ul>
+          </li>
+   <!-- Tools Dropdown -->
+   <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Tools
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
+      <li><a class="dropdown-item" href="/catch-report/admin/report">Generate Catch Report</a></li>
+      <li><a class="dropdown-item" href="#">Data Tools</a></li>
+      <li><a class="dropdown-item" href="#">Gov Reports</a></li>
+    </ul>
+  </li>
+  
+          <li class="nav-item"><a class="nav-link" href="#">Welcome, Admin</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+  <!-- Catch Report Review Section -->
+  <div class="container">
+    <h5 class="text-center">Catch Report Review</h5>
+
+    <!-- Filtering Form -->
+    <form method="GET" action="/catch-report/review" class="filters-container">
+      <div class="row g-1">
+        <div class="col-md-2">
+          <input type="text" name="species" class="form-control form-control-sm" placeholder="Species" value="<%= filters.species || '' %>">
+        </div>
+        <div class="col-md-2">
+          <input type="text" name="location" class="form-control form-control-sm" placeholder="Location" value="<%= filters.location || '' %>">
+        </div>
+        <div class="col-md-2">
+          <select name="status" class="form-select form-select-sm">
+            <option value="">Status</option>
+            <option value="Under Review" <%= filters.status === 'Under Review' ? 'selected' : '' %>>Under Review</option>
+            <option value="Approved" <%= filters.status === 'Approved' ? 'selected' : '' %>>Approved</option>
+            <option value="Flagged" <%= filters.status === 'Flagged' ? 'selected' : '' %>>Flagged</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="date" name="date" class="form-control form-control-sm" value="<%= filters.date || '' %>">
+        </div>
+        <div class="col-md-2">
+          <select name="sortBy" class="form-select form-select-sm">
+            <option value="">Sort By</option>
+            <option value="species" <%= filters.sortBy === 'species' ? 'selected' : '' %>>Species</option>
+            <option value="quantity" <%= filters.sortBy === 'quantity' ? 'selected' : '' %>>Quantity</option>
+            <option value="location" <%= filters.sortBy === 'location' ? 'selected' : '' %>>Location</option>
+            <option value="date" <%= filters.sortBy === 'date' ? 'selected' : '' %>>Date</option>
+          </select>
+        </div>
+        <div class="col-md-2 text-end">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Catch Reports Table -->
+    <div class="table-container mt-2">
+      <table class="table table-striped table-sm">
+        <thead class="table-dark">
+          <tr>
+            <th>User</th>
+            <th>Species</th>
+            <th>Methods Of Fishing</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (reports && reports.length) { %>
+            <% reports.forEach(report => { %>
+              <tr>
+                <td><%= report.user_name %></td>
+                <td><%= report.species %></td>
+                <td><%= report.method_of_fishing %></td>
+                <td><%= report.quantity %></td>
+                <td><%= report.location %></td>
+                <td><%= report.status %></td>
+                <td>
+                  <% 
+                    // Extract date only
+                    const dateOnly = new Date(report.date).toISOString().split('T')[0]; 
+                  %>
+                  <%= dateOnly %>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      ⚙️
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item approve-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-check text-success"></i> Approve</a></li>
+                      <li><a class="dropdown-item flag-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-flag text-danger"></i> Flag</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center">No reports found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Logout Modal -->
+  <div class="modal fade" id="logoutModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5>Confirm Logout</h5></div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger btn-sm">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/catchReport.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+</body>
+</html>

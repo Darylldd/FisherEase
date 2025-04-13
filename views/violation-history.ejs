@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Violation History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Violation History</a>
+        <span class="navbar-text text-light">Welcome, <%= user.name %></span>
+        
+    </div>
+    
+</nav>
+
+<div class="container mt-4">
+   <!-- Shows the user's violations -->
+<h2>Your Violations</h2>
+<% if (violations.length === 0) { %>
+    <div class="alert alert-info">You have no recorded violations.</div>
+<% } else { %>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% violations.forEach((v, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= v.violation_type %></td>
+                    <td><%= v.details %></td>
+                    <td><%= v.status %></td>
+                    <td><%= new Date(v.created_at).toLocaleDateString() %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+<% } %>
+
+</div>
+</body>
+</html>

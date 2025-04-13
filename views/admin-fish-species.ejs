@@ -1,0 +1,20 @@
+<h2>Manage Fish Species</h2>
+<a href="/admin/fish-species/add">Add New Species</a>
+
+<% if (speciesList.length > 0) { %>
+    <ul>
+        <% speciesList.forEach(species => { %>
+            <li>
+                <%= species.common_name %> - 
+                <a href="/fish-species/<%= species.id %>">View</a>
+                <form action="/admin/fish-species/delete/<%= species.id %>" method="POST" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+                
+            </li>
+        <% }); %>
+    </ul>
+<% } else { %>
+    <p>No fish species available.</p>
+<% } %>
+

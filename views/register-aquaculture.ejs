@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Aquaculture Facility Registration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/admin_ar.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">FMO Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Register
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
+                            <li><a class="dropdown-item" href="/register/aquaculture">Aquaculture Facility Registration</a></li>
+                            <li><a class="dropdown-item" href="/logs">Audit Logs & Activity Tracking</a></li>
+                        </ul>
+                    </li>
+                         <!-- New Dropdown for Reports and Tracking -->
+                         <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Reports & Tracking
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+                                <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review</a></li>
+                                <li><a class="dropdown-item" href="/fishing-activity-tracking">Fishing Activity Tracking</a></li>
+                                <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
+                                <li><a class="dropdown-item" href="/violation-notification-system">Violation Notification System</a></li>
+                            </ul>
+                        </li>
+    
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Welcome, Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+                      </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+ <!-- Logout Confirmation Modal -->
+ <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="container mt-4 con">
+        <h2>Aquaculture Facility Registration</h2>
+        <form action="/aquaculture/register" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Facility Name</label>
+                <input type="text" class="form-control" name="facility_name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Owner's Name</label>
+                <input type="text" class="form-control" name="owner" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contact Info</label>
+                <input type="text" class="form-control" name="contact_info" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" name="location" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Fish Species Being Raised</label>
+                <input type="text" class="form-control" name="species" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Production Capacity</label>
+                <input type="text" class="form-control" name="capacity" required>
+            </div>
+          
+           
+            <button type="submit" class="btn btn-success">Register</button>
+        </form>
+    </div>
+</body>
+</html>
