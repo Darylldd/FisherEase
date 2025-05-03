@@ -9,7 +9,7 @@ const ClimateEventLossController = {
             if (!userId) return res.status(401).send("Unauthorized");
 
             await ClimateEventLossModel.reportLoss(userId, eventType, date, speciesLost, lossKg, lossValue, description, location);
-            res.json({ success: true, message: "Loss report submitted successfully!" });
+            res.redirect("/climateLoss/view?success=true");
         } catch (error) {
             console.error("Error submitting loss report:", error);
             res.status(500).json({ success: false, message: "Server Error" });

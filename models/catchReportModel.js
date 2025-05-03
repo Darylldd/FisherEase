@@ -158,6 +158,7 @@ getAllReports: async (filters = {}) => {
         const [rows] = await db.execute("SELECT DISTINCT location FROM catch_reports");
         return rows.map(row => row.location);
     },
+    
    
     async getUserTotalCatches(userId) {
         try {

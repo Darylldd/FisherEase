@@ -7,36 +7,38 @@ const path = require("path");
 
 exports.submitCatchReport = async (req, res) => {
     try {
-        if (!req.session.userId) {
-            return res.status(401).send("User is not authenticated");
-        }
-
-        const userId = req.session.userId;
-        const { species, quantity, location, method_of_fishing, date } = req.body;
-
-        if (!species || !quantity || !location || !date) {
-            return res.status(400).send("All fields are required");
-        }
-
-        // Check for online/offline status
-        if (navigator.onLine) {
-            await CatchReport.createReport(userId, species, quantity, location, method_of_fishing, "Under Review", date);
-        } else {
-            CatchReport.saveLocally({ userId, species, quantity, location, method_of_fishing, status: "Under Review", date });
-        }
-
-        await auditController.logUserActivity(req, "Submitted a catch report");
-        res.redirect("back");
+      if (!req.session.userId) {
+        return res.status(401).send("User is not authenticated");
+      }
+  
+      const userId = req.session.userId;
+      const { species, quantity, location, method_of_fishing, date } = req.body;
+  
+      if (!species || !quantity || !location || !date) {
+        return res.status(400).send("All fields are required");
+      }
+  
+      // Save report directly to DB
+      await CatchReport.createReport(userId, species, quantity, location, method_of_fishing, "Under Review", date);
+  
+      await auditController.logUserActivity(req, "Submitted a catch report");
+  
+      // Send success response
+      res.status(200).json({ message: 'Report submitted successfully' });
     } catch (error) {
-        console.error("Error submitting catch report:", error);
-        res.status(500).send("Internal server error");
+      console.error("Error submitting catch report:", error);
+      res.status(500).send("Internal server error");
     }
-};
+  };
 
-// Sync offline reports when the application is online
+
 exports.syncOfflineReports = async (req, res) => {
     try {
-        await CatchReport.syncLocalReports();
+        const reports = JSON.parse(localStorage.getItem('offlineReports')) || [];
+        for (const report of reports) {
+            await CatchReport.createReport(req.session.userId, report.species, report.quantity, report.location, report.method_of_fishing, "Under Review", report.date);
+        }
+        localStorage.removeItem('offlineReports');
         res.status(200).send("Offline reports synced successfully.");
     } catch (error) {
         console.error("Error syncing offline reports:", error);
