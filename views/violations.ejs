@@ -3,143 +3,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <title>Document</title>
+    <title>Violation Notification System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep navy */
+            --accent: #3b82f6; /* Vibrant blue */
+            --background: #f0f4ff; /* Light blue-gray */
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --highlight: #10b981; /* Green for success */
+            --warning: #ef4444; /* Red for alerts */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #ffffff !important;
+            letter-spacing: 0.5px;
+        }
+        .nav-link {
+            color: #ffffff !important;
+            font-weight: 400;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-top: 0.75rem;
+            padding: 0.5rem 0;
+        }
+        .dropdown-item {
+            color: var(--text);
+            font-weight: 400;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            margin: 0 0.5rem;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: var(--background);
+            color: var(--accent);
+        }
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+        .navbar-nav .nav-item {
+            margin-left: 0.5rem;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 900px; /* Compact width for table */
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Violation Section */
+        .violation-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        .violation-section:hover {
+            transform: translateY(-4px);
+        }
+        .violation-section h2,
+        .violation-section h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .violation-section h3 {
+            font-size: 1.5rem;
+        }
+        .violation-section h2 i,
+        .violation-section h3 i {
+            color: var(--accent);
+        }
+
+        /* Table */
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+        .table {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        .table thead {
+            background-color: var(--primary);
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .table th, .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .no-violations {
+            text-align: center;
+            padding: 1.5rem;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        .form-control,
+        .form-select {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+        .form-select {
+            display: inline-block;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        .btn-primary {
+            background-color: var(--accent);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background-color: var(--highlight);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+        textarea.form-control {
+            min-height: 100px;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 1.5rem;
+        }
+        .btn-danger {
+            background-color: var(--warning);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+            .table-container {
+                max-height: 350px;
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+            .violation-section h2 {
+                font-size: 1.5rem;
+            }
+            .violation-section h3 {
+                font-size: 1.3rem;
+            }
+            .violation-section {
+                padding: 1.5rem;
+            }
+            .table-container {
+                max-height: 300px;
+            }
+            .table th, .table td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            .form-select {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .btn-primary {
+                width: 100%;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 1rem auto;
+            }
+            .violation-section {
+                padding: 1rem;
+            }
+            .violation-section h2 {
+                font-size: 1.3rem;
+            }
+            .violation-section h3 {
+                font-size: 1.2rem;
+            }
+            .form-control,
+            .form-select {
+                font-size: 0.85rem;
+            }
+            .btn-primary,
+            .btn-success {
+                font-size: 0.85rem;
+            }
+            .table-container {
+                max-height: 250px;
+            }
+            .table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">FMO Admin</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard/admin">Dashboard</a>
-          </li>
-          <!-- Registration Dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Register
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
-              <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
-              <li><a class="dropdown-item" href="/aquaculture/register">Aquaculture Facility Registration</a></li>
-             
+    <nav class="navbar navbar-expand-lg">
+        <div class="main-container">
+            <a class="navbar-brand" href="#">Fisheries Management Office</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
+                            <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
+                            <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-file-alt me-1"></i> Reports & Tracking
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+                            <li><a class="dropdown-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a></li>
+                            <li><a class="dropdown-item" href="/fishing-activity-log"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a></li>
+                            <li><a class="dropdown-item" href="/enforcement-compliance-logging"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a></li>
+                            <li><a class="dropdown-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a></li>
+                            <li><a class="dropdown-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a></li>
+                            <li><a class="dropdown-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a></li>
+                            <li><a class="dropdown-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a></li>
+                            <li><a class="dropdown-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-tools me-1"></i> Tools
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
+                            <li><a class="dropdown-item" href="/catch-report/admin/report"><i class="fas fa-file-export me-2"></i> Generate Catch Report</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-signature me-2"></i> Gov Reports</a></li>
+                            <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-            </ul>
-          </li>
-
-          <!-- Reports & Tracking Dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Reports & Tracking
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-              <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review Page</a></li>
-              <li><a class="dropdown-item" href="/fishing-activity-log">Fishing Activity Tracking</a></li>
-              <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
-              <li><a class="dropdown-item" href="/violation-notifications">Violation Notification System</a></li>
-              <li><a class="dropdown-item" href="/audit/logs">Audit Logs & Activity Tracking</a></li>
-            </ul>
-          </li>
-          <!-- Tools Dropdown -->
-<li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Tools
-  </a>
-  <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
-    <li><a class="dropdown-item" href="/catch-report/admin/report">Generate Catch Report</a></li>
-    <li><a class="dropdown-item" href="#">Data Tools</a></li>
-    <li><a class="dropdown-item" href="#">Gov Reports</a></li>
-  </ul>
-</li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#">Welcome, <%= user.name %></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-          </li>
-        </ul>
-      </div>
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </nav>
-    <div class="container mt-4">
-      <h2>Violation Notification System</h2>
-      <table class="table">
-          <thead>
-              <tr>
-                  <th>ID</th>
-                  <th>User</th>
-                  <th>Violation Type</th>
-                  <th>Details</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-              <% violations.forEach(violation => { %>
-                  <tr>
-                      <td><%= violation.id %></td>
-                      <td><%= violation.name %></td>
-                      <td><%= violation.violation_type %></td>
-                      <td><%= violation.details %></td>
-                      <td><%= violation.status %></td>
-                      <td>
-                          <form action="/violation-notifications/update" method="POST" class="d-inline">
-                              <input type="hidden" name="id" value="<%= violation.id %>">
-                              <select name="status" class="form-select">
-                                  <option value="Pending" <%= violation.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                                  <option value="Reviewed" <%= violation.status === 'Reviewed' ? 'selected' : '' %>>Reviewed</option>
-                                  <option value="Resolved" <%= violation.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
-                              </select>
-                              <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                          </form>
-                      </td>
-                  </tr>
-              <% }) %>
-          </tbody>
-      </table>
-  
-      <h3>Add Violation</h3>
-      <form action="/violation-notifications/add" method="POST">
-          <div class="mb-3">
-              <label for="user_id" class="form-label">User ID</label>
-              <input type="text" name="user_id" class="form-control" required>
-          </div>
-          <div class="mb-3">
-              <label for="violation_type" class="form-label">Violation Type</label>
-              <input type="text" name="violation_type" class="form-control" required>
-          </div>
-          <div class="mb-3">
-              <label for="details" class="form-label">Details</label>
-              <textarea name="details" class="form-control" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-success">Submit</button>
-      </form>
-  </div>
-  
-<!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Are you sure you want to log out?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <a href="/auth/logout" class="btn btn-danger">Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Violation Notification System Section -->
+    <div class="main-container">
+        <div class="violation-section">
+            <h2><i class="fas fa-exclamation-triangle"></i> Violation Notification System</h2>
+
+            <!-- Violations Table -->
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Violation Type</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (violations && violations.length) { %>
+                            <% violations.forEach(violation => { %>
+                                <tr>
+                                    <td><%= violation.id %></td>
+                                    <td><%= violation.name %></td>
+                                    <td><%= violation.violation_type %></td>
+                                    <td><%= violation.details %></td>
+                                    <td><%= violation.status %></td>
+                                    <td>
+                                        <form action="/violation-notifications/update" method="POST" class="d-inline">
+                                            <input type="hidden" name="id" value="<%= violation.id %>">
+                                            <select name="status" class="form-select">
+                                                <option value="Pending" <%= violation.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                                <option value="Reviewed" <%= violation.status === 'Reviewed' ? 'selected' : '' %>>Reviewed</option>
+                                                <option value="Resolved" <%= violation.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="no-violations">No violations found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Violation Form -->
+        <div class="violation-section">
+            <h3><i class="fas fa-plus"></i> Add Violation</h3>
+            <form action="/violation-notifications/add" method="POST">
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">User ID</label>
+                    <input type="text" name="user_id" id="user_id" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="violation_type" class="form-label">Violation Type</label>
+                    <input type="text" name="violation_type" id="violation_type" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="details" class="form-label">Details</label>
+                    <textarea name="details" id="details" class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

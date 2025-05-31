@@ -1,0 +1,169 @@
+.navbar {
+    background-color: black !important;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+    color: white !important;
+}
+
+.navbar .nav-link:hover {
+    color: #ccc !important;
+}
+
+.navbar .dropdown-menu {
+    background-color: #ffffff !important;
+}
+
+.navbar .dropdown-item {
+    color: #000 !important;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #505050 !important;
+    color: white !important;
+}
+
+.navbar-toggler {
+    border-color: white !important;
+    color: #ffffff;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+@media (max-width: 991px) {
+    .navbar {
+        background-color: #000;
+        text-align: center;
+        width: 100%;
+        z-index: 1050; /* Higher than other elements */
+    }
+ 
+    .navbar .nav-link:hover {
+        color: #000 !important;
+        background-color: #ffffff;
+        border-radius: 5px;
+    }
+
+    .navbar-collapse {
+        background-color: rgba(0, 0, 0, 0.9); /* Ensure dropdown is visible */
+        padding: 1rem;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        z-index: 1050; /* Bring it to front */
+    }
+
+    .navbar:hover,
+    .navbar:focus-within {
+        z-index: 1100; /* Bring navbar above everything when hovered */
+        
+    }
+}
+
+
+
+/*........................Catch Report Review Section Styling................*/
+
+.container {
+    color: #fff;
+  }
+  
+  h3.text-center {
+    color: #000;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+  
+  /* Filtering Form */
+  .filters-container {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    
+  }
+  
+  .filters-container .form-control,
+  .filters-container .form-select {
+    background-color: transparent;
+    color: #000;
+    border: 1px solid #444;
+  }
+  
+  .filters-container .form-control::placeholder {
+    color: #000;
+  }
+  
+  .filters-container .form-control:focus,
+  .filters-container .form-select:focus {
+    border-color: #ccc;
+    box-shadow: none;
+    background-color: transparent;
+  }
+  
+  .filters-container button {
+    background-color: #333;
+    border: none;
+    color: #fff;
+  }
+  
+  .filters-container button:hover {
+    background-color: #555;
+  }
+  
+  /* Table Styling */
+  .table-container {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #333;
+  }
+  
+  .table.table-striped {
+    color: #fff;
+  }
+  
+  .table thead.table-dark {
+    background-color: transparent;
+    border-bottom: 2px solid #444;
+    color: #fff;
+  }
+  
+  .table tbody tr {
+    background-color: transparent;
+  }
+  
+  .table tbody tr:nth-child(even) {
+    background-color: transparent;
+  }
+  
+  .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .table .dropdown-menu {
+    background-color: #fff;
+  }
+  
+  .table .dropdown-item {
+    color: #000;
+  }
+  
+  .table .dropdown-item:hover {
+    background-color: #505050;
+    color: #fff;
+  }
+  
+  /* Dropdown action button */
+  .btn-secondary.btn-sm.dropdown-toggle {
+    background-color: transparent;
+    border: 1px solid #555;
+    color: #fff;
+  }
+  
+  .btn-secondary.btn-sm.dropdown-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  

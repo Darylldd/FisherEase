@@ -1,4 +1,97 @@
-<h2>Manage Fish Species</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">FMO Admin</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+          </li>
+          <!-- Registration Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Register
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
+              <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
+              <li><a class="dropdown-item" href="/aquaculture/register">Aquaculture Facility Registration</a></li>
+             
+
+            </ul>
+          </li>
+
+          <!-- Reports & Tracking Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Reports & Tracking
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+              <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review Page</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-log">Fishing Activity Tracking</a></li>
+              <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
+              <li><a class="dropdown-item" href="/violation-notifications">Violation Notification System</a></li>
+              <li><a class="dropdown-item" href="/audit/logs">Audit Logs & Activity Tracking</a></li>
+               <li><a class="dropdown-item" href="/harvest/admin-view">📊 Harvest & Production Data Entry</a></li>
+               <li>
+                <a class="dropdown-item" href="/fish-species">
+                    Fish Species Guide
+                </a>
+            </li>
+            <li><a class="dropdown-item" href="/admin/fish-species/add">➕ Add Fish Species</a></li>
+            </ul>
+          </li>
+          <!-- Tools Dropdown -->
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Tools
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
+    <li><a class="dropdown-item" href="/catch-report/admin/report">Generate Catch Report</a></li>
+    <li><a class="dropdown-item" href="#">Gov Reports</a></li>
+    <li><a class="dropdown-item" href="/climate-analysis">Climate Event Analysis</a></li>
+  </ul>
+</li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+ 
+  <!-- Logout Confirmation Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+    <h2>Manage Fish Species</h2>
 <a href="/admin/fish-species/add">Add New Species</a>
 
 <% if (speciesList.length > 0) { %>
@@ -18,3 +111,6 @@
     <p>No fish species available.</p>
 <% } %>
 
+
+</body>
+</html>

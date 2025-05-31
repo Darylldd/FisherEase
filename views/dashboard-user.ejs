@@ -1,114 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Fisheries Management</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Navbar (reused from previous designs for consistency) */
+    .navbar {
+      background-color: var(--primary);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #ffffff !important;
+      letter-spacing: 0.5px;
+    }
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 400;
+      font-size: 0.95rem;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link:hover {
+      background-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .dropdown-menu {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin-top: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    .dropdown-item {
+      color: var(--text);
+      font-weight: 400;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      margin: 0 0.5rem;
+    }
+    .dropdown-item:hover {
+      background-color: var(--background);
+      color: var(--accent);
+    }
+    .dropdown-item i {
+      width: 24px;
+      text-align: center;
+    }
+    .navbar-nav .nav-item {
+      margin-left: 0.5rem;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1600px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-header i {
+      color: var(--accent);
+    }
+
+    /* Dashboard Content */
+    .dashboard-content {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .dashboard-content:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-content h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .dashboard-content p {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text);
+      margin: 0.5rem 0;
+    }
+    .dashboard-content p strong {
+      font-weight: 500;
+      color: var(--primary);
+    }
+    .dashboard-content h4 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 1.5rem 0 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Weather Info */
+    #weatherInfo .list-group {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #weatherInfo .list-group-item {
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      background-color: #f9fafb;
+      color: var(--text);
+    }
+    #weatherInfo .list-group-item strong {
+      font-weight: 500;
+      color: var(--primary);
+    }
+    #weatherInfo .text-danger {
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .main-container {
+        padding: 0 1rem;
+      }
+      .dashboard-content {
+        max-width: 600px;
+      }
+    }
+    @media (max-width: 768px) {
+      .section-header {
+        font-size: 1.2rem;
+      }
+      .dashboard-content {
+        padding: 1rem;
+      }
+      .dashboard-content h2 {
+        font-size: 1.6rem;
+      }
+      .dashboard-content h4 {
+        font-size: 1.1rem;
+      }
+      .dashboard-content p,
+      #weatherInfo .list-group-item {
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .main-container {
+        margin: 1rem auto;
+      }
+      .section-header {
+        font-size: 1.1rem;
+      }
+      .dashboard-content {
+        padding: 0.75rem;
+      }
+      .dashboard-content h2 {
+        font-size: 1.4rem;
+      }
+      .dashboard-content h4 {
+        font-size: 1rem;
+      }
+      .dashboard-content p,
+      #weatherInfo .list-group-item {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">FMO User</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Dashboard</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            User Tools
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-                            <li><a class="dropdown-item" href="/climateLoss/view">Post-Climate Event Loss Reporting</a></li>
-                            <li><a class="dropdown-item" href="/catch-report/predictions">Predict Best Catch Time</a></li>
-                            <li><a class="dropdown-item" href="/catch-report">Report Daily Catch</a></li>
-                            <li><a class="dropdown-item" href="/fishing-activity-tracking">Log Fishing Activity</a></li>
-                            <li><a class="dropdown-item" href="/harvest/user-view">Harvest</a></li>
-                            <li><a class="dropdown-item" href="/harvest/add">Add Harvest</a></li>
-                            <li>
-                              <a class="dropdown-item" href="/violation-history">My Violations</a>
-                            </li>
-                            
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Welcome, <%= user.name %></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Logout Confirmation Modal -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to log out?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
-                </div>
-            </div>
-        </div>
+  <!-- Navbar (updated to match provided HTML with added icons) -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="main-container">
+      <a class="navbar-brand" href="/">Fisheries Management Office</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-tools me-1"></i> User Tools
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+              <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
+              <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
+              <li><a class="dropdown-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
+              <li><a class="dropdown-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
+              <li><a class="dropdown-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <div class="container mt-4">
-        <h2>User Dashboard</h2>
-        <p>View and manage your registered information.</p>
-        <p>You have caught a total of: <strong><%= userCatches %></strong> fish.</p>
-        
-        <% if (userCatches === 0) { %>
-            <p>It looks like you're new! Start catching fish to track your records.</p>
-        <% } %>
-
-        <h4>🌦 Weather Today in Calapan City</h4>
-        <div id="weatherInfo">Loading...</div>
+  <!-- Logout Confirmation Modal (reused from provided HTML) -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          const url = "https://api.open-meteo.com/v1/forecast?latitude=13.4139&longitude=121.0561&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=auto";
+  <div class="main-container">
+    <!-- User Dashboard Section -->
+    <div class="section-header">
+      <i class="fas fa-tachometer-alt"></i> User Dashboard
+    </div>
+    <div class="dashboard-content">
+      <h2>User Dashboard</h2>
+      <p>View and manage your registered information.</p>
+      <p>You have caught a total of: <strong><%= userCatches %></strong> fish.</p>
       
-          fetch(url)
-            .then(res => res.json())
-            .then(data => {
-              const daily = data.daily;
-              const todayIndex = 0;
-              const forecast = `
-                <ul class="list-group mt-3">
-                  <li class="list-group-item"><strong>Max Temp:</strong> ${daily.temperature_2m_max[todayIndex]}°C</li>
-                  <li class="list-group-item"><strong>Min Temp:</strong> ${daily.temperature_2m_min[todayIndex]}°C</li>
-                  <li class="list-group-item"><strong>Rain:</strong> ${daily.precipitation_sum[todayIndex]} mm</li>
-                  <li class="list-group-item"><strong>Wind:</strong> ${daily.windspeed_10m_max[todayIndex]} km/h from ${getDirection(daily.winddirection_10m_dominant[todayIndex])}</li>
-                </ul>
-              `;
-              document.getElementById("weatherInfo").innerHTML = forecast;
-            })
-            .catch(err => {
-              document.getElementById("weatherInfo").innerHTML = "<p class='text-danger'>Failed to load weather.</p>";
-              console.error(err);
-            });
-      
-          function getDirection(degrees) {
-            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-            return directions[Math.round(degrees / 45) % 8];
-          }
+      <% if (userCatches === 0) { %>
+        <p>It looks like you're new! Start catching fish to track your records.</p>
+      <% } %>
+
+      <h4><i class="fas fa-cloud-sun"></i> Weather Today in Calapan City</h4>
+      <div id="weatherInfo">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=13.4139&longitude=121.0561&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=auto";
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const daily = data.daily;
+          const todayIndex = 0;
+          const forecast = `
+            <ul class="list-group mt-3">
+              <li class="list-group-item"><strong>Max Temp:</strong> ${daily.temperature_2m_max[todayIndex]}°C</li>
+              <li class="list-group-item"><strong>Min Temp:</strong> ${daily.temperature_2m_min[todayIndex]}°C</li>
+              <li class="list-group-item"><strong>Rain:</strong> ${daily.precipitation_sum[todayIndex]} mm</li>
+              <li class="list-group-item"><strong>Wind:</strong> ${daily.windspeed_10m_max[todayIndex]} km/h from ${getDirection(daily.winddirection_10m_dominant[todayIndex])}</li>
+            </ul>
+          `;
+          document.getElementById("weatherInfo").innerHTML = forecast;
+        })
+        .catch(err => {
+          document.getElementById("weatherInfo").innerHTML = "<p class='text-danger'>Failed to load weather.</p>";
+          console.error(err);
         });
-      </script>
-      
+
+      function getDirection(degrees) {
+        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        return directions[Math.round(degrees / 45) % 8];
+      }
+    });
+  </script>
 </body>
 </html>

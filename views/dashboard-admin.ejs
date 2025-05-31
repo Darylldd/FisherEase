@@ -1,80 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/dashboardStyles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Fisheries Management</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
+    }
 
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: var(--primary);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #ffffff !important;
+      letter-spacing: 0.5px;
+    }
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 400;
+      font-size: 0.95rem;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link:hover {
+      background-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .dropdown-menu {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin-top: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    .dropdown-item {
+      color: var(--text);
+      font-weight: 400;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      margin: 0 0.5rem;
+    }
+    .dropdown-item:hover {
+      background-color: var(--background);
+      color: var(--accent);
+    }
+    .dropdown-item i {
+      width: 24px;
+      text-align: center;
+    }
+    .navbar-nav .nav-item {
+      margin-left: 0.5rem;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1600px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-header i {
+      color: var(--accent);
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    .card-body {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .card-icon {
+      font-size: 2rem;
+      color: var(--accent);
+      background-color: rgba(59, 130, 246, 0.1);
+      padding: 0.75rem;
+      border-radius: 8px;
+    }
+    .card-content h5 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin: 0;
+    }
+    .card-content p {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 0;
+    }
+    .status-total { color: var(--primary); }
+    .status-approved { color: var(--highlight); }
+    .status-flagged { color: var(--warning); }
+
+    /* Weather Section */
+    .weather-section {
+      background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      margin-bottom: 2rem;
+      color: #ffffff;
+      max-width: 800px; /* Reduced width */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .weather-section .section-header {
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+    .weather-section .section-header i {
+      color: #ffffff;
+    }
+    .weather-carousel {
+      position: relative;
+    }
+    .weather-carousel .carousel-inner {
+      padding: 0 1rem;
+    }
+    .weather-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      color: var(--text);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin: 0 auto;
+      max-width: 220px; /* Compact card width */
+    }
+    .weather-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .weather-icon {
+      font-size: 2.5rem; /* Slightly smaller icon */
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+    .weather-card .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .weather-card .card-text {
+      font-size: 0.85rem;
+      margin: 0.25rem 0;
+    }
+    .carousel-control-prev, .carousel-control-next {
+      width: 8%;
+      background: none;
+      opacity: 0.8;
+    }
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+      background-color: var(--primary);
+      border-radius: 50%;
+      padding: 0.4rem;
+      width: 24px;
+      height: 24px;
+    }
+    .weather-carousel .carousel-indicators {
+      bottom: -30px;
+    }
+    .weather-carousel .carousel-indicators button {
+      background-color: #ffffff;
+      opacity: 0.5;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin: 0 4px;
+    }
+    .weather-carousel .carousel-indicators .active {
+      opacity: 1;
+      background-color: var(--accent);
+    }
+
+    /* Charts */
+    .chart-container {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      height: 360px;
+      position: relative;
+    }
+    .chart-container h5 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Modal */
+    .modal-content {
+      border-radius: 12px;
+      border: none;
+      overflow: hidden;
+    }
+    .modal-header {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .modal-footer {
+      border-top: none;
+      padding: 1rem 1.5rem;
+    }
+    .btn-danger {
+      background-color: var(--warning);
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    .btn-secondary {
+      background-color: #6b7280;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .btn-secondary:hover {
+      background-color: #4b5563;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .main-container {
+        padding: 0 1rem;
+      }
+      .chart-container {
+        height: 320px;
+      }
+      .weather-section {
+        max-width: 600px;
+      }
+    }
+    @media (max-width: 768px) {
+      .navbar-brand {
+        font-size: 1.3rem;
+      }
+      .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+      }
+      .section-header {
+        font-size: 1.2rem;
+      }
+      .card-content p {
+        font-size: 1.4rem;
+      }
+      .chart-container {
+        height: 280px;
+      }
+      .weather-section {
+        max-width: 500px;
+      }
+      .weather-carousel .carousel-inner {
+        padding: 0 0.5rem;
+      }
+      .weather-card {
+        max-width: 180px;
+      }
+      .weather-icon {
+        font-size: 2rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .main-container {
+        margin: 1rem auto;
+      }
+      .section-header {
+        font-size: 1.1rem;
+      }
+      .card-body {
+        flex-direction: column;
+        text-align: center;
+      }
+      .card-icon {
+        margin-bottom: 0.5rem;
+      }
+      .chart-container {
+        height: 240px;
+      }
+      .weather-section {
+        max-width: 100%;
+        padding: 1rem;
+      }
+      .weather-card {
+        max-width: 160px;
+      }
+      .carousel-control-prev, .carousel-control-next {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">FMO Admin</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+  <nav class="navbar navbar-expand-lg">
+    <div class="main-container">
+      <a class="navbar-brand" href="#">Fisheries Management Office</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard/admin">Dashboard</a>
+            <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
           </li>
-          <!-- Registration Dropdown -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Register
+              <i class="fas fa-user-plus me-1"></i> Register
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
-              <li><a class="dropdown-item" href="/register/fisherfolk">Fisherfolk Registration</a></li>
-              <li><a class="dropdown-item" href="/aquaculture/register">Aquaculture Facility Registration</a></li>
-             
-
+              <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
+              <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
             </ul>
           </li>
-
-          <!-- Reports & Tracking Dropdown -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Reports & Tracking
+              <i class="fas fa-file-alt me-1"></i> Reports & Tracking
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-              <li><a class="dropdown-item" href="/catch-report/review">Catch Report Review Page</a></li>
-              <li><a class="dropdown-item" href="/fishing-activity-log">Fishing Activity Tracking</a></li>
-              <li><a class="dropdown-item" href="/enforcement-compliance-logging">Enforcement and Compliance Logging</a></li>
-              <li><a class="dropdown-item" href="/violation-notifications">Violation Notification System</a></li>
-              <li><a class="dropdown-item" href="/audit/logs">Audit Logs & Activity Tracking</a></li>
-               <li><a class="dropdown-item" href="/harvest/admin-view">📊 Harvest & Production Data Entry</a></li>
-               <li>
-                <a class="dropdown-item" href="/fish-species">
-                    Fish Species Guide
-                </a>
-            </li>
-            <li><a class="dropdown-item" href="/admin/fish-species/add">➕ Add Fish Species</a></li>
+              <li><a class="dropdown-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-log"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a></li>
+              <li><a class="dropdown-item" href="/enforcement-compliance-logging"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a></li>
+              <li><a class="dropdown-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a></li>
+              <li><a class="dropdown-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a></li>
+              <li><a class="dropdown-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a></li>
+              <li><a class="dropdown-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a></li>
+              <li><a class="dropdown-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a></li>
             </ul>
           </li>
-          <!-- Tools Dropdown -->
-<li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Tools
-  </a>
-  <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
-    <li><a class="dropdown-item" href="/catch-report/admin/report">Generate Catch Report</a></li>
-    <li><a class="dropdown-item" href="#">Gov Reports</a></li>
-    <li><a class="dropdown-item" href="/climate-analysis">Climate Event Analysis</a></li>
-  </ul>
-</li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#">Welcome, <%= user.name %></a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-tools me-1"></i> Tools
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
+              <li><a class="dropdown-item" href="/catch-report/admin/report"><i class="fas fa-file-export me-2"></i> Generate Catch Report</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fas fa-file-signature me-2"></i> Gov Reports</a></li>
+              <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
- 
+
   <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -93,65 +434,297 @@
       </div>
     </div>
   </div>
-  
-  <div class="container mt-4">
 
+  <div class="main-container">
+    <!-- Summary Cards -->
+    <div class="section-header">
+      <i class="fas fa-tachometer-alt"></i> Dashboard Overview
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <i class="fas fa-file-alt card-icon"></i>
+            <div class="card-content">
+              <h5>Total Reports</h5>
+              <p class="status-total" id="totalReports">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <i class="fas fa-check-circle card-icon status-approved"></i>
+            <div class="card-content">
+              <h5>Approved Reports</h5>
+              <p class="status-approved" id="approvedReports">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <i class="fas fa-exclamation-triangle card-icon status-flagged"></i>
+            <div class="card-content">
+              <h5>Flagged Reports</h5>
+              <p class="status-flagged" id="flaggedReports">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Weather Forecast Section -->
-    <div id="weather-forecast" class="mt-4">
-      <h3>Weather Forecast for Calapan City, Philippines</h3>
-      <div id="forecast-cards">
-        <!-- Weather cards will be inserted here -->
+    <div class="weather-section">
+      <div class="section-header">
+        <i class="fas fa-cloud-sun"></i> Weather Forecast for Calapan City, Philippines
+      </div>
+      <div id="weather-carousel" class="weather-carousel carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" id="forecast-cards"></div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#weather-carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#weather-carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+        <div class="carousel-indicators" id="carousel-indicators"></div>
       </div>
     </div>
 
-    <!-- Dashboard Cards -->
-    <div class="row mt-4">
-      <div class="col-md-4">
-        <div class="card text-white bg-primary shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">Total Reports</h5>
-            <p class="card-text" id="totalReports">Loading...</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-white bg-success shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">Approved Reports</h5>
-            <p class="card-text" id="approvedReports">Loading...</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-white bg-danger shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">Flagged Reports</h5>
-            <p class="card-text" id="flaggedReports">Loading...</p>
-          </div>
-        </div>
-      </div>
+    <!-- Analytics Section -->
+    <div class="section-header">
+      <i class="fas fa-chart-bar"></i> Analytics
     </div>
-
-    <!-- Charts -->
-    <div class="row mt-4">
-      <div class="col-md-4">
-        <canvas id="speciesChart"></canvas>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div class="col">
+        <div class="chart-container">
+          <h5>Species Distribution</h5>
+          <canvas id="speciesChart"></canvas>
+        </div>
       </div>
-      <div class="col-md-4">
-        <canvas id="statusChart"></canvas>
+      <div class="col">
+        <div class="chart-container">
+          <h5>Report Status</h5>
+          <canvas id="statusChart"></canvas>
+        </div>
       </div>
-      <div class="col-md-4">
-        <canvas id="dailyChart"></canvas>
+      <div class="col">
+        <div class="chart-container">
+          <h5>Daily Reports</h5>
+          <canvas id="dailyChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="/js/dashboardAnalytics.js"></script>
-  <script src="/js/weatherapi.js">
+  <script>
+    // Store chart instances in the window object to avoid redeclaration
+    window.speciesChartInstance = window.speciesChartInstance || null;
+    window.statusChartInstance = window.statusChartInstance || null;
+    window.dailyChartInstance = window.dailyChartInstance || null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const response = await fetch("/analytics");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        console.log("📊 Received Data:", data); // Debugging log
+
+        if (!data) {
+          throw new Error("Missing API response data");
+        }
+
+        // Update dashboard counters
+        document.getElementById("totalReports").innerText = data.totalReports ?? "N/A";
+        document.getElementById("approvedReports").innerText = data.approvedReports ?? "N/A";
+        document.getElementById("flaggedReports").innerText = data.flaggedReports ?? "N/A";
+
+        // Render charts
+        renderCharts(data.speciesData, data.statusData, data.dailyReports);
+      } catch (error) {
+        console.error("❌ Error loading analytics data:", error);
+      }
+    });
+
+    function renderCharts(speciesData, statusData, dailyReports) {
+      const speciesLabels = speciesData.map(item => item.species);
+      const speciesCounts = speciesData.map(item => item.count);
+
+      const statusLabels = statusData.map(item => item.status);
+      const statusCounts = statusData.map(item => item.count);
+
+      const dailyLabels = dailyReports.map(item => item.report_date.split("T")[0]);
+      const dailyCounts = dailyReports.map(item => item.count);
+
+      // Destroy existing charts if they exist
+      if (window.speciesChartInstance) window.speciesChartInstance.destroy();
+      if (window.statusChartInstance) window.statusChartInstance.destroy();
+      if (window.dailyChartInstance) window.dailyChartInstance.destroy();
+
+      // Create new charts
+      window.speciesChartInstance = new Chart(document.getElementById("speciesChart"), {
+        type: "bar",
+        data: {
+          labels: speciesLabels,
+          datasets: [{
+            label: "Species",
+            data: speciesCounts,
+            backgroundColor: "rgba(59, 130, 246, 0.7)",
+            borderColor: "rgba(59, 130, 246, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Count', font: { family: 'Poppins', size: 12 } } }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      window.statusChartInstance = new Chart(document.getElementById("statusChart"), {
+        type: "pie",
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusCounts,
+            backgroundColor: ["rgba(16, 185, 129, 0.7)", "rgba(239, 68, 68, 0.7)", "rgba(234, 179, 8, 0.7)"],
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { family: 'Poppins', size: 12 } } }
+          }
+        }
+      });
+
+      window.dailyChartInstance = new Chart(document.getElementById("dailyChart"), {
+        type: "line",
+        data: {
+          labels: dailyLabels,
+          datasets: [{
+            label: "Reports Over Time",
+            data: dailyCounts,
+            borderColor: "rgba(59, 130, 246, 0.8)",
+            backgroundColor: "rgba(59, 130, 246, 0.2)",
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Reports', font: { family: 'Poppins', size: 12 } } }
+          },
+          plugins: {
+            legend: { labels: { font: { family: 'Poppins', size: 12 } } }
+          }
+        }
+      });
+    }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const lat = '13.4139';
+      const lon = '121.0561';
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const forecastCards = document.getElementById('forecast-cards');
+          const indicators = document.getElementById('carousel-indicators');
+          const times = data.daily.time;
+          const maxTemps = data.daily.temperature_2m_max;
+          const minTemps = data.daily.temperature_2m_min;
+          const weatherCodes = data.daily.weathercode;
+
+          times.forEach((time, index) => {
+            const date = new Date(time);
+            const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
+            const maxTemp = maxTemps[index];
+            const minTemp = minTemps[index];
+            const weatherCode = weatherCodes[index];
+            const weatherDescription = getWeatherDescription(weatherCode);
+            const weatherIcon = getWeatherIcon(weatherCode);
+
+            const card = document.createElement('div');
+            card.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            card.innerHTML = `
+              <div class="weather-card">
+                <div class="weather-icon">${weatherIcon}</div>
+                <h5 class="card-title">${dayName}</h5>
+                <p class="card-text">Max: ${maxTemp}°C</p>
+                <p class="card-text">Min: ${minTemp}°C</p>
+                <p class="card-text">Weather: ${weatherDescription}</p>
+              </div>
+            `;
+            forecastCards.appendChild(card);
+
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#weather-carousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === 0) indicator.className = 'active';
+            indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+            indicators.appendChild(indicator);
+          });
+
+          // Initialize carousel
+          const carousel = new bootstrap.Carousel(document.getElementById('weather-carousel'), {
+            interval: 5000,
+            wrap: true
+          });
+
+          // Make the carousel visible after loading
+          forecastCards.style.opacity = 1;
+        })
+        .catch(error => console.error('Error fetching weather data:', error));
+
+      function getWeatherDescription(code) {
+        const weatherMapping = {
+          0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+          45: 'Fog', 48: 'Depositing rime fog', 51: 'Light drizzle', 53: 'Moderate drizzle',
+          55: 'Dense drizzle', 56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
+          61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain', 66: 'Light freezing rain',
+          67: 'Heavy freezing rain', 71: 'Slight snowfall', 73: 'Moderate snowfall',
+          75: 'Heavy snowfall', 77: 'Snow grains', 80: 'Slight rain showers',
+          81: 'Moderate rain showers', 82: 'Violent rain showers', 85: 'Slight snow showers',
+          86: 'Heavy snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with slight hail',
+          99: 'Thunderstorm with heavy hail'
+        };
+        return weatherMapping[code] || 'Unknown';
+      }
+
+      function getWeatherIcon(code) {
+        const iconMapping = {
+          0: '🌞', 1: '🌤', 2: '🌥', 3: '☁️', 45: '🌫', 48: '🌫', 51: '🌧',
+          53: '🌧', 55: '🌧', 56: '🌨', 57: '🌨', 61: '🌦', 63: '🌦', 65: '🌧',
+          66: '🌨', 67: '🌨', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
+          80: '🌧', 81: '🌧', 82: '🌧', 85: '❄️', 86: '❄️', 95: '🌩', 96: '🌩', 99: '🌩'
+        };
+        return iconMapping[code] || '❓';
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
