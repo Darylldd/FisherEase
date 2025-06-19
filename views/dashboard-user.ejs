@@ -31,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* Navbar (reused from previous designs for consistency) */
+    /* Navbar */
     .navbar {
       background-color: var(--primary);
       padding: 1rem 1.5rem;
@@ -146,25 +146,86 @@
       gap: 0.5rem;
     }
 
-    /* Weather Info */
-    #weatherInfo .list-group {
+    /* Weather and Tide Sections */
+    .weather-section, .tide-section {
+      background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      margin-bottom: 2rem;
+      color: #ffffff;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .weather-section .section-header, .tide-section .section-header {
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+    .weather-section .section-header i, .tide-section .section-header i {
+      color: #ffffff;
+    }
+    .weather-carousel, .tide-carousel {
+      position: relative;
+    }
+    .weather-carousel .carousel-inner, .tide-carousel .carousel-inner {
+      padding: 0 1rem;
+    }
+    .weather-card, .tide-card {
+      background: rgba(255, 255, 255, 0.95);
       border-radius: 8px;
-      overflow: hidden;
-    }
-    #weatherInfo .list-group-item {
-      border: 1px solid var(--border);
-      font-size: 0.95rem;
-      padding: 0.75rem 1rem;
-      background-color: #f9fafb;
+      padding: 1rem;
+      text-align: center;
       color: var(--text);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin: 0 auto;
+      max-width: 220px;
     }
-    #weatherInfo .list-group-item strong {
+    .weather-card:hover, .tide-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .weather-icon, .tide-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+    .weather-card .card-title, .tide-card .card-title {
+      font-size: 1rem;
       font-weight: 500;
-      color: var(--primary);
+      margin-bottom: 0.5rem;
     }
-    #weatherInfo .text-danger {
-      font-size: 0.95rem;
-      font-weight: 400;
+    .weather-card .card-text, .tide-card .card-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      margin: 0.25rem 0;
+    }
+    .carousel-control-prev, .carousel-control-next {
+      width: 8%;
+      background: none;
+      opacity: 0.8;
+    }
+    .carousel-control-prev-icon, .carousel-control-next-icon {
+      background-color: var(--primary);
+      border-radius: 50%;
+      padding: 0.4rem;
+      width: 24px;
+      height: 24px;
+    }
+    .weather-carousel .carousel-indicators, .tide-carousel .carousel-indicators {
+      bottom: -30px;
+    }
+    .weather-carousel .carousel-indicators button, .tide-carousel .carousel-indicators button {
+      background-color: #ffffff;
+      opacity: 0.5;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin: 0 4px;
+    }
+    .weather-carousel .carousel-indicators .active, .tide-carousel .carousel-indicators .active {
+      opacity: 1;
+      background-color: var(--accent);
     }
 
     /* Responsive Design */
@@ -173,6 +234,9 @@
         padding: 0 1rem;
       }
       .dashboard-content {
+        max-width: 600px;
+      }
+      .weather-section, .tide-section {
         max-width: 600px;
       }
     }
@@ -189,9 +253,20 @@
       .dashboard-content h4 {
         font-size: 1.1rem;
       }
-      .dashboard-content p,
-      #weatherInfo .list-group-item {
+      .dashboard-content p {
         font-size: 0.9rem;
+      }
+      .weather-section, .tide-section {
+        max-width: 500px;
+      }
+      .weather-carousel .carousel-inner, .tide-carousel .carousel-inner {
+        padding: 0 0.5rem;
+      }
+      .weather-card, .tide-card {
+        max-width: 180px;
+      }
+      .weather-icon, .tide-icon {
+        font-size: 2rem;
       }
     }
     @media (max-width: 576px) {
@@ -210,15 +285,24 @@
       .dashboard-content h4 {
         font-size: 1rem;
       }
-      .dashboard-content p,
-      #weatherInfo .list-group-item {
+      .dashboard-content p {
         font-size: 0.85rem;
+      }
+      .weather-section, .tide-section {
+        max-width: 100%;
+        padding: 1rem;
+      }
+      .weather-card, .tide-card {
+        max-width: 160px;
+      }
+      .carousel-control-prev, .carousel-control-next {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar (updated to match provided HTML with added icons) -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
     <div class="main-container">
       <a class="navbar-brand" href="/">Fisheries Management Office</a>
@@ -255,7 +339,7 @@
     </div>
   </nav>
 
-  <!-- Logout Confirmation Modal (reused from provided HTML) -->
+  <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -287,41 +371,205 @@
       <% if (userCatches === 0) { %>
         <p>It looks like you're new! Start catching fish to track your records.</p>
       <% } %>
+    </div>
 
-      <h4><i class="fas fa-cloud-sun"></i> Weather Today in Calapan City</h4>
-      <div id="weatherInfo">Loading...</div>
+    <!-- Weather Forecast Section -->
+    <div class="weather-section">
+      <div class="section-header">
+        <i class="fas fa-cloud-sun"></i> Weather Forecast for Calapan City, Philippines
+      </div>
+      <div id="weather-carousel" class="weather-carousel carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" id="forecast-cards"></div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#weather-carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#weather-carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+        <div class="carousel-indicators" id="carousel-indicators"></div>
+      </div>
+    </div>
+
+    <!-- Tide Forecast Section -->
+    <div class="tide-section">
+      <div class="section-header">
+        <i class="fas fa-water"></i> Tide Forecast for Calapan City, Philippines
+      </div>
+      <div id="tide-carousel" class="tide-carousel carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner" id="tide-cards"></div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#tide-carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#tide-carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+        <div class="carousel-indicators" id="tide-indicators"></div>
+      </div>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const url = "https://api.open-meteo.com/v1/forecast?latitude=13.4139&longitude=121.0561&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=auto";
+    document.addEventListener('DOMContentLoaded', function() {
+      // Weather Forecast
+      const weatherLat = '13.4139';
+      const weatherLon = '121.0561';
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${weatherLat}&longitude=${weatherLon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
 
-      fetch(url)
-        .then(res => res.json())
+      fetch(weatherUrl)
+        .then(response => response.json())
         .then(data => {
-          const daily = data.daily;
-          const todayIndex = 0;
-          const forecast = `
-            <ul class="list-group mt-3">
-              <li class="list-group-item"><strong>Max Temp:</strong> ${daily.temperature_2m_max[todayIndex]}°C</li>
-              <li class="list-group-item"><strong>Min Temp:</strong> ${daily.temperature_2m_min[todayIndex]}°C</li>
-              <li class="list-group-item"><strong>Rain:</strong> ${daily.precipitation_sum[todayIndex]} mm</li>
-              <li class="list-group-item"><strong>Wind:</strong> ${daily.windspeed_10m_max[todayIndex]} km/h from ${getDirection(daily.winddirection_10m_dominant[todayIndex])}</li>
-            </ul>
-          `;
-          document.getElementById("weatherInfo").innerHTML = forecast;
+          const forecastCards = document.getElementById('forecast-cards');
+          const indicators = document.getElementById('carousel-indicators');
+          const times = data.daily.time;
+          const maxTemps = data.daily.temperature_2m_max;
+          const minTemps = data.daily.temperature_2m_min;
+          const weatherCodes = data.daily.weathercode;
+
+          times.forEach((time, index) => {
+            const date = new Date(time);
+            const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
+            const maxTemp = maxTemps[index];
+            const minTemp = minTemps[index];
+            const weatherCode = weatherCodes[index];
+            const weatherDescription = getWeatherDescription(weatherCode);
+            const weatherIcon = getWeatherIcon(weatherCode);
+
+            const card = document.createElement('div');
+            card.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            card.innerHTML = `
+              <div class="weather-card">
+                <div class="weather-icon">${weatherIcon}</div>
+                <h5 class="card-title">${dayName}</h5>
+                <p class="card-text">Max: ${maxTemp}°C</p>
+                <p class="card-text">Min: ${minTemp}°C</p>
+                <p class="card-text">Weather: ${weatherDescription}</p>
+              </div>
+            `;
+            forecastCards.appendChild(card);
+
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#weather-carousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === 0) indicator.className = 'active';
+            indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+            indicators.appendChild(indicator);
+          });
+
+          // Initialize weather carousel
+          const weatherCarousel = new bootstrap.Carousel(document.getElementById('weather-carousel'), {
+            interval: 5000,
+            wrap: true
+          });
+
+          // Make the carousel visible after loading
+          forecastCards.style.opacity = 1;
         })
-        .catch(err => {
-          document.getElementById("weatherInfo").innerHTML = "<p class='text-danger'>Failed to load weather.</p>";
-          console.error(err);
+        .catch(error => {
+          console.error('Error fetching weather data:', error);
+          document.getElementById('forecast-cards').innerHTML = "<p class='text-danger'>Failed to load weather forecast.</p>";
         });
 
-      function getDirection(degrees) {
-        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-        return directions[Math.round(degrees / 45) % 8];
+      // Tide Forecast
+      const tideLat = '13.4139';
+      const tideLon = '121.0561';
+      const apiKey = 'c740ad90-683b-4777-83c9-7092b6cd1858'; // Replace with your WorldTides API key
+      const tideUrl = `https://www.worldtides.info/api/v3?extremes&lat=${tideLat}&lon=${tideLon}&key=${apiKey}&days=7`;
+
+      fetch(tideUrl)
+        .then(response => response.json())
+        .then(data => {
+          const tideCards = document.getElementById('tide-cards');
+          const tideIndicators = document.getElementById('tide-indicators');
+
+          if (!data.extremes || data.extremes.length === 0) {
+            tideCards.innerHTML = "<p class='text-danger'>No tide data available.</p>";
+            return;
+          }
+
+          // Group tides by day
+          const tidesByDay = {};
+          data.extremes.forEach(tide => {
+            const date = new Date(tide.date);
+            const dayKey = date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            if (!tidesByDay[dayKey]) {
+              tidesByDay[dayKey] = [];
+            }
+            tidesByDay[dayKey].push(tide);
+          });
+
+          // Create carousel items
+          Object.keys(tidesByDay).forEach((day, index) => {
+            const tides = tidesByDay[day];
+            const card = document.createElement('div');
+            card.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            let tideHtml = `
+              <div class="tide-card">
+                <div class="tide-icon">🌊</div>
+                <h5 class="card-title">${day}</h5>
+            `;
+            tides.forEach(tide => {
+              const time = new Date(tide.date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+              tideHtml += `
+                <p class="card-text">${tide.type}: ${time}, ${tide.height.toFixed(2)} m</p>
+              `;
+            });
+            tideHtml += `</div>`;
+            card.innerHTML = tideHtml;
+            tideCards.appendChild(card);
+
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#tide-carousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === 0) indicator.className = 'active';
+            indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+            tideIndicators.appendChild(indicator);
+          });
+
+          // Initialize tide carousel
+          const tideCarousel = new bootstrap.Carousel(document.getElementById('tide-carousel'), {
+            interval: 5000,
+            wrap: true
+          });
+
+          // Make the carousel visible after loading
+          tideCards.style.opacity = 1;
+        })
+        .catch(error => {
+          console.error('Error fetching tide data:', error);
+          document.getElementById('tide-cards').innerHTML = "<p class='text-danger'>Failed to load tide forecast.</p>";
+        });
+
+      function getWeatherDescription(code) {
+        const weatherMapping = {
+          0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+          45: 'Fog', 48: 'Depositing rime fog', 51: 'Light drizzle', 53: 'Moderate drizzle',
+          55: 'Dense drizzle', 56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
+          61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain', 66: 'Light freezing rain',
+          67: 'Heavy freezing rain', 71: 'Slight snowfall', 73: 'Moderate snowfall',
+          75: 'Heavy snowfall', 77: 'Snow grains', 80: 'Slight rain showers',
+          81: 'Moderate rain showers', 82: 'Violent rain showers', 85: 'Slight snow showers',
+          86: 'Heavy snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with slight hail',
+          99: 'Thunderstorm with heavy hail'
+        };
+        return weatherMapping[code] || 'Unknown';
+      }
+
+      function getWeatherIcon(code) {
+        const iconMapping = {
+          0: '🌞', 1: '🌤', 2: '🌥', 3: '☁️', 45: '🌫', 48: '🌫', 51: '🌧',
+          53: '🌧', 55: '🌧', 56: '🌨', 57: '🌨', 61: '🌦', 63: '🌦', 65: '🌧',
+          66: '🌨', 67: '🌨', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
+          80: '🌧', 81: '🌧', 82: '🌧', 85: '❄️', 86: '❄️', 95: '🌩', 96: '🌩', 99: '🌩'
+        };
+        return iconMapping[code] || '❓';
       }
     });
   </script>

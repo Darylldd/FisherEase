@@ -147,87 +147,6 @@
     .status-approved { color: var(--highlight); }
     .status-flagged { color: var(--warning); }
 
-    /* Weather Section */
-    .weather-section {
-      background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      margin-bottom: 2rem;
-      color: #ffffff;
-      max-width: 800px; /* Reduced width */
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .weather-section .section-header {
-      color: #ffffff;
-      margin-bottom: 1rem;
-    }
-    .weather-section .section-header i {
-      color: #ffffff;
-    }
-    .weather-carousel {
-      position: relative;
-    }
-    .weather-carousel .carousel-inner {
-      padding: 0 1rem;
-    }
-    .weather-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 8px;
-      padding: 1rem;
-      text-align: center;
-      color: var(--text);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      margin: 0 auto;
-      max-width: 220px; /* Compact card width */
-    }
-    .weather-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-    .weather-icon {
-      font-size: 2.5rem; /* Slightly smaller icon */
-      margin-bottom: 0.5rem;
-      color: var(--accent);
-    }
-    .weather-card .card-title {
-      font-size: 1rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-    .weather-card .card-text {
-      font-size: 0.85rem;
-      margin: 0.25rem 0;
-    }
-    .carousel-control-prev, .carousel-control-next {
-      width: 8%;
-      background: none;
-      opacity: 0.8;
-    }
-    .carousel-control-prev-icon, .carousel-control-next-icon {
-      background-color: var(--primary);
-      border-radius: 50%;
-      padding: 0.4rem;
-      width: 24px;
-      height: 24px;
-    }
-    .weather-carousel .carousel-indicators {
-      bottom: -30px;
-    }
-    .weather-carousel .carousel-indicators button {
-      background-color: #ffffff;
-      opacity: 0.5;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      margin: 0 4px;
-    }
-    .weather-carousel .carousel-indicators .active {
-      opacity: 1;
-      background-color: var(--accent);
-    }
-
     /* Charts */
     .chart-container {
       background-color: var(--card-bg);
@@ -295,9 +214,6 @@
       .chart-container {
         height: 320px;
       }
-      .weather-section {
-        max-width: 600px;
-      }
     }
     @media (max-width: 768px) {
       .navbar-brand {
@@ -316,18 +232,6 @@
       .chart-container {
         height: 280px;
       }
-      .weather-section {
-        max-width: 500px;
-      }
-      .weather-carousel .carousel-inner {
-        padding: 0 0.5rem;
-      }
-      .weather-card {
-        max-width: 180px;
-      }
-      .weather-icon {
-        font-size: 2rem;
-      }
     }
     @media (max-width: 576px) {
       .main-container {
@@ -345,16 +249,6 @@
       }
       .chart-container {
         height: 240px;
-      }
-      .weather-section {
-        max-width: 100%;
-        padding: 1rem;
-      }
-      .weather-card {
-        max-width: 160px;
-      }
-      .carousel-control-prev, .carousel-control-next {
-        display: none;
       }
     }
   </style>
@@ -473,25 +367,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Weather Forecast Section -->
-    <div class="weather-section">
-      <div class="section-header">
-        <i class="fas fa-cloud-sun"></i> Weather Forecast for Calapan City, Philippines
-      </div>
-      <div id="weather-carousel" class="weather-carousel carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner" id="forecast-cards"></div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#weather-carousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#weather-carousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-        <div class="carousel-indicators" id="carousel-indicators"></div>
       </div>
     </div>
 
@@ -640,90 +515,6 @@
         }
       });
     }
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const lat = '13.4139';
-      const lon = '121.0561';
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
-
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          const forecastCards = document.getElementById('forecast-cards');
-          const indicators = document.getElementById('carousel-indicators');
-          const times = data.daily.time;
-          const maxTemps = data.daily.temperature_2m_max;
-          const minTemps = data.daily.temperature_2m_min;
-          const weatherCodes = data.daily.weathercode;
-
-          times.forEach((time, index) => {
-            const date = new Date(time);
-            const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
-            const maxTemp = maxTemps[index];
-            const minTemp = minTemps[index];
-            const weatherCode = weatherCodes[index];
-            const weatherDescription = getWeatherDescription(weatherCode);
-            const weatherIcon = getWeatherIcon(weatherCode);
-
-            const card = document.createElement('div');
-            card.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-            card.innerHTML = `
-              <div class="weather-card">
-                <div class="weather-icon">${weatherIcon}</div>
-                <h5 class="card-title">${dayName}</h5>
-                <p class="card-text">Max: ${maxTemp}°C</p>
-                <p class="card-text">Min: ${minTemp}°C</p>
-                <p class="card-text">Weather: ${weatherDescription}</p>
-              </div>
-            `;
-            forecastCards.appendChild(card);
-
-            const indicator = document.createElement('button');
-            indicator.type = 'button';
-            indicator.setAttribute('data-bs-target', '#weather-carousel');
-            indicator.setAttribute('data-bs-slide-to', index);
-            if (index === 0) indicator.className = 'active';
-            indicator.setAttribute('aria-label', `Slide ${index + 1}`);
-            indicators.appendChild(indicator);
-          });
-
-          // Initialize carousel
-          const carousel = new bootstrap.Carousel(document.getElementById('weather-carousel'), {
-            interval: 5000,
-            wrap: true
-          });
-
-          // Make the carousel visible after loading
-          forecastCards.style.opacity = 1;
-        })
-        .catch(error => console.error('Error fetching weather data:', error));
-
-      function getWeatherDescription(code) {
-        const weatherMapping = {
-          0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-          45: 'Fog', 48: 'Depositing rime fog', 51: 'Light drizzle', 53: 'Moderate drizzle',
-          55: 'Dense drizzle', 56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
-          61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain', 66: 'Light freezing rain',
-          67: 'Heavy freezing rain', 71: 'Slight snowfall', 73: 'Moderate snowfall',
-          75: 'Heavy snowfall', 77: 'Snow grains', 80: 'Slight rain showers',
-          81: 'Moderate rain showers', 82: 'Violent rain showers', 85: 'Slight snow showers',
-          86: 'Heavy snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with slight hail',
-          99: 'Thunderstorm with heavy hail'
-        };
-        return weatherMapping[code] || 'Unknown';
-      }
-
-      function getWeatherIcon(code) {
-        const iconMapping = {
-          0: '🌞', 1: '🌤', 2: '🌥', 3: '☁️', 45: '🌫', 48: '🌫', 51: '🌧',
-          53: '🌧', 55: '🌧', 56: '🌨', 57: '🌨', 61: '🌦', 63: '🌦', 65: '🌧',
-          66: '🌨', 67: '🌨', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
-          80: '🌧', 81: '🌧', 82: '🌧', 85: '❄️', 86: '❄️', 95: '🌩', 96: '🌩', 99: '🌩'
-        };
-        return iconMapping[code] || '❓';
-      }
-    });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

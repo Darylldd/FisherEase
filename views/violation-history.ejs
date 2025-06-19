@@ -277,6 +277,8 @@
                 <tr>
                   <th>#</th>
                   <th>Type</th>
+                  <th>Specific Violation</th>
+                  <th>Location/Barangay</th>
                   <th>Details</th>
                   <th>Status</th>
                   <th>Date</th>
@@ -287,6 +289,8 @@
                   <tr>
                     <td><%= index + 1 %></td>
                     <td><%= v.violation_type %></td>
+                    <td><%= v.specific_violation %></td>
+                    <td><%= v.location %></td>
                     <td><%= v.details %></td>
                     <td><%= v.status %></td>
                     <td><%= new Date(v.created_at).toLocaleDateString() %></td>

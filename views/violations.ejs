@@ -87,7 +87,7 @@
 
         /* Main Container */
         .main-container {
-            max-width: 900px; /* Compact width for table */
+            max-width: 1200px; /* Increased width to accommodate new columns */
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
@@ -122,6 +122,20 @@
         .violation-section h2 i,
         .violation-section h3 i {
             color: var(--accent);
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+        .search-form {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .search-form .form-control {
+            flex: 1;
+            min-width: 200px;
         }
 
         /* Table */
@@ -299,6 +313,9 @@
             .btn-primary {
                 width: 100%;
             }
+            .search-form .form-control {
+                min-width: 100%;
+            }
         }
         @media (max-width: 576px) {
             .main-container {
@@ -337,7 +354,6 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
@@ -412,6 +428,15 @@
         <div class="violation-section">
             <h2><i class="fas fa-exclamation-triangle"></i> Violation Notification System</h2>
 
+            <!-- Search Bar -->
+            <div class="search-container">
+                <form action="/violation-notifications" method="GET" class="search-form">
+                    <input type="text" name="search" class="form-control" placeholder="Search by user name, violation type, or status" value="<%= search || '' %>">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/violation-notifications" class="btn btn-secondary">Clear</a>
+                </form>
+            </div>
+
             <!-- Violations Table -->
             <div class="table-container">
                 <table class="table table-striped">
@@ -420,6 +445,8 @@
                             <th>ID</th>
                             <th>User</th>
                             <th>Violation Type</th>
+                            <th>Specific Violation</th>
+                            <th>Location/Barangay</th>
                             <th>Details</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -432,6 +459,8 @@
                                     <td><%= violation.id %></td>
                                     <td><%= violation.name %></td>
                                     <td><%= violation.violation_type %></td>
+                                    <td><%= violation.specific_violation %></td>
+                                    <td><%= violation.location %></td>
                                     <td><%= violation.details %></td>
                                     <td><%= violation.status %></td>
                                     <td>
@@ -449,7 +478,7 @@
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="6" class="no-violations">No violations found.</td>
+                                <td colspan="8" class="no-violations">No violations found.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -468,6 +497,14 @@
                 <div class="mb-3">
                     <label for="violation_type" class="form-label">Violation Type</label>
                     <input type="text" name="violation_type" id="violation_type" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="specific_violation" class="form-label">Specific Violation</label>
+                    <input type="text" name="specific_violation" id="specific_violation" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location/Barangay</label>
+                    <input type="text" name="location" id="location" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label for="details" class="form-label">Details</label>

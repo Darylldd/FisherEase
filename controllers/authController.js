@@ -195,8 +195,15 @@ exports.postResetPassword = async (req, res) => {
 
 // GET /auth/logout
 exports.logout = async (req, res) => {
-    await auditController.logUserActivity(req, "Logged out");
-    req.session.destroy();
-    res.redirect('/');
+    const userId = req.session.userId;
+    if (userId) {
+        await auditController.logUserActivity(req, "Logged out");
+    }
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error destroying session:", err);
+            return res.status(500).send("Server Error");
+        }
+        res.redirect('/');
+    });
 };
-

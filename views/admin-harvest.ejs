@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary: #1e3a8a; /* Deep navy */
@@ -115,6 +119,35 @@
             gap: 0.5rem;
         }
         .harvest-section h2 i {
+            color: var(--accent);
+        }
+
+        /* Export Button */
+        .export-btn-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+        .btn-export {
+            background-color: var(--accent);
+            color: #ffffff;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-export:hover {
+            background-color: #2563eb;
+        }
+        .dropdown-menu-export {
+            min-width: 120px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-item-export {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .dropdown-item-export:hover {
+            background-color: var(--background);
             color: var(--accent);
         }
 
@@ -225,6 +258,9 @@
                 padding: 0.5rem;
                 font-size: 0.85rem;
             }
+            .export-btn-group {
+                text-align: center;
+            }
         }
         @media (max-width: 576px) {
             .main-container {
@@ -326,9 +362,22 @@
         <div class="harvest-section">
             <h2><i class="fas fa-chart-line"></i> All Reported Harvests</h2>
 
+            <!-- Export Button -->
+            <div class="export-btn-group">
+                <div class="dropdown">
+                    <button class="btn btn-export dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-1"></i> Export
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-export" aria-labelledby="exportDropdown">
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToPDF()">PDF</a></li>
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToExcel()">Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Harvests Table -->
             <div class="table-container">
-                <table class="table table-striped">
+                <table class="table table-striped" id="harvestTable">
                     <thead>
                         <tr>
                             <th>User</th>
@@ -361,5 +410,44 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text("Harvest & Production Report", 20, 20);
+
+            const table = document.getElementById("harvestTable");
+            const rows = table.querySelectorAll("tr");
+            let y = 30;
+
+            // Headers
+            const headers = Array.from(rows[0].querySelectorAll("th")).map(th => th.textContent);
+            doc.setFontSize(12);
+            headers.forEach((header, index) => {
+                doc.text(header, 20 + index * 40, y);
+            });
+            y += 10;
+
+            // Data rows
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].querySelectorAll("td");
+                if (cells.length === 5) { // Ensure it's a data row, not the "no records" row
+                    cells.forEach((cell, index) => {
+                        doc.text(cell.textContent, 20 + index * 40, y);
+                    });
+                    y += 10;
+                }
+            }
+
+            doc.save("harvest_report.pdf");
+        }
+
+        function exportToExcel() {
+            const table = document.getElementById("harvestTable");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Harvest Report" });
+            XLSX.writeFile(wb, "harvest_report.xlsx");
+        }
+    </script>
 </body>
 </html>

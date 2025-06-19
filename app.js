@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const path = require("path");
 const flash = require('connect-flash');
 const multer = require("multer");
+
 const upload = multer({ dest: "uploads/" }); // Store files in "uploads/" directory
 const app = express();
 
@@ -30,7 +32,8 @@ app.set('views', './views');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));  // For parsing application/x-www-form-urlencoded (HTML forms)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "uploads")));  // For parsing application/x-www-form-urlencoded (HTML forms)
 app.use(express.json());  // For parsing application/json
 
 

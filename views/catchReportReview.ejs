@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary: #1e3a8a; /* Deep navy */
@@ -153,6 +158,35 @@
             transform: translateY(-2px);
         }
 
+        /* Export Button */
+        .export-btn-group {
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+        .btn-export {
+            background-color: var(--accent);
+            color: #ffffff;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-export:hover {
+            background-color: #2563eb;
+        }
+        .dropdown-menu-export {
+            min-width: 120px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-item-export {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .dropdown-item-export:hover {
+            background-color: var(--background);
+            color: var(--accent);
+        }
+
         /* Table */
         .table-container {
             max-height: 400px;
@@ -289,6 +323,9 @@
                 padding: 0.5rem;
                 font-size: 0.85rem;
             }
+            .export-btn-group {
+                text-align: center;
+            }
         }
         @media (max-width: 576px) {
             .main-container {
@@ -406,6 +443,19 @@
         <div class="report-section">
             <h3><i class="fas fa-clipboard-check"></i> Catch Report Review</h3>
 
+            <!-- Export Button -->
+            <div class="export-btn-group">
+                <div class="dropdown">
+                    <button class="btn btn-export dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-1"></i> Export
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-export" aria-labelledby="exportDropdown">
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToPDF()">PDF</a></li>
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToExcel()">Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Filtering Form -->
             <form method="GET" action="/catch-report/review" class="filters-container">
                 <div class="row g-2">
@@ -443,7 +493,7 @@
 
             <!-- Catch Reports Table -->
             <div class="table-container">
-                <table class="table table-striped">
+                <table class="table table-striped" id="catchReportTable">
                     <thead>
                         <tr>
                             <th>User</th>
@@ -499,5 +549,76 @@
 
     <script src="/js/catchReport.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Title with branding
+            doc.setFillColor(30, 58, 138); // Primary color
+            doc.rect(10, 10, 190, 10, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.text("Fisheries Management Office - Catch Report Review", 20, 16);
+            doc.setTextColor(31, 41, 55); // Text color
+            doc.setFontSize(12);
+
+            // Table headers
+            const headers = ["User", "Species", "Methods Of Fishing", "Quantity", "Location", "Status", "Date"];
+            const tableData = [];
+            const table = document.getElementById("catchReportTable");
+            const rows = table.querySelectorAll("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].querySelectorAll("td");
+                if (cells.length === 8) { // Ensure it's a data row
+                    const rowData = Array.from(cells).slice(0, -1).map(cell => cell.textContent);
+                    tableData.push(rowData);
+                }
+            }
+
+            // AutoTable for structured table
+            doc.autoTable({
+                head: [headers],
+                body: tableData,
+                startY: 30,
+                theme: 'grid',
+                headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontSize: 12 },
+                bodyStyles: { fillColor: [240, 244, 255], textColor: [31, 41, 55], fontSize: 10 },
+                alternateRowStyles: { fillColor: [255, 255, 255] },
+                margin: { top: 20, bottom: 20 },
+                styles: { cellPadding: 2, font: "helvetica", lineWidth: 0.1, lineColor: [209, 213, 219] }
+            });
+
+            // Add date and page number
+            const currentDate = new Date().toLocaleDateString();
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${currentDate}`, 20, doc.internal.pageSize.height - 10);
+
+            doc.save("catch_report_review.pdf");
+        }
+
+        function exportToExcel() {
+            const table = document.getElementById("catchReportTable");
+            // Create a clone of the table to modify
+            const tableClone = table.cloneNode(true);
+            // Remove the Action column
+            const headers = tableClone.querySelectorAll("th");
+            headers[headers.length - 1].remove();
+            const rows = tableClone.querySelectorAll("tr");
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].querySelectorAll("td");
+                if (cells.length === 8) {
+                    cells[cells.length - 1].remove();
+                }
+            }
+            const wb = XLSX.utils.table_to_book(tableClone, { sheet: "Catch Report Review" });
+            XLSX.writeFile(wb, "catch_report_review.xlsx");
+        }
+    </script>
 </body>
 </html>
