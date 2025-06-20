@@ -10,4 +10,7 @@ router.get('/register/fisherfolk', (req, res) => {
 // Handle form submission
 router.post('/register/fisherfolk', fisherfolkController.registerFisherfolk);
 
+// Render fisherfolk table
+router.get('/fisherfolk/table', fisherfolkController.getFisherfolkTable);
+
 module.exports = router;
