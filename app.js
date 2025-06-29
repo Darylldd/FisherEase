@@ -24,7 +24,7 @@ const analyticsRoutes = require('./routes/analytics');
 const auditRoutes = require('./routes/auditRoutes');
 const climateRoutes = require('./routes/climateRoutes');
 const climateLossRoutes = require('./routes/climateLoss');
-
+ 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
