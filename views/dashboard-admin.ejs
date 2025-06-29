@@ -400,124 +400,123 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // Store chart instances in the window object to avoid redeclaration
-    window.speciesChartInstance = window.speciesChartInstance || null;
-    window.statusChartInstance = window.statusChartInstance || null;
-    window.dailyChartInstance = window.dailyChartInstance || null;
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const response = await fetch("/analytics");
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+<script>
+  window.speciesChartInstance = null;
+  window.statusChartInstance = null;
+  window.dailyChartInstance = null;
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const response = await fetch("/analytics");
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const json = await response.json();
+      const data = json.data || {};
+
+      console.log("📊 Received Data:", data); // Debug
+
+      const {
+        totalReports = 0,
+        approvedReports = 0,
+        flaggedReports = 0,
+        speciesData = [],
+        statusData = [],
+        dailyReports = []
+      } = data;
+
+      document.getElementById("totalReports").innerText = totalReports;
+      document.getElementById("approvedReports").innerText = approvedReports;
+      document.getElementById("flaggedReports").innerText = flaggedReports;
+
+      renderCharts(speciesData, statusData, dailyReports);
+    } catch (error) {
+      console.error("❌ Error loading analytics data:", error);
+    }
+  });
+
+  function renderCharts(speciesData, statusData, dailyReports) {
+    const speciesLabels = speciesData.map(item => item.species || "Unknown");
+    const speciesCounts = speciesData.map(item => item.count || 0);
+
+    const statusLabels = statusData.map(item => item.status || "Unknown");
+    const statusCounts = statusData.map(item => item.count || 0);
+
+    const dailyLabels = dailyReports.map(item => (item.report_date || "").split("T")[0]);
+    const dailyCounts = dailyReports.map(item => item.count || 0);
+
+    if (window.speciesChartInstance) window.speciesChartInstance.destroy();
+    if (window.statusChartInstance) window.statusChartInstance.destroy();
+    if (window.dailyChartInstance) window.dailyChartInstance.destroy();
+
+    window.speciesChartInstance = new Chart(document.getElementById("speciesChart"), {
+      type: "bar",
+      data: {
+        labels: speciesLabels,
+        datasets: [{
+          label: "Species",
+          data: speciesCounts,
+          backgroundColor: "rgba(59, 130, 246, 0.7)",
+          borderColor: "rgba(59, 130, 246, 1)",
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
+        },
+        plugins: {
+          legend: { display: false }
         }
-        const data = await response.json();
-
-        console.log("📊 Received Data:", data); // Debugging log
-
-        if (!data) {
-          throw new Error("Missing API response data");
-        }
-
-        // Update dashboard counters
-        document.getElementById("totalReports").innerText = data.totalReports ?? "N/A";
-        document.getElementById("approvedReports").innerText = data.approvedReports ?? "N/A";
-        document.getElementById("flaggedReports").innerText = data.flaggedReports ?? "N/A";
-
-        // Render charts
-        renderCharts(data.speciesData, data.statusData, data.dailyReports);
-      } catch (error) {
-        console.error("❌ Error loading analytics data:", error);
       }
     });
 
-    function renderCharts(speciesData, statusData, dailyReports) {
-      const speciesLabels = speciesData.map(item => item.species);
-      const speciesCounts = speciesData.map(item => item.count);
-
-      const statusLabels = statusData.map(item => item.status);
-      const statusCounts = statusData.map(item => item.count);
-
-      const dailyLabels = dailyReports.map(item => item.report_date.split("T")[0]);
-      const dailyCounts = dailyReports.map(item => item.count);
-
-      // Destroy existing charts if they exist
-      if (window.speciesChartInstance) window.speciesChartInstance.destroy();
-      if (window.statusChartInstance) window.statusChartInstance.destroy();
-      if (window.dailyChartInstance) window.dailyChartInstance.destroy();
-
-      // Create new charts
-      window.speciesChartInstance = new Chart(document.getElementById("speciesChart"), {
-        type: "bar",
-        data: {
-          labels: speciesLabels,
-          datasets: [{
-            label: "Species",
-            data: speciesCounts,
-            backgroundColor: "rgba(59, 130, 246, 0.7)",
-            borderColor: "rgba(59, 130, 246, 1)",
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Count', font: { family: 'Poppins', size: 12 } } }
-          },
-          plugins: {
-            legend: { display: false }
-          }
+    window.statusChartInstance = new Chart(document.getElementById("statusChart"), {
+      type: "pie",
+      data: {
+        labels: statusLabels,
+        datasets: [{
+          data: statusCounts,
+          backgroundColor: ["#10b981", "#ef4444", "#eab308"],
+          borderColor: "#ffffff",
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
         }
-      });
+      }
+    });
 
-      window.statusChartInstance = new Chart(document.getElementById("statusChart"), {
-        type: "pie",
-        data: {
-          labels: statusLabels,
-          datasets: [{
-            data: statusCounts,
-            backgroundColor: ["rgba(16, 185, 129, 0.7)", "rgba(239, 68, 68, 0.7)", "rgba(234, 179, 8, 0.7)"],
-            borderColor: "#ffffff",
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { font: { family: 'Poppins', size: 12 } } }
-          }
+    window.dailyChartInstance = new Chart(document.getElementById("dailyChart"), {
+      type: "line",
+      data: {
+        labels: dailyLabels,
+        datasets: [{
+          label: "Reports Over Time",
+          data: dailyCounts,
+          borderColor: "rgba(59, 130, 246, 0.8)",
+          backgroundColor: "rgba(59, 130, 246, 0.2)",
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
         }
-      });
+      }
+    });
+  }
+</script>
 
-      window.dailyChartInstance = new Chart(document.getElementById("dailyChart"), {
-        type: "line",
-        data: {
-          labels: dailyLabels,
-          datasets: [{
-            label: "Reports Over Time",
-            data: dailyCounts,
-            borderColor: "rgba(59, 130, 246, 0.8)",
-            backgroundColor: "rgba(59, 130, 246, 0.2)",
-            fill: true,
-            tension: 0.4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Reports', font: { family: 'Poppins', size: 12 } } }
-          },
-          plugins: {
-            legend: { labels: { font: { family: 'Poppins', size: 12 } } }
-          }
-        }
-      });
-    }
-  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

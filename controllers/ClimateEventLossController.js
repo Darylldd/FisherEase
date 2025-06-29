@@ -17,7 +17,10 @@ const ClimateEventLossController = {
                 return res.status(400).send("Proof image is required");
             }
 
-            await ClimateEventLossModel.reportLoss(userId, eventType, date, speciesLost, lossKg, lossValue, description, location, imagePath);
+            await ClimateEventLossModel.reportLoss(
+                userId, eventType, date, speciesLost, 
+                lossKg, lossValue, description, location, imagePath
+            );
             res.redirect("/climateLoss/view?success=true");
         } catch (error) {
             console.error("Error submitting loss report:", error);
@@ -31,9 +34,22 @@ const ClimateEventLossController = {
             if (!userId) return res.status(401).send("Unauthorized");
 
             const lossReports = await ClimateEventLossModel.getUserLossReports(userId);
-            res.render("loss-form", { lossReports });
+            res.render("loss-form", { lossReports, user: req.session.user });
         } catch (error) {
             console.error("Error fetching loss reports:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async viewAllLossReports(req, res) {
+        try {
+            const userId = req.session.userId;
+            if (!userId) return res.status(401).send("Unauthorized");
+
+            const lossReports = await ClimateEventLossModel.getAllLossReports();
+            res.render("admin/climate-loss-table", { lossReports, user: req.session.user });
+        } catch (error) {
+            console.error("Error fetching all loss reports:", error);
             res.status(500).send("Server Error");
         }
     }
