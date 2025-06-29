@@ -24,7 +24,7 @@ const ClimateEventLossController = {
             res.redirect("/climateLoss/view?success=true");
         } catch (error) {
             console.error("Error submitting loss report:", error);
-            res.status(500).json({ success: false, message: "Server Error" });
+            res.status(500).json({ success: false, message: "Server Error: " + error.message });
         }
     },
 
@@ -34,10 +34,13 @@ const ClimateEventLossController = {
             if (!userId) return res.status(401).send("Unauthorized");
 
             const lossReports = await ClimateEventLossModel.getUserLossReports(userId);
-            res.render("loss-form", { lossReports, user: req.session.user });
+            res.render("climate-loss-view", { 
+                lossReports, 
+                user: req.session.user || { name: "User" } // Fallback to prevent undefined errors
+            });
         } catch (error) {
             console.error("Error fetching loss reports:", error);
-            res.status(500).send("Server Error");
+            res.status(500).json({ success: false, message: "Server Error: " + error.message });
         }
     },
 
@@ -47,10 +50,13 @@ const ClimateEventLossController = {
             if (!userId) return res.status(401).send("Unauthorized");
 
             const lossReports = await ClimateEventLossModel.getAllLossReports();
-            res.render("admin/climate-loss-table", { lossReports, user: req.session.user });
+            res.render("admin/climate-loss-table", { 
+                lossReports, 
+                user: req.session.user || { name: "Admin" } 
+            });
         } catch (error) {
             console.error("Error fetching all loss reports:", error);
-            res.status(500).send("Server Error");
+            res.status(500).json({ success: false, message: "Server Error: " + error.message });
         }
     }
 };

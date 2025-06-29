@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Report Calamity/Damage Loss - Fisheries Management</title>
+  <title>View Climate Event Loss Reports - Fisheries Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -38,7 +38,6 @@
       font-weight: 600;
       font-size: 1.5rem;
       color: #ffffff !important;
-      letter-spacing: 0.5px;
     }
     .nav-link {
       color: #ffffff !important;
@@ -57,8 +56,6 @@
       border: none;
       border-radius: 8px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      margin-top: 0.75rem;
-      padding: 0.5rem 0;
     }
     .dropdown-item {
       color: var(--text);
@@ -74,9 +71,6 @@
     .dropdown-item i {
       width: 24px;
       text-align: center;
-    }
-    .navbar-nav .nav-item {
-      margin-left: 0.5rem;
     }
     .main-container {
       max-width: 1600px;
@@ -95,170 +89,77 @@
     .section-header i {
       color: var(--accent);
     }
-    .form-container {
+    .table-container {
       background-color: var(--card-bg);
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
-      max-width: 800px;
-      margin: 0 auto;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .form-container:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    label {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--primary);
-      margin-bottom: 0.25rem;
-    }
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="file"],
-    select,
-    textarea {
-      padding: 0.75rem 1rem;
-      border:  0px; 
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      color: var(--text);
-      background-color: #f9fafb;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    input[type="file"]:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    button[type="submit"] {
-      padding: 0.75rem 1.5rem;
-      background-color: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: #ffffff;
-      font-weight: 500;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      align-self: flex-start;
-    }
-    button[type="submit"]:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
+    table {
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1050;
+      border-collapse: separate;
+      border-spacing: 0;
     }
-    .modal-content {
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
     }
-    .modal-content h2 {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-    .modal-content button {
-      padding: 0.75rem 1.5rem;
-      background-color: var(--accent);
-      border: none;
-      border-radius: 8px;
+    th {
+      background-color: var(--primary);
       color: #ffffff;
       font-weight: 500;
       font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.3s ease, transform 0.2s ease;
     }
-    .modal-content button:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
+    td {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .image-preview {
+      max-width: 100px;
+      max-height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .description {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     @media (max-width: 1200px) {
       .main-container {
         padding: 0 1rem;
-      }
-      .form-container {
-        max-width: 600px;
       }
     }
     @media (max-width: 768px) {
       .section-header {
         font-size: 1.2rem;
       }
-      .form-container {
+      .table-container {
         padding: 1rem;
       }
-      label {
-        font-size: 0.9rem;
+      th, td {
+        font-size: 0.85rem;
+        padding: 0.5rem;
       }
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      input[type="file"],
-      select,
-      textarea {
-        font-size: 0.9rem;
-      }
-      button[type="submit"],
-      .modal-content button {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-      }
-      .modal-content h2 {
-        font-size: 1.1rem;
+      .image-preview {
+        max-width: 80px;
+        max-height: 80px;
       }
     }
     @media (max-width: 576px) {
       .main-container {
         margin: 1rem auto;
       }
-      .section-header {
-        font-size: 1.1rem;
+      .table-container {
+        overflow-x: auto;
       }
-      .form-container {
-        padding: 0.75rem;
-      }
-      button[type="submit"],
-      .modal-content button {
-        width: 100%;
-        align-self: stretch;
-      }
-      .modal-content {
-        padding: 1rem;
+      table {
+        min-width: 600px;
       }
     }
   </style>
@@ -319,66 +220,54 @@
   </div>
   <div class="main-container">
     <div class="section-header">
-      <i class="fas fa-cloud-sun"></i> Report Calamity/Damage Event Loss
+      <i class="fas fa-cloud-sun"></i> Your Climate Event Loss Reports
     </div>
-    <div class="form-container">
-      <form action="/climateLoss/report" method="POST" enctype="multipart/form-data">
-        <label for="eventType">Event Type:</label>
-        <select name="eventType" id="eventType" required>
-          <option value="Storm">Storm</option>
-          <option value="Typhoon">Typhoon</option>
-          <option value="Flood">Flood</option>
-          <option value="Red Tide">Red Tide</option>
-        </select>
-        <label for="date">Date:</label>
-        <input type="date" name="date" id="date" required>
-        <label for="speciesLost">Species Lost:</label>
-        <input type="text" name="speciesLost" id="speciesLost" required>
-        <label for="lossKg">Estimated Loss (Kg):</label>
-        <input type="number" name="lossKg" id="lossKg" step="0.01" required>
-        <label for="lossValue">Estimated Loss Value:</label>
-        <input type="number" name="lossValue" id="lossValue" step="0.01" required>
-        <label for="location">Location:</label>
-        <input type="text" name="location" id="location" required>
-        <label for="proofImage">Proof of Loss (Image):</label>
-        <input type="file" name="proofImage" id="proofImage" accept="image/*" required>
-        <label for="description">Description:</label>
-        <textarea name="description" id="description" placeholder="Describe the loss" required></textarea>
-        <button type="submit">Report Loss</button>
-      </form>
-    </div>
-  </div>
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="successModalLabel">Success</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <h2><i class="fas fa-check-circle me-1"></i> Loss report submitted successfully!</h2>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
+    <div class="table-container">
+      <% if (lossReports.length === 0) { %>
+        <p>No loss reports found.</p>
+      <% } else { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Event Type</th>
+              <th>Date</th>
+              <th>Species Lost</th>
+              <th>Loss (Kg)</th>
+              <th>Loss Value</th>
+              <th>Location</th>
+              <th>Description</th>
+              <th>Image</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% lossReports.forEach(report => { %>
+              <tr>
+                <td><%= report.id %></td>
+                <td><%= report.event_type %></td>
+                <td><%= new Date(report.date).toLocaleDateString() %></td>
+                <td><%= report.species_lost %></td>
+                <td><%= report.estimated_loss_kg %></td>
+                <td><%= report.estimated_loss_value %></td>
+                <td><%= report.location %></td>
+                <td class="description" title="<%= report.description %>">
+                  <%= report.description %>
+                </td>
+                <td>
+                  <% if (report.image_path) { %>
+                    <img src="<%= report.image_path %>" alt="Proof Image" class="image-preview">
+                  <% } else { %>
+                    No Image
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
     </div>
   </div>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const modals = document.querySelectorAll(".modal");
-      modals.forEach(modal => {
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) {
-          bsModal.hide();
-        }
-      });
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("success") === "true") {
-        const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-        successModal.show();
-      }
-    });
     function logout() {
       const logoutModal = document.getElementById("logoutModal");
       const bsModal = bootstrap.Modal.getInstance(logoutModal);
