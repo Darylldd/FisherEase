@@ -42,7 +42,7 @@ app.use(express.json());
 // ✅ Session middleware using shared pg pool
 app.use(session({
   store: new PostgresStore({
-    pool: db, // ✅ Use same pool as the rest of your app
+    pool: db,
     tableName: 'session',
     createTableIfMissing: true
   }),
@@ -50,10 +50,13 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
+    secure: false,            // Force disable HTTPS-only cookies
+    httpOnly: true,
+    sameSite: 'lax',          // Prevent cross-site cookie blocking
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
+
 
 // Attach user info to views
 app.use((req, res, next) => {
