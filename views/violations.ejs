@@ -87,7 +87,7 @@
 
         /* Main Container */
         .main-container {
-            max-width: 1200px; /* Increased width to accommodate new columns */
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
@@ -223,7 +223,7 @@
             border-radius: 6px;
             font-weight: 500;
             font-size: 0.9rem;
-            padding: 0.5rem 1rem;
+            padding-top: 0.5rem 1rem;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .btn-success:hover {
@@ -253,7 +253,7 @@
             border-top: none;
             padding: 1rem 1.5rem;
         }
-        .btn-danger {
+        btn-danger {
             background-color: var(--warning);
             border: none;
             border-radius: 6px;
@@ -304,7 +304,7 @@
             }
             .table th, .table td {
                 padding: 0.5rem;
-                font-size: 0.85rem;
+                font-size: 0.85 MMR;
             }
             .form-select {
                 width: 100%;
@@ -491,8 +491,13 @@
             <h3><i class="fas fa-plus"></i> Add Violation</h3>
             <form action="/violation-notifications/add" method="POST">
                 <div class="mb-3">
-                    <label for="user_id" class="form-label">User ID</label>
-                    <input type="text" name="user_id" id="user_id" class="form-control" required>
+                    <label for="user_id" class="form-label">User Name</label>
+                    <select name="user_id" id="user_id" class="form-select" required>
+                        <option value="" disabled selected>Select a user</option>
+                        <% users.forEach(user => { %>
+                            <option value="<%= user.id %>"><%= user.name %></option>
+                        <% }) %>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="violation_type" class="form-label">Violation Type</label>

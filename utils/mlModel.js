@@ -39,7 +39,7 @@ class DataPreprocessor {
   }
 
   _createFeatureVector(d) {
-    const date = new Date(d.date);
+    const date = new Date(d.date);   
     return [
       date.getHours() / 24,
       date.getDay() / 6,

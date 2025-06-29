@@ -1,9 +1,9 @@
 const db = require("./db");
 
 const Harvest = {
-    addHarvest: async (userId, fishType, weight, location, dateHarvested) => {
-        const sql = "INSERT INTO harvest_production (user_id, fish_type, weight, location, date_harvested) VALUES (?, ?, ?, ?, ?)";
-        await db.execute(sql, [userId, fishType, weight, location, dateHarvested]);
+    addHarvest: async (userId, fishType, weight, unit, ownership, sourceOfFry, marketDestination, remarks, dateHarvested) => {
+        const sql = "INSERT INTO harvest_production (user_id, fish_type, weight, unit, ownership, source_of_fry, market_destination, remarks, date_harvested) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        await db.execute(sql, [userId, fishType, weight, unit, ownership, sourceOfFry, marketDestination, remarks, dateHarvested]);
     },
     
     getAllHarvests: async () => {

@@ -14,6 +14,7 @@
         :root {
             --primary: #1e3a8a; /* Deep navy */
             --accent: #3b82f6; /* Vibrant blue */
+            --accent-light: #60a5fa; /* Lighter blue for subtle button */
             --background: #f0f4ff; /* Light blue-gray */
             --card-bg: #ffffff;
             --text: #1f2937;
@@ -123,7 +124,7 @@
             color: var(--text);
         }
         .form-control {
-            border: 1px solid var(--border);
+            border: 1px solid var;
             border-radius: 6px;
             font-size: 0.9rem;
             padding: 0.75rem;
@@ -149,6 +150,25 @@
         }
         .btn-success:hover {
             background-color: #059669;
+            transform: translateY(-2px);
+        }
+        .btn-fisherfolk {
+            background-color: var(--accent-light);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            max-width: 250px;
+            margin: 0 auto 1rem;
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+        .btn-fisherfolk:hover {
+            background-color: var(--accent);
             transform: translateY(-2px);
         }
 
@@ -229,9 +249,10 @@
                 font-size: 0.85rem;
                 padding: 0.6rem;
             }
-            .btn-success {
-                font-size: 0.9rem;
-                padding: 0.6rem;
+            .btn-success, .btn-fisherfolk {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+                max-width: 220px;
             }
         }
     </style>
@@ -253,7 +274,6 @@
                             <i class="fas fa-user-plus me-1"></i> Register
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
-                            <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
                             <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
                         </ul>
                     </li>
@@ -316,6 +336,9 @@
     <div class="main-container">
         <div class="form-section">
             <h2><i class="fas fa-water"></i> Aquaculture Facility Registration</h2>
+            <div class="mb-3">
+                <a href="/register/fisherfolk" class="btn btn-fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+            </div>
             <form action="/aquaculture/register" method="POST">
                 <div class="mb-3">
                     <label class="form-label">Facility Name</label>

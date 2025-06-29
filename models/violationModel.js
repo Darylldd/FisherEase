@@ -36,6 +36,11 @@ class Violation {
             [status, violationId]
         );
     }
+
+    static async getAllUsers() {
+        const [rows] = await db.query('SELECT id, name FROM users');
+        return rows;
+    }
 }
 
 module.exports = Violation;

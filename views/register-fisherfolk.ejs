@@ -14,6 +14,7 @@
         :root {
             --primary: #1e3a8a; /* Deep navy */
             --accent: #3b82f6; /* Vibrant blue */
+            --accent-light: #60a5fa; /* Lighter blue for subtle button */
             --background: #f0f4ff; /* Light blue-gray */
             --card-bg: #ffffff;
             --text: #1f2937;
@@ -151,6 +152,25 @@
             background-color: #059669;
             transform: translateY(-2px);
         }
+        .btn-aquaculture {
+            background-color: var(--accent-light);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem; /* Smaller font size */
+            padding: 0.5rem 1rem; /* Reduced padding */
+            max-width: 250px; /* Smaller width */
+            margin: 0 auto 1rem; /* Centered with bottom margin */
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+        .btn-aquaculture:hover {
+            background-color: #3b82f6;
+            transform: translateY(-2px);
+        }
 
         /* Modal */
         .modal-content {
@@ -233,6 +253,11 @@
                 font-size: 0.9rem;
                 padding: 0.6rem;
             }
+            .btn-aquaculture {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+                max-width: 220px;
+            }
         }
     </style>
 </head>
@@ -254,7 +279,6 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
                             <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
-                            <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -312,10 +336,13 @@
         </div>
     </div>
 
-   <!-- Fisherfolk Registration Form -->
+    <!-- Fisherfolk Registration Form -->
     <div class="main-container">
         <div class="form-section">
             <h2><i class="fas fa-fish"></i> Fisherfolk Registration</h2>
+            <div class="mb-3">
+                <a href="/aquaculture/register" class="btn btn-aquaculture"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+            </div>
             <form action="/register/fisherfolk" method="POST">
                 <div class="mb-3">
                     <label class="form-label">Number</label>

@@ -7,7 +7,23 @@
   <title><%= title %></title>
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    :root {
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
+      --gradient: linear-gradient(135deg, #3b82f6, #60a5fa);
+    }
+
     body {
       background-color: #fff8dc;
       scroll-behavior: smooth;
@@ -15,37 +31,72 @@
     }
 
     nav{
-      background-color: #000;
+      background: var(--gradient);
     }
+
     .navbar-brand {
       margin-left: 50px;
       font-size: 30px;
       color: #ffffff !important;
     }
-    .nav-link {
-      font-size: 15px;
-      color: #ffffff !important;
+    
+    .navbar-nav{
+      margin-right: 3%;
     }
+
+    .navbar-nav .nav-iten{
+      margin-right: 3%;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ffffff !important;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
     .nav-link:hover {
-      color: #ddd !important;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(1px);
+      padding: 6px;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .nav-link:hover::before {
+      left: 100%;
     }
 
     .signin {
-        padding: 5px 15px 5px 15px;
-        margin-right: 15px;
         transition: 0.3s;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
     }
       .signin:hover {
         color: #000;
+        background: var(--highlight);
     }
 
     .signup {
-        padding: 5px 15px 5px 15px;
-        margin-right: 25px;
         transition: 0.3s;
+        background: var(--accent);
+        border-radius: 50px;
     }
       .signup:hover {
-        color: #000;
+        background: #2563eb;
     }
 
     .menu{
@@ -91,17 +142,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
-
-       <!-- <li class="nav-item">   
-          <a class="nav-link" href="/landing">Home</a>
-        </li>   -->
-
         <li class="nav-item signin">
-          <a class="nav-link" href="/auth/login">Sign In</a>
+          <a class="nav-link animate__animated animate__fadeIn" href="/auth/login"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>
         </li>
-          
         <li class="nav-item signup">
-          <a class="nav-link" href="/auth/signup">Sign Up</a>
+          <a class="nav-link animate__animated animate__fadeIn" href="/auth/signup"><i class="fas fa-user-plus me-1"></i> Sign Up</a>
         </li>
       </ul>
     </div>

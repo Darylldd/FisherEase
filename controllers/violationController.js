@@ -4,12 +4,13 @@ exports.getViolations = async (req, res) => {
     try {
         const search = req.query.search || '';
         const violations = await Violation.getAllViolations(search);
+        const users = await Violation.getAllUsers(); // Fetch all users for the dropdown
         const user = req.user || { name: 'Guest' };
 
-        res.render('violations', { violations, user, search });
+        res.render('violations', { violations, user, search, users });
     } catch (error) {
-        console.error('Error fetching violations:', error);
-        res.status(500).send('Error fetching violations');
+        console.error('Error fetching violations or users:', error);
+        res.status(500).send('Error fetching violations or users');
     }
 };
 

@@ -4,28 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvest & Production Data Entry</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- jsPDF for PDF export -->
+    <!-- Include jsPDF and jspdf-autotable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #1e3a8a; /* Deep navy */
-            --accent: #3b82f6; /* Vibrant blue */
-            --background: #f0f4ff; /* Light blue-gray */
+            --primary: #1e3a8a;
+            --accent: #3b82f6;
+            --background: #f0f4ff;
             --card-bg: #ffffff;
             --text: #1f2937;
             --border: #d1d5db;
-            --highlight: #10b981; /* Green for success */
-            --warning: #ef4444; /* Red for alerts */
+            --highlight: #10b981;
+            --warning: #ef4444;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--background);
@@ -33,8 +29,6 @@
             margin: 0;
             padding: 0;
         }
-
-        /* Navbar */
         .navbar {
             background-color: var(--primary);
             padding: 1rem 1.5rem;
@@ -88,15 +82,11 @@
         .navbar-nav .nav-item {
             margin-left: 0.5rem;
         }
-
-        /* Main Container */
         .main-container {
-            max-width: 900px; /* Compact width for table */
+            max-width: 900px;
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
-
-        /* Harvest Section */
         .harvest-section {
             background: var(--card-bg);
             border-radius: 12px;
@@ -121,8 +111,6 @@
         .harvest-section h2 i {
             color: var(--accent);
         }
-
-        /* Export Button */
         .export-btn-group {
             margin-bottom: 1.5rem;
             text-align: right;
@@ -150,8 +138,6 @@
             background-color: var(--background);
             color: var(--accent);
         }
-
-        /* Table */
         .table-container {
             max-height: 400px;
             overflow-y: auto;
@@ -188,8 +174,6 @@
             color: #6b7280;
             font-size: 0.95rem;
         }
-
-        /* Modal */
         .modal-content {
             border-radius: 12px;
             border: none;
@@ -227,57 +211,25 @@
         .btn-secondary:hover {
             background-color: #4b5563;
         }
-
-        /* Responsive Design */
         @media (max-width: 1200px) {
-            .main-container {
-                padding: 0 1rem;
-            }
-            .table-container {
-                max-height: 350px;
-            }
+            .main-container { padding: 0 1rem; }
+            .table-container { max-height: 350px; }
         }
         @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.3rem;
-            }
-            .nav-link {
-                font-size: 0.9rem;
-                padding: 0.5rem 0.75rem;
-            }
-            .harvest-section h2 {
-                font-size: 1.5rem;
-            }
-            .harvest-section {
-                padding: 1.5rem;
-            }
-            .table-container {
-                max-height: 300px;
-            }
-            .table th, .table td {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
-            .export-btn-group {
-                text-align: center;
-            }
+            .navbar-brand { font-size: 1.3rem; }
+            .nav-link { font-size: 0.9rem; padding: 0.5rem 0.75rem; }
+            .harvest-section h2 { font-size: 1.5rem; }
+            .harvest-section { padding: 1.5rem; }
+            .table-container { max-height: 300px; }
+            .table th, .table td { padding: 0.5rem; font-size: 0.85rem; }
+            .export-btn-group { text-align: center; }
         }
         @media (max-width: 576px) {
-            .main-container {
-                margin: 1rem auto;
-            }
-            .harvest-section {
-                padding: 1rem;
-            }
-            .harvest-section h2 {
-                font-size: 1.3rem;
-            }
-            .table-container {
-                max-height: 250px;
-            }
-            .table {
-                font-size: 0.8rem;
-            }
+            .main-container { margin: 1rem auto; }
+            .harvest-section { padding: 1rem; }
+            .harvest-section h2 { font-size: 1.3rem; }
+            .table-container { max-height: 250px; }
+            .table { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -338,7 +290,6 @@
         </div>
     </nav>
 
-    <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -357,12 +308,9 @@
         </div>
     </div>
 
-    <!-- Harvest & Production Section -->
     <div class="main-container">
         <div class="harvest-section">
             <h2><i class="fas fa-chart-line"></i> All Reported Harvests</h2>
-
-            <!-- Export Button -->
             <div class="export-btn-group">
                 <div class="dropdown">
                     <button class="btn btn-export dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -374,16 +322,18 @@
                     </ul>
                 </div>
             </div>
-
-            <!-- Harvests Table -->
             <div class="table-container">
                 <table class="table table-striped" id="harvestTable">
                     <thead>
                         <tr>
                             <th>User</th>
                             <th>Fish Type</th>
-                            <th>Weight (kg)</th>
-                            <th>Location</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Ownership</th>
+                            <th>Source of Fry</th>
+                            <th>Market Destination</th>
+                            <th>Remarks</th>
                             <th>Date Harvested</th>
                         </tr>
                     </thead>
@@ -394,13 +344,17 @@
                                     <td><%= harvest.user_id %></td>
                                     <td><%= harvest.fish_type %></td>
                                     <td><%= harvest.weight %></td>
-                                    <td><%= harvest.location %></td>
+                                    <td><%= harvest.unit %></td>
+                                    <td><%= harvest.ownership %></td>
+                                    <td><%= harvest.source_of_fry %></td>
+                                    <td><%= harvest.market_destination %></td>
+                                    <td><%= harvest.remarks %></td>
                                     <td><%= new Date(harvest.date_harvested).toLocaleDateString() %></td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="5" class="no-harvests">No harvest records available.</td>
+                                <td colspan="9" class="no-harvests">No harvest records available.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -415,30 +369,37 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFontSize(16);
-            doc.text("Harvest & Production Report", 20, 20);
+            doc.text("Harvest & Production Report", 14, 15);
 
             const table = document.getElementById("harvestTable");
-            const rows = table.querySelectorAll("tr");
-            let y = 30;
+            const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent);
+            const data = Array.from(table.querySelectorAll("tbody tr"))
+                .filter(row => row.querySelectorAll("td").length === 9) // Exclude "no records" row
+                .map(row => Array.from(row.querySelectorAll("td")).map(td => td.textContent));
 
-            // Headers
-            const headers = Array.from(rows[0].querySelectorAll("th")).map(th => th.textContent);
-            doc.setFontSize(12);
-            headers.forEach((header, index) => {
-                doc.text(header, 20 + index * 40, y);
+            doc.autoTable({
+                head: [headers],
+                body: data,
+                startY: 25,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [30, 58, 138], // Matches var(--primary)
+                    textColor: [255, 255, 255],
+                    fontSize: 12,
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    textColor: [31, 41, 55], // Matches var(--text)
+                    fontSize: 10,
+                    halign: 'left'
+                },
+                alternateRowStyles: {
+                    fillColor: [240, 244, 255] // Matches var(--background) for odd rows
+                },
+                margin: { top: 20 },
+                tableWidth: 'auto',
+                columnWidth: 'auto'
             });
-            y += 10;
-
-            // Data rows
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].querySelectorAll("td");
-                if (cells.length === 5) { // Ensure it's a data row, not the "no records" row
-                    cells.forEach((cell, index) => {
-                        doc.text(cell.textContent, 20 + index * 40, y);
-                    });
-                    y += 10;
-                }
-            }
 
             doc.save("harvest_report.pdf");
         }

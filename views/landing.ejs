@@ -79,6 +79,7 @@
     .navbar-nav {
       display: flex;
       align-items: center;
+      text-align: center;
     }
 
     .nav-item {
@@ -116,15 +117,24 @@
       left: 100%;
     }
 
+    .navbar .navB{
+      padding-left: 20%;
+    }
+
+    .navB .nav-item {
+      margin: 0 20px; 
+    }
+
     .signin, .signup {
       border: 2px solid transparent;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(5px);
+      border-radius: 50px;
     }
 
     .signin:hover, .signup:hover {
       background: var(--highlight);
-      border-color: var(--highlight);
+      /*border-color: var(--highlight);*/
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
@@ -462,7 +472,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto text-center">
+      <ul class="navbar-nav mx-auto text-center navB">
         <li class="nav-item">
           <a class="nav-link animate__animated animate__fadeIn" href="#elearning"><i class="fas fa-book me-1"></i> E-Learning</a>
         </li>

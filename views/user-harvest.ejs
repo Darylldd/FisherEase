@@ -260,8 +260,12 @@
             <thead>
               <tr>
                 <th>Fish Type</th>
-                <th>Weight (kg)</th>
-                <th>Location</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Ownership</th>
+                <th>Source of Fry</th>
+                <th>Market Destination</th>
+                <th>Remarks</th>
                 <th>Date Harvested</th>
               </tr>
             </thead>
@@ -271,12 +275,16 @@
                   <tr>
                     <td><%= harvest.fish_type %></td>
                     <td><%= harvest.weight %></td>
-                    <td><%= harvest.location %></td>
+                    <td><%= harvest.unit %></td>
+                    <td><%= harvest.ownership %></td>
+                    <td><%= harvest.source_of_fry %></td>
+                    <td><%= harvest.market_destination %></td>
+                    <td><%= harvest.remarks %></td>
                     <td><%= new Date(harvest.date_harvested).toLocaleDateString() %></td>
                   </tr>
                 <% }) %>
               <% } else { %>
-                <tr><td colspan="4">No harvests recorded yet.</td></tr>
+                <tr><td colspan="8">No harvests recorded yet.</td></tr>
               <% } %>
             </tbody>
           </table>
