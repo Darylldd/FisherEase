@@ -7,7 +7,7 @@ const path = require("path");
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, "Uploads/");
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
@@ -29,6 +29,12 @@ const upload = multer({
         }
     },
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// Render the loss report form
+router.get("/report", (req, res) => {
+    if (!req.session.userId) return res.status(401).send("Unauthorized");
+    res.render("loss-form", { user: req.session.user || { name: "User" } });
 });
 
 router.post("/report", upload.single("proofImage"), ClimateEventLossController.submitLossReport);
