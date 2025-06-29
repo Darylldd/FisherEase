@@ -8,7 +8,7 @@ exports.getClimateAnalysis = async (req, res) => {
 
         if (!Array.isArray(climateData)) {
             console.error("Error: climateData is not an array", climateData);
-            climateData = []; // Fallback to empty array
+            climateData = [];
         }
 
         res.render('climateAnalysis', { climateData });

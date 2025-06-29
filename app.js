@@ -1,19 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const path = require("path");
+const PostgresStore = require('connect-pg-simple')(session); // Added for PostgreSQL session store
+const path = require('path');
 const flash = require('connect-flash');
-const multer = require("multer");
 
-const upload = multer({ dest: "uploads/" }); // Store files in "uploads/" directory
 const app = express();
 
 const fishSpeciesRoutes = require('./routes/fishSpeciesRoutes');
-const harvestRoutes = require("./routes/harvest");
+const harvestRoutes = require('./routes/harvest');
 const landingRoutes = require('./routes/landingRoutes');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboard');
-const registerRoutes = require('./routes/register'); 
+const registerRoutes = require('./routes/register');
 const aquacultureRoutes = require('./routes/aquacultureRoutes');
 const fisherfolkRoutes = require('./routes/fisherfolkRoutes');
 const catchReportRoutes = require('./routes/catchReportRoutes');
@@ -21,10 +20,11 @@ const fishingActivityRoutes = require('./routes/fishingActivityRoutes');
 const userFishingRoutes = require('./routes/userFishingRoutes');
 const enforcementComplianceRoutes = require('./routes/enforcementComplianceRoutes');
 const violationRoutes = require('./routes/violationRoutes');
-const analyticsRoutes = require('./routes/analytics'); 
+const analyticsRoutes = require('./routes/analytics');
 const auditRoutes = require('./routes/auditRoutes');
-const climateRoutes = require("./routes/climateRoutes");
-const climateLossRoutes = require("./routes/climateLoss");
+const climateRoutes = require('./routes/climateRoutes');
+const climateLossRoutes = require('./routes/climateLoss');
+
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -33,26 +33,30 @@ app.set('views', './views');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "uploads")));  // For parsing application/x-www-form-urlencoded (HTML forms)
-app.use(express.json());  // For parsing application/json
+app.use(express.static(path.join(__dirname, 'Uploads')));
+app.use(express.json());
 
-
- 
-// Session middleware
+// Session middleware with PostgreSQL store
 app.use(session({
-  secret: '2025',
+  store: new PostgresStore({
+    conString: process.env.DATABASE_URL, // Use Render's PostgreSQL connection string
+    tableName: 'session',
+    createTableIfMissing: true // Automatically create session table if it doesn't exist
+  }),
+  secret: process.env.SESSION_SECRET || '2025', // Use environment variable for secret
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  saveUninitialized: false, // Changed to false for better security
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production' ? true : false, // Secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 app.use((req, res, next) => {
-  res.locals.user = req.session.user || null; // Available in EJS
-  req.user = req.session.user;  // Attach to `req`
+  res.locals.user = req.session.user || null;
+  req.user = req.session.user;
   next();
 });
-
-
 
 app.use(flash());
 
@@ -62,43 +66,35 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Routes
 app.get('/', (req, res) => {
-    if (req.session.userId) {
-      return res.redirect(`/dashboard/${req.session.role}`);
-    }
-    res.redirect('/auth/login');
-  });
+  if (req.session.userId) {
+    return res.redirect(`/dashboard/${req.session.role}`);
+  }
+  res.redirect('/auth/login');
+});
 
-
-  app.use('/', fishSpeciesRoutes);
-app.use("/climateLoss", climateLossRoutes);
-app.use('/climate-analysis', climateRoutes)
-app.use('/audit', auditRoutes);  
+app.use('/', fishSpeciesRoutes);
+app.use('/climateLoss', climateLossRoutes);
+app.use('/climate-analysis', climateRoutes);
+app.use('/audit', auditRoutes);
 app.use('/landing', landingRoutes);
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
-app.use('/register', registerRoutes);  // For handling registration routes (including fisherfolk, aquaculture)
-app.use('/aquaculture', aquacultureRoutes);  // Only the aquaculture-specific routes
+app.use('/register', registerRoutes);
+app.use('/aquaculture', aquacultureRoutes);
 app.use('/', fisherfolkRoutes);
 app.use('/catch-report', catchReportRoutes);
 app.use('/fishing-activity-tracking', fishingActivityRoutes);
-app.use('/', userFishingRoutes); // User Routes
-app.use('/', fishingActivityRoutes); // Admin Routes
+app.use('/', userFishingRoutes);
+app.use('/', fishingActivityRoutes);
 app.use('/enforcement-compliance-logging', enforcementComplianceRoutes);
-app.use( violationRoutes);
+app.use('/', violationRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', analyticsRoutes);
-app.use("/harvest", harvestRoutes);
+app.use('/harvest', harvestRoutes);
 
-
-
-//const PORT = process.env.PORT || 3000;
-//app.listen(PORT, '0.0.0.0', () => {
-  //console.log(`Server started on http://0.0.0.0:${PORT}`);
-//});
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on http://0.0.0.0:${PORT}`);
 });

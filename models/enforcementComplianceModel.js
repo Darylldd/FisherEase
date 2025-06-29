@@ -1,44 +1,39 @@
-// models/enforcementComplianceModel.js
+const db = require('./db'); // Import PostgreSQL DB connection (e.g., node-postgres)
 
-const enforcementLogs = [
-    { incident: "Incident #001", violation: "Overfishing", penalty: "Warning", date: "2025-02-10" },
-    { incident: "Incident #002", violation: "Illegal netting", penalty: "Fine", date: "2025-02-12" },
-    // ... more dummy data
-  ];
-  
-  function getEnforcementLogs(filters, sortBy) {
-    let results = [...enforcementLogs];
-  
+async function getEnforcementLogs(filters, sortBy) {
+  try {
+    let query = 'SELECT * FROM enforcement_logs WHERE 1=1';
+    let params = [];
+
     // Filtering by incident, violation, and date
     if (filters) {
       if (filters.incident) {
-        results = results.filter(log =>
-          log.incident.toLowerCase().includes(filters.incident.toLowerCase())
-        );
+        query += ' AND incident ILIKE $1';
+        params.push(`%${filters.incident}%`);
       }
       if (filters.violation) {
-        results = results.filter(log =>
-          log.violation.toLowerCase().includes(filters.violation.toLowerCase())
-        );
+        query += ' AND violation ILIKE $2';
+        params.push(`%${filters.violation}%`);
       }
       if (filters.date) {
-        results = results.filter(log => log.date === filters.date);
+        query += ' AND date = $3';
+        params.push(filters.date);
       }
     }
-  
+
     // Sorting
     if (sortBy) {
-      results.sort((a, b) => {
-        if (a[sortBy] < b[sortBy]) return -1;
-        if (a[sortBy] > b[sortBy]) return 1;
-        return 0;
-      });
+      query += ` ORDER BY ${sortBy} ASC`;
     }
-  
-    return results;
+
+    const { rows } = await db.query(query, params);
+    return rows;
+  } catch (error) {
+    console.error('Error fetching enforcement logs:', error);
+    throw error;
   }
-  
-  module.exports = {
-    getEnforcementLogs,
-  };
-  
+}
+
+module.exports = {
+  getEnforcementLogs,
+};

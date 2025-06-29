@@ -19,6 +19,7 @@ const fishingActivityController = {
       res.status(500).send('Server Error');
     }
   },
+
   showFishingActivityForm: (req, res) => {
     const user = req.session.user || { name: 'Guest' };
     res.render('fishingActivity', { user });
@@ -29,7 +30,6 @@ const fishingActivityController = {
       const activities = await FishingActivity.getAll();
       const user = req.session.user || { name: 'Guest' };
 
-      // Fix: Ensure filters is always defined
       const filters = {
         date: '',
         location: '',

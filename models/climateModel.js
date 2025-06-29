@@ -1,7 +1,7 @@
-const db = require('./db'); // MySQL Connection
+const db = require('./db'); // PostgreSQL Connection (pg Pool)
 const axios = require('axios');
 
-// Fetch Climate Events from Open-Meteo
+// Fetch Climate Events from Open-Meteo API
 const fetchClimateEvents = async () => {
     try {
         const response = await axios.get(
@@ -17,13 +17,23 @@ const fetchClimateEvents = async () => {
             affected_area: "Calapan, Philippines"
         }));
 
-        // Store in the database
+        // Insert each event into PostgreSQL
         for (let event of events) {
-            await db.execute(
-                "INSERT INTO climate_events (event_name, event_type, event_date, severity, estimated_damage, affected_area) VALUES (?, ?, ?, ?, ?, ?)",
-                [event.event_name, event.event_type, event.event_date, event.severity, event.estimated_damage, event.affected_area]
+            await db.query(
+                `INSERT INTO climate_events 
+                (event_name, event_type, event_date, severity, estimated_damage, affected_area) 
+                VALUES ($1, $2, $3, $4, $5, $6)`,
+                [
+                    event.event_name,
+                    event.event_type,
+                    event.event_date,
+                    event.severity,
+                    event.estimated_damage,
+                    event.affected_area
+                ]
             );
         }
+
         return events;
     } catch (error) {
         console.error("Error fetching climate events:", error);
@@ -31,7 +41,7 @@ const fetchClimateEvents = async () => {
     }
 };
 
-// **Helper Functions to Classify Events**
+// Helper: Translate weather code to event name
 const getEventName = (code) => {
     const eventMapping = {
         0: "Clear Sky",
@@ -63,14 +73,14 @@ const getEventName = (code) => {
         96: "Thunderstorm with Slight Hail",
         99: "Thunderstorm with Heavy Hail"
     };
-    
     return eventMapping[code] || "Unknown Weather";
 };
 
+// Helper: Classify event type
 const getEventType = (code) => {
     if ([95, 96, 99].includes(code)) return "Typhoon";
     if ([66, 67].includes(code)) return "Flood";
-    if ([82, 81, 80].includes(code)) return "Storm Surge";
+    if ([80, 81, 82].includes(code)) return "Storm Surge";
     if ([61, 63, 65].includes(code)) return "Heavy Rain";
     if ([56, 57].includes(code)) return "Freezing Rain";
     if ([45, 48].includes(code)) return "Fog";
@@ -83,50 +93,46 @@ const getEventType = (code) => {
     return "Unknown";
 };
 
-
-
+// Helper: Get severity level
 const getSeverityLevel = (code) => {
-    if ([99, 67, 75].includes(code)) return "Extreme";  
-    if ([95, 96, 66, 65, 82].includes(code)) return "Severe";  
-    if ([63, 80, 81, 85, 86].includes(code)) return "Moderate";  
-    if ([45, 48, 51, 53, 55, 2].includes(code)) return "Low";  
-    if ([0, 1, 3].includes(code)) return "None";  
+    if ([99, 67, 75].includes(code)) return "Extreme";
+    if ([95, 96, 66, 65, 82].includes(code)) return "Severe";
+    if ([63, 80, 81, 85, 86].includes(code)) return "Moderate";
+    if ([45, 48, 51, 53, 55, 2].includes(code)) return "Low";
+    if ([0, 1, 3].includes(code)) return "None";
 
     console.log(`⚠️ Unknown Weather Code in getSeverityLevel: ${code}`);
-    return "Low"; // Default fallback
+    return "Low";
 };
 
-
+// Helper: Estimate damage cost based on code
 const calculateDamage = (code) => {
     const damageMapping = {
-        95: 100000,  // Typhoon
-        96: 200000,  // Thunderstorm with Hail
-        99: 500000,  // Severe Typhoon
-        66: 200000,  // Freezing Rain
-        67: 400000,  // Severe Freezing Rain
-        82: 150000,  // Storm Surge
-        65: 80000,   // Heavy Rain
-        75: 120000,  // Heavy Snowfall
-        80: 50000,   // Rain Showers
-        81: 60000,   // Moderate Rain Showers
-        85: 70000,   // Snow Showers
-        2: 0,        // Partly Cloudy - No Damage
-        0: 0,        // Clear Sky - No Damage
-        1: 0,        // Mainly Clear - No Damage
-        3: 0         // Overcast - No Damage
+        95: 100000,
+        96: 200000,
+        99: 500000,
+        66: 200000,
+        67: 400000,
+        82: 150000,
+        65: 80000,
+        75: 120000,
+        80: 50000,
+        81: 60000,
+        85: 70000,
+        2: 0,
+        0: 0,
+        1: 0,
+        3: 0
     };
 
-    // ✅ DEBUGGING LOG
     console.log(`🌦 Weather Code Received: ${code}`);
 
     if (!damageMapping.hasOwnProperty(code)) {
         console.log(`⚠️ Unknown Weather Code in calculateDamage: ${code}`);
-        return 50000; // Default fallback
+        return 50000; // default
     }
 
     return damageMapping[code];
 };
-
-
 
 module.exports = { fetchClimateEvents };
