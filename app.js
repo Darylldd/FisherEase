@@ -39,18 +39,20 @@ app.use(express.json());
 // Session middleware with PostgreSQL store
 app.use(session({
   store: new PostgresStore({
-    conString: process.env.DATABASE_URL, // Use Render's PostgreSQL connection string
+    connectionString: process.env.DATABASE_URL || 
+      `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?sslmode=require`,
     tableName: 'session',
-    createTableIfMissing: true // Automatically create session table if it doesn't exist
+    createTableIfMissing: true
   }),
-  secret: process.env.SESSION_SECRET || '2025', // Use environment variable for secret
+  secret: process.env.SESSION_SECRET || '2025',
   resave: false,
-  saveUninitialized: false, // Changed to false for better security
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production' ? true : false, // Secure cookies in production
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
+
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
