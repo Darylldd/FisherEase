@@ -1,11 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const PostgresStore = require('connect-pg-simple')(session); // Added for PostgreSQL session store
+const PostgresStore = require('connect-pg-simple')(session);
 const path = require('path');
 const flash = require('connect-flash');
 
 const app = express();
+
+// ✅ Use shared db pool for session
+const db = require('./models/db');
 
 const fishSpeciesRoutes = require('./routes/fishSpeciesRoutes');
 const harvestRoutes = require('./routes/harvest');
@@ -24,8 +27,8 @@ const analyticsRoutes = require('./routes/analytics');
 const auditRoutes = require('./routes/auditRoutes');
 const climateRoutes = require('./routes/climateRoutes');
 const climateLossRoutes = require('./routes/climateLoss');
- 
-// Set EJS as the view engine
+
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
@@ -36,11 +39,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Uploads')));
 app.use(express.json());
 
-// Session middleware with PostgreSQL store
+// ✅ Session middleware using shared pg pool
 app.use(session({
   store: new PostgresStore({
-    connectionString: process.env.DATABASE_URL || 
-      `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?sslmode=require`,
+    pool: db, // ✅ Use same pool as the rest of your app
     tableName: 'session',
     createTableIfMissing: true
   }),
@@ -49,17 +51,18 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }));
 
-
+// Attach user info to views
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   req.user = req.session.user;
   next();
 });
 
+// Flash messages
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -96,6 +99,7 @@ app.use('/', dashboardRoutes);
 app.use('/', analyticsRoutes);
 app.use('/harvest', harvestRoutes);
 
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on http://0.0.0.0:${PORT}`);
