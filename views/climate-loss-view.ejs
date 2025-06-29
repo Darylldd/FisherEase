@@ -218,6 +218,22 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Success</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h2><i class="fas fa-check-circle me-1"></i> Loss report submitted successfully!</h2>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="main-container">
     <div class="section-header">
       <i class="fas fa-cloud-sun"></i> Your Climate Event Loss Reports
@@ -268,6 +284,20 @@
     </div>
   </div>
   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const modals = document.querySelectorAll(".modal");
+      modals.forEach(modal => {
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) {
+          bsModal.hide();
+        }
+      });
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("success") === "true") {
+        const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+        successModal.show();
+      }
+    });
     function logout() {
       const logoutModal = document.getElementById("logoutModal");
       const bsModal = bootstrap.Modal.getInstance(logoutModal);

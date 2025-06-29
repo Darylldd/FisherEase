@@ -4,7 +4,6 @@ const ClimateEventLossController = require("../controllers/ClimateEventLossContr
 const multer = require("multer");
 const path = require("path");
 
-// Configure Multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "Uploads/");
@@ -21,19 +20,17 @@ const upload = multer({
         const filetypes = /jpeg|jpg|png/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
-
         if (extname && mimetype) {
             return cb(null, true);
         } else {
             cb(new Error("Images only (JPEG, JPG, PNG)!"));
         }
     },
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// Render the loss report form
 router.get("/report", (req, res) => {
-    if (!req.session.userId) return res.status(401).send("Unauthorized");
+    if (!req.session.userId) return res.status(401).json({ success: false, message: "Unauthorized: No user session found" });
     res.render("loss-form", { user: req.session.user || { name: "User" } });
 });
 
