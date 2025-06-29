@@ -4,6 +4,9 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
 
+// Render production domain (change if using custom domain)
+const BASE_URL = process.env.BASE_URL || 'https://fisherease.onrender.com';
+
 // Email transporter setup
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -11,7 +14,7 @@ let transporter = nodemailer.createTransport({
     secure: false,
     auth: {
         user: 'calapancityfmo@gmail.com',
-        pass: 'cvmv irvp jpdk gget'
+        pass: 'cvmv irvp jpdk gget' // Consider using environment variables here too
     }
 });
 
@@ -75,8 +78,7 @@ exports.postSignup = async (req, res) => {
             [name, email, hashedPassword, role, false, verificationToken]
         );
 
-        const verificationLink = `http://localhost:3000/auth/verify-email?token=${verificationToken}&email=${email}`;
-
+        const verificationLink = `${BASE_URL}/auth/verify-email?token=${verificationToken}&email=${email}`;
         await transporter.sendMail({
             from: '"FMO" <no-reply@fmo.com>',
             to: email,
@@ -150,7 +152,7 @@ exports.postForgotPassword = async (req, res) => {
             [resetToken, expiry, email]
         );
 
-        const resetLink = `http://localhost:3000/auth/reset-password?token=${resetToken}&email=${email}`;
+        const resetLink = `${BASE_URL}/auth/reset-password?token=${resetToken}&email=${email}`;
         await transporter.sendMail({
             from: '"FMO" <no-reply@fmo.com>',
             to: email,
