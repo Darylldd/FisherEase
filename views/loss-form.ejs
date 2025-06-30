@@ -322,66 +322,69 @@
     </div>
   </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Hide any existing Bootstrap modals
+document.addEventListener("DOMContentLoaded", function () {
     const modals = document.querySelectorAll(".modal");
     modals.forEach(modal => {
-      const bsModal = bootstrap.Modal.getInstance(modal);
-      if (bsModal) {
-        bsModal.hide();
-      }
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) {
+            bsModal.hide();
+        }
     });
 
-    // Show success modal if redirected with success=true
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("success") === "true") {
-      const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-      successModal.show();
+        const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+        successModal.show();
     }
 
-    // Handle form submission
     const form = document.getElementById("loss-report-form");
     const errorMessage = document.getElementById("error-message");
 
     form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      errorMessage.style.display = "none";
-      errorMessage.textContent = "";
+        event.preventDefault();
+        errorMessage.style.display = "none";
+        errorMessage.textContent = "";
 
-      try {
-        const formData = new FormData(form);
-        const response = await fetch("/climateLoss/report", {
-          method: "POST",
-          body: formData
-        });
-        const result = await response.json();
+        try {
+            const formData = new FormData(form);
+            const response = await fetch("/climateLoss/report", {
+                method: "POST",
+                body: formData
+            });
 
-        if (response.ok && result.success) {
-          // Redirect with success query param
-          window.location.href = result.redirect || "/climateLoss/view?success=true";
-        } else {
-          errorMessage.textContent = result.message || "An error occurred. Please try again.";
-          errorMessage.style.display = "block";
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    window.location.href = result.redirect || "/climateLoss/view?success=true";
+                } else {
+                    errorMessage.textContent = result.message || "An error occurred. Please try again.";
+                    errorMessage.style.display = "block";
+                }
+            } else {
+                const text = await response.text();
+                console.error("Non-JSON response:", text);
+                errorMessage.textContent = "Server returned an unexpected response. Please try again.";
+                errorMessage.style.display = "block";
+            }
+        } catch (error) {
+            errorMessage.textContent = "Network error: " + error.message;
+            errorMessage.style.display = "block";
+            console.error("Submission error:", error);
         }
-      } catch (error) {
-        errorMessage.textContent = "Network error: " + error.message;
-        errorMessage.style.display = "block";
-        console.error("Submission error:", error);
-      }
     });
-  });
+});
 
-  // Logout function outside DOMContentLoaded
-  function logout() {
+function logout() {
     const logoutModal = document.getElementById("logoutModal");
     const bsModal = bootstrap.Modal.getInstance(logoutModal);
     if (bsModal) {
-      bsModal.hide();
+        bsModal.hide();
     }
     setTimeout(() => {
-      window.location.href = "/auth/logout";
+        window.location.href = "/auth/logout";
     }, 300);
-  }
+}
 </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
