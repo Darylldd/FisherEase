@@ -304,33 +304,35 @@
       <i class="fas fa-cloud-sun"></i> Climate Event Damage Analysis
     </div>
    <!-- Add this table to your existing climateAnalysis-admin.ejs -->
-  <div class="table-container">
-     <h5>User Loss Reports Verification</h5>
-        <table class="table table-bordered">
+ <!-- views/climateAnalysis.ejs -->
+<div class="table-container">
+  <h5>User Loss Reports Verification</h5>
+  <table class="table table-bordered">
     <thead>
-        <tr>
-          <th>User</th>
-          <th>Event Type</th>
-          <th>Date</th>
-          <th>Species Lost</th>
-          <th>Loss (Kg)</th>
-          <th>Loss Value</th>
-          <th>Location</th>
-          <th>Description</th>
-          <th>Proof</th>
-        </tr>
-      </thead>
-      <tbody>
+      <tr>
+        <th>User</th>
+        <th>Event Type</th>
+        <th>Date</th>
+        <th>Species Lost</th>
+        <th>Loss (Kg)</th>
+        <th>Loss Value</th>
+        <th>Location</th>
+        <th>Description</th>
+        <th>Proof</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (climateData && climateData.length > 0) { %>
         <% climateData.forEach(report => { %>
           <tr>
             <td><%= report.user_name %></td>
             <td><%= report.event_type %></td>
-            <td><%= new Date(report.date).toLocaleDateString() %></td>
+            <td><%= report.formatted_date || 'N/A' %></td>
             <td><%= report.species_lost %></td>
             <td><%= report.estimated_loss_kg %></td>
-            <td>₱<%= report.estimated_loss_value.toFixed(2) %></td>
+            <td>₱<%= (report.estimated_loss_value || 0).toFixed(2) %></td>
             <td><%= report.location %></td>
-            <td><%= report.description %></td>
+            <td><%= report.description || 'No description' %></td>
             <td>
               <% if (report.image_path) { %>
                 <a href="<%= report.image_path %>" target="_blank" class="btn btn-sm btn-primary">
@@ -342,10 +344,14 @@
             </td>
           </tr>
         <% }); %>
-      </tbody>
+      <% } else { %>
+        <tr>
+          <td colspan="9" class="text-center">No loss reports found</td>
+        </tr>
+      <% } %>
+    </tbody>
   </table>
 </div>
-
 <!-- Add this script at the bottom of the file -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {

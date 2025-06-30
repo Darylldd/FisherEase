@@ -34,5 +34,5 @@ const upload = multer({
 router.post("/report", upload.single("proofImage"), ClimateEventLossController.submitLossReport);
 router.get("/view", ClimateEventLossController.viewLossReports);
 // Admin view of all user-submitted reports
-router.get("/climateLoss/analysis", ClimateEventLossController.adminViewAllLossReports);
+router.get("/analysis", ClimateEventLossController.adminViewAllLossReports);
 module.exports = router;
