@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Loss Reports - Fisheries Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #3b82f6;
+      --background: #f0f4ff;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981;
+      --warning: #ef4444;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+    }
+    .navbar {
+      background-color: var(--primary);
+    }
+    .main-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .report-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .report-header {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px;
+      font-weight: 600;
+    }
+    .report-body {
+      padding: 20px;
+    }
+    .report-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+    }
+    .btn-new-report {
+      background-color: var(--accent);
+      color: white;
+      margin-bottom: 20px;
+    }
+    .btn-new-report:hover {
+      background-color: #2563eb;
+      color: white;
+    }
+    .section-header {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-header i {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <!-- Use the same navbar as your dashboard -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Fisheries Management Office</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-tools me-1"></i> User Tools
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+              <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
+              <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
+              <li><a class="dropdown-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
+              <li><a class="dropdown-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
+              <li><a class="dropdown-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
+<li><a class="dropdown-item" href="/climateLoss/report"><i class="fas fa-cloud-sun me-2"></i> Report Loss</a></li>
+<li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-table me-2"></i> View Reports</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="section-header">
+        <i class="fas fa-cloud-sun"></i> My Loss Reports
+      </div>
+      <a href="/climateLoss/report" class="btn btn-new-report">
+        <i class="fas fa-plus me-2"></i> New Report
+      </a>
+    </div>
+
+    <% if (lossReports.length === 0) { %>
+      <div class="alert alert-info">
+        You haven't submitted any loss reports yet.
+      </div>
+    <% } %>
+
+    <% lossReports.forEach(report => { %>
+      <div class="report-card">
+        <div class="report-header">
+          <%= report.event_type %> - <%= new Date(report.date).toLocaleDateString() %>
+        </div>
+        <div class="report-body">
+          <div class="row">
+            <div class="col-md-8">
+              <p><strong>Species Lost:</strong> <%= report.species_lost %></p>
+              <p><strong>Estimated Loss:</strong> <%= report.estimated_loss_kg %> kg (₱<%= report.estimated_loss_value %>)</p>
+              <p><strong>Location:</strong> <%= report.location %></p>
+              <p><strong>Description:</strong> <%= report.description %></p>
+            </div>
+            <div class="col-md-4">
+              <% if (report.image_path) { %>
+                <img src="<%= report.image_path %>" alt="Proof of loss" class="report-image img-fluid">
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Success</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i> Your report has been submitted successfully!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if (success) { %>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+      });
+    </script>
+  <% } %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
