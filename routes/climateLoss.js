@@ -31,13 +31,13 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Show the report form
+// User routes
 router.get("/report", ClimateEventLossController.showReportForm);
-
-// Submit the report
 router.post("/report", upload.single("proofImage"), ClimateEventLossController.submitLossReport);
-
-// View all reports
 router.get("/view", ClimateEventLossController.viewLossReports);
+
+// Admin routes
+router.get("/admin", ClimateEventLossController.adminViewAllReports);
+router.post("/admin/update-status", ClimateEventLossController.updateReportStatus);
 
 module.exports = router;

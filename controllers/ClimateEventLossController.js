@@ -20,8 +20,8 @@ const ClimateEventLossController = {
             const { eventType, date, speciesLost, lossKg, lossValue, description, location } = req.body;
             const userId = req.session.userId;
 
-            if (!userId) return res.status(401).send("Unauthorized");
-            if (!req.file) return res.status(400).send("Proof image is required");
+            if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+            if (!req.file) return res.status(400).json({ success: false, message: "Proof image is required" });
 
             const imagePath = `/uploads/${req.file.filename}`;
 
@@ -37,10 +37,10 @@ const ClimateEventLossController = {
                 imagePath
             );
             
-            res.redirect("/climateLoss/view?success=true");
+            res.json({ success: true, redirect: "/climateLoss/view?success=true" });
         } catch (error) {
             console.error("Error submitting loss report:", error);
-            res.status(500).json({ success: false, message: "Server Error" });
+            res.status(500).json({ success: false, message: "Server Error: " + error.message });
         }
     },
 
@@ -57,6 +57,36 @@ const ClimateEventLossController = {
         } catch (error) {
             console.error("Error fetching loss reports:", error);
             res.status(500).send("Server Error");
+        }
+    },
+
+    async adminViewAllReports(req, res) {
+        try {
+            if (!req.session.userId || !req.session.isAdmin) return res.redirect('/auth/login');
+            
+            const allReports = await ClimateEventLossModel.getAllLossReports();
+            res.render("climateAnalysis-admin", { 
+                user: req.session.user,
+                climateData: allReports
+            });
+        } catch (error) {
+            console.error("Error fetching all reports:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async updateReportStatus(req, res) {
+        try {
+            const { reportId, status } = req.body;
+            const adminId = req.session.userId;
+
+            if (!adminId || !req.session.isAdmin) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+            const updatedReport = await ClimateEventLossModel.updateReportStatus(reportId, status, adminId);
+            res.json({ success: true, report: updatedReport });
+        } catch (error) {
+            console.error("Error updating report status:", error);
+            res.status(500).json({ success: false, message: "Server Error" });
         }
     }
 };
