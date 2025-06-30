@@ -19,7 +19,7 @@ const ClimateEventLossController = {
                 lossKg, lossValue, description, location, imagePath
             );
             
-            res.redirect("/climateLoss/view?success=true");
+            res.redirect("/view?success=true");
         } catch (error) {
             console.error("Error submitting loss report:", error);
             res.status(500).json({ success: false, message: "Server Error" });
