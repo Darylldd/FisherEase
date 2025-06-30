@@ -4,20 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Report Calamity/Damage Loss - Fisheries Management</title>
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root {
-      --primary: #1e3a8a;
-      --accent: #3b82f6;
-      --background: #f0f4ff;
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
       --card-bg: #ffffff;
       --text: #1f2937;
       --border: #d1d5db;
-      --highlight: #10b981;
-      --warning: #ef4444;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--background);
@@ -26,6 +30,8 @@
       padding: 0;
       overflow-x: hidden;
     }
+
+    /* Navbar (reused from User Dashboard for consistency) */
     .navbar {
       background-color: var(--primary);
       padding: 1rem 1.5rem;
@@ -78,11 +84,15 @@
     .navbar-nav .nav-item {
       margin-left: 0.5rem;
     }
+
+    /* Main Container */
     .main-container {
       max-width: 1600px;
       margin: 2rem auto;
       padding: 0 1.5rem;
     }
+
+    /* Section Headers */
     .section-header {
       font-size: 1.4rem;
       font-weight: 500;
@@ -95,6 +105,8 @@
     .section-header i {
       color: var(--accent);
     }
+
+    /* Form Container */
     .form-container {
       background-color: var(--card-bg);
       border-radius: 12px;
@@ -108,11 +120,12 @@
       transform: translateY(-6px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
+
+    /* Form Styling */
     form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-   -west: 0px;
     }
     label {
       font-size: 0.95rem;
@@ -165,12 +178,53 @@
       background-color: #2563eb;
       transform: translateY(-2px);
     }
-    .error-message {
-      color: var(--warning);
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
+
+    /* Modal Styling */
+    .modal {
       display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1050;
     }
+    .modal-content {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+    .modal-content h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .modal-content button {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-weight: 500;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .modal-content button:hover {
+      background-color: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
     @media (max-width: 1200px) {
       .main-container {
         padding: 0 1rem;
@@ -197,9 +251,13 @@
       textarea {
         font-size: 0.9rem;
       }
-      button[type="submit"] {
+      button[type="submit"],
+      .modal-content button {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
+      }
+      .modal-content h2 {
+        font-size: 1.1rem;
       }
     }
     @media (max-width: 576px) {
@@ -212,14 +270,19 @@
       .form-container {
         padding: 0.75rem;
       }
-      button[type="submit"] {
+      button[type="submit"],
+      .modal-content button {
         width: 100%;
         align-self: stretch;
+      }
+      .modal-content {
+        padding: 1rem;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Navbar (reused from User Dashboard) -->
   <nav class="navbar navbar-expand-lg">
     <div class="main-container">
       <a class="navbar-brand" href="/">Fisheries Management Office</a>
@@ -236,8 +299,7 @@
               <i class="fas fa-tools me-1"></i> User Tools
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-              <li><a class="dropdown-item" href="/climateLoss/report"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
-              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-table me-2"></i> View Loss Reports</a></li>
+              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
               <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
               <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
               <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
@@ -256,6 +318,8 @@
       </div>
     </div>
   </nav>
+
+  <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -273,13 +337,14 @@
       </div>
     </div>
   </div>
+
   <div class="main-container">
+    <!-- Report Climate Loss Section -->
     <div class="section-header">
       <i class="fas fa-cloud-sun"></i> Report Calamity/Damage Event Loss
     </div>
     <div class="form-container">
-      <div id="error-message" class="error-message"></div>
-      <form id="loss-report-form" action="/climateLoss/report" method="POST" enctype="multipart/form-data">
+      <form action="/climateLoss/report" method="POST" enctype="multipart/form-data">
         <label for="eventType">Event Type:</label>
         <select name="eventType" id="eventType" required>
           <option value="Storm">Storm</option>
@@ -287,24 +352,34 @@
           <option value="Flood">Flood</option>
           <option value="Red Tide">Red Tide</option>
         </select>
+
         <label for="date">Date:</label>
         <input type="date" name="date" id="date" required>
+
         <label for="speciesLost">Species Lost:</label>
         <input type="text" name="speciesLost" id="speciesLost" required>
+
         <label for="lossKg">Estimated Loss (Kg):</label>
         <input type="number" name="lossKg" id="lossKg" step="0.01" required>
+
         <label for="lossValue">Estimated Loss Value:</label>
         <input type="number" name="lossValue" id="lossValue" step="0.01" required>
+
         <label for="location">Location:</label>
         <input type="text" name="location" id="location" required>
+
         <label for="proofImage">Proof of Loss (Image):</label>
         <input type="file" name="proofImage" id="proofImage" accept="image/*" required>
+
         <label for="description">Description:</label>
         <textarea name="description" id="description" placeholder="Describe the loss" required></textarea>
+
         <button type="submit">Report Loss</button>
       </form>
     </div>
   </div>
+
+  <!-- Success Modal (Converted to Bootstrap Modal) -->
   <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -321,72 +396,39 @@
       </div>
     </div>
   </div>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const modals = document.querySelectorAll(".modal");
-    modals.forEach(modal => {
+
+  <script>
+    // Hide all modals on page load to reset state
+    document.addEventListener("DOMContentLoaded", function () {
+      const modals = document.querySelectorAll(".modal");
+      modals.forEach(modal => {
         const bsModal = bootstrap.Modal.getInstance(modal);
         if (bsModal) {
-            bsModal.hide();
+          bsModal.hide();
         }
-    });
+      });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("success") === "true") {
+      // Show success modal if success parameter is present
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("success") === "true") {
         const successModal = new bootstrap.Modal(document.getElementById("successModal"));
         successModal.show();
-    }
-
-    const form = document.getElementById("loss-report-form");
-    const errorMessage = document.getElementById("error-message");
-
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        errorMessage.style.display = "none";
-        errorMessage.textContent = "";
-
-        try {
-            const formData = new FormData(form);
-            const response = await fetch("/climateLoss/report", {
-                method: "POST",
-                body: formData
-            });
-
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    window.location.href = result.redirect || "/climateLoss/view?success=true";
-                } else {
-                    errorMessage.textContent = result.message || "An error occurred. Please try again.";
-                    errorMessage.style.display = "block";
-                }
-            } else {
-                const text = await response.text();
-                console.error("Non-JSON response:", text);
-                errorMessage.textContent = "Server returned an unexpected response. Please try again.";
-                errorMessage.style.display = "block";
-            }
-        } catch (error) {
-            errorMessage.textContent = "Network error: " + error.message;
-            errorMessage.style.display = "block";
-            console.error("Submission error:", error);
-        }
+      }
     });
-});
 
-function logout() {
-    const logoutModal = document.getElementById("logoutModal");
-    const bsModal = bootstrap.Modal.getInstance(logoutModal);
-    if (bsModal) {
+    function logout() {
+      const logoutModal = document.getElementById("logoutModal");
+      const bsModal = bootstrap.Modal.getInstance(logoutModal);
+      if (bsModal) {
         bsModal.hide();
-    }
-    setTimeout(() => {
+      }
+      setTimeout(() => {
         window.location.href = "/auth/logout";
-    }, 300);
-}
-</script>
+      }, 300);
+    }
+  </script>
 
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
