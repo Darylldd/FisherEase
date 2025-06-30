@@ -39,5 +39,3 @@ const ClimateEventLossController = {
 };
 
 module.exports = ClimateEventLossController;
-
-module.exports = ClimateEventLossController;

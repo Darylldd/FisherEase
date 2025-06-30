@@ -1,3 +1,4 @@
+// routes/climateLoss.js
 const express = require("express");
 const router = express.Router();
 const ClimateEventLossController = require("../controllers/ClimateEventLossController");
@@ -31,8 +32,9 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
+// Make sure the controller methods exist and are properly imported
 router.post("/report", upload.single("proofImage"), ClimateEventLossController.submitLossReport);
 router.get("/view", ClimateEventLossController.viewLossReports);
-// Admin view of all user-submitted reports
 router.get("/analysis", ClimateEventLossController.adminViewAllLossReports);
+
 module.exports = router;
