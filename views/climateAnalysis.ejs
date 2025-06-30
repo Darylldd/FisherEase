@@ -325,8 +325,8 @@
       <% if (climateData && climateData.length > 0) { %>
         <% climateData.forEach(report => { %>
           <tr>
-            <td><%= report.user_name %></td>
-            <td><%= report.event_type %></td>
+<td><%= report.user_name || `User #${report.user_id}` %></td>          
+  <td><%= report.event_type %></td>
             <td><%= report.formatted_date || 'N/A' %></td>
             <td><%= report.species_lost %></td>
             <td><%= report.estimated_loss_kg %></td>

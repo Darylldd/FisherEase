@@ -24,23 +24,25 @@ const ClimateEventLossModel = {
         return rows;
     },
 
-    async getAllLossReportsWithUser() {
-        try {
-            const query = `
-                SELECT 
-                    c.*, 
-                    u.name AS user_name,
-                    TO_CHAR(c.date, 'YYYY-MM-DD') AS formatted_date
-                FROM climate_event_losses c
-                JOIN users u ON c.user_id = u.id
-                ORDER BY c.date DESC`;
-            const { rows } = await db.query(query);
-            return rows;
-        } catch (error) {
-            console.error("PostgreSQL Error:", error);
-            throw error;
-        }
-    }
+    // models/ClimateEventLossModel.js
+async getAllLossReportsWithUser() {
+  try {
+    const query = `
+      SELECT 
+        c.*, 
+        u.name AS user_name,
+        u.id AS user_id,  // Explicitly select user id
+        TO_CHAR(c.date, 'YYYY-MM-DD') AS formatted_date
+      FROM climate_event_losses c
+      LEFT JOIN users u ON c.user_id = u.id  // Use LEFT JOIN to include reports even if user is deleted
+      ORDER BY c.date DESC`;
+    const { rows } = await db.query(query);
+    return rows;
+  } catch (error) {
+    console.error("Database Error:", error);
+    return []; 
+  }
+}
 };
 
 module.exports = ClimateEventLossModel;
