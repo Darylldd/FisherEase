@@ -304,54 +304,45 @@
       <i class="fas fa-cloud-sun"></i> Climate Event Damage Analysis
     </div>
    <!-- Add this table to your existing climateAnalysis-admin.ejs -->
-<div class="table-container">
-  <h5>User Loss Reports Verification</h5>
-  <table class="table table-bordered">
+  <div class="table-container">
+     <h5>User Loss Reports Verification</h5>
+        <table class="table table-bordered">
     <thead>
-      <tr>
-        <th>User</th>
-        <th>Event Type</th>
-        <th>Date</th>
-        <th>Species Lost</th>
-        <th>Loss (Kg)</th>
-        <th>Proof</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% climateData.forEach(report => { %>
         <tr>
-          <td><%= report.user_name %></td>
-          <td><%= report.event_type %></td>
-          <td><%= new Date(report.date).toLocaleDateString() %></td>
-          <td><%= report.species_lost %></td>
-          <td><%= report.estimated_loss_kg %></td>
-          <td>
-            <% if (report.image_path) { %>
-              <a href="<%= report.image_path %>" target="_blank" class="btn btn-sm btn-primary">
-                <i class="fas fa-eye"></i> View Proof
-              </a>
-            <% } %>
-          </td>
-          <td>
-            <span class="badge bg-<%= report.status === 'approved' ? 'success' : report.status === 'rejected' ? 'danger' : 'warning' %>">
-              <%= report.status %>
-            </span>
-          </td>
-          <td>
-            <% if (report.status === 'pending') { %>
-              <button class="btn btn-sm btn-success approve-btn" data-id="<%= report.id %>">
-                <i class="fas fa-check"></i> Approve
-              </button>
-              <button class="btn btn-sm btn-danger reject-btn" data-id="<%= report.id %>">
-                <i class="fas fa-times"></i> Reject
-              </button>
-            <% } %>
-          </td>
+          <th>User</th>
+          <th>Event Type</th>
+          <th>Date</th>
+          <th>Species Lost</th>
+          <th>Loss (Kg)</th>
+          <th>Loss Value</th>
+          <th>Location</th>
+          <th>Description</th>
+          <th>Proof</th>
         </tr>
-      <% }); %>
-    </tbody>
+      </thead>
+      <tbody>
+        <% climateData.forEach(report => { %>
+          <tr>
+            <td><%= report.user_name %></td>
+            <td><%= report.event_type %></td>
+            <td><%= new Date(report.date).toLocaleDateString() %></td>
+            <td><%= report.species_lost %></td>
+            <td><%= report.estimated_loss_kg %></td>
+            <td>₱<%= report.estimated_loss_value.toFixed(2) %></td>
+            <td><%= report.location %></td>
+            <td><%= report.description %></td>
+            <td>
+              <% if (report.image_path) { %>
+                <a href="<%= report.image_path %>" target="_blank" class="btn btn-sm btn-primary">
+                  <i class="fas fa-eye"></i> View
+                </a>
+              <% } else { %>
+                <span class="text-muted">No Image</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
   </table>
 </div>
 

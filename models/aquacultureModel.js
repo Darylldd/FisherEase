@@ -1,8 +1,7 @@
-// models/aquacultureModel.js
-const db = require('./db');  // PostgreSQL db.js using pg Pool
+const db = require('./db'); // PostgreSQL db.js using pg Pool
 
 // Function to register a new aquaculture facility
-module.exports.registerAquaculture = async (data, callback) => {
+module.exports.registerAquaculture = async (data) => {
   const { facility_name, location, species, capacity, owner, contact_info } = data;
 
   const query = `
@@ -11,17 +10,14 @@ module.exports.registerAquaculture = async (data, callback) => {
     VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;`;
 
-  try {
-    const result = await db.query(query, [
-      facility_name,
-      location,
-      species,
-      capacity,
-      owner,
-      contact_info
-    ]);
-    callback(null, result.rows[0]); // Return the inserted row
-  } catch (err) {
-    callback(err);
-  }
+  const result = await db.query(query, [
+    facility_name,
+    location,
+    species,
+    capacity,
+    owner,
+    contact_info
+  ]);
+
+  return result.rows[0]; // Return the inserted row
 };

@@ -36,7 +36,19 @@ const ClimateEventLossController = {
             console.error("Error fetching loss reports:", error);
             res.status(500).send("Server Error");
         }
+    },
+    async adminViewAllLossReports(req, res) {
+    try {
+      // Optional: Admin-only check
+      if (!req.session.isAdmin) return res.status(403).send("Forbidden");
+
+      const reports = await ClimateEventLossModel.getAllLossReportsWithUser();
+      res.render("climateAnalysis", { climateData: reports });
+    } catch (error) {
+      console.error("Error loading admin climate loss reports:", error);
+      res.status(500).send("Internal Server Error");
     }
+  }
 };
 
 module.exports = ClimateEventLossController;

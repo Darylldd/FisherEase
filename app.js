@@ -83,7 +83,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/', fishSpeciesRoutes);
-app.use('/climateLoss', climateLossRoutes);
+app.use('/', climateLossRoutes);
 app.use('/climate-analysis', climateRoutes);
 app.use('/audit', auditRoutes);
 app.use('/landing', landingRoutes);
