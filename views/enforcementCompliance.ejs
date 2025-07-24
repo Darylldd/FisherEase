@@ -410,6 +410,7 @@
                             <option value="incident" <%= sortBy === 'incident' ? 'selected' : '' %>>Incident</option>
                             <option value="violation" <%= sortBy === 'violation' ? 'selected' : '' %>>Violation</option>
                             <option value="date" <%= sortBy === 'date' ? 'selected' : '' %>>Date</option>
+                            <option value="fisherfolk_name" <%= sortBy === 'fisherfolk_name' ? 'selected' : '' %>>Fisherfolk Name</option>
                         </select>
                     </div>
                     <div class="col-md-4 align-self-end">
@@ -427,6 +428,7 @@
                             <th>Violation</th>
                             <th>Penalty</th>
                             <th>Date</th>
+                            <th>Fisherfolk Name</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -437,11 +439,12 @@
                                     <td><%= log.violation %></td>
                                     <td><%= log.penalty %></td>
                                     <td><%= log.date %></td>
+                                    <td><%= log.fisherfolk_name || 'Unknown' %></td>
                                 </tr>
                             <% }); %>
                         <% } else { %>
                             <tr>
-                                <td colspan="4" class="no-logs">No logs found.</td>
+                                <td colspan="5" class="no-logs">No logs found.</td>
                             </tr>
                         <% } %>
                     </tbody>

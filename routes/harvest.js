@@ -10,5 +10,7 @@ router.get("/view", HarvestController.viewAllHarvests);
 router.get("/my-harvests", HarvestController.viewUserHarvests);
 router.get("/user-view", HarvestController.viewUserHarvests);
 router.get("/admin-view", HarvestController.viewAllHarvests);
+router.get("/export/pdf", HarvestController.exportToPDF);
+router.get("/export/excel", HarvestController.exportToExcel);
 
 module.exports = router;

@@ -315,10 +315,21 @@
                 <% predictions.forEach(prediction => { %>
                   <tr>
                     <td><%= prediction.species %></td>
-                    <td><%= prediction.predicted_best_time %></td>
+                     <td><%= new Date(prediction.predicted_best_time).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+
                     <td><%= prediction.predicted_quantity %></td>
                     <td><%= (prediction.confidence * 100).toFixed(2) %>%</td>
-                    <td><%= prediction.date %></td>
+                    <td>
+  <%= new Date(prediction.date).toLocaleString('en-PH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }) %>
+</td>
+
                   </tr>
                 <% }) %>
               </tbody>

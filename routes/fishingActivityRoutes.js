@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const fishingActivityController = require('../controllers/fishingActivityController');
 
-// 🚀 GET: Display Fishing Activity Tracking (Admin Dashboard)
-router.get('/fishing-activity-tracking', fishingActivityController.getFishingActivities);
+router.get('/fishing-activity/export/excel', fishingActivityController.exportExcel);
+router.get('/fishing-activity/export/pdf', fishingActivityController.exportPDF);
 
-// 🚀 POST: Add Fishing Activity
-router.post('/fishing-activity-tracking/add', fishingActivityController.addFishingActivity);
-
+router.get('/fishing-activity', fishingActivityController.getFishingActivitiesForAdmin);
 module.exports = router;

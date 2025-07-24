@@ -14,7 +14,35 @@ const Harvest = {
     getHarvestByUser: async (userId) => {
         const [rows] = await db.execute("SELECT * FROM harvest_production WHERE user_id = ? ORDER BY date_harvested DESC", [userId]);
         return rows;
+    },
+ getFilteredHarvests: async (month, year) => {
+    let sql = `
+        SELECT 
+            hp.*, 
+            u.name AS user_name
+        FROM harvest_production hp
+        JOIN users u ON hp.user_id = u.id
+        WHERE 1=1
+    `;
+    const params = [];
+
+    if (month) {
+        sql += " AND MONTH(hp.date_harvested) = ?";
+        params.push(month);
     }
+
+    if (year) {
+        sql += " AND YEAR(hp.date_harvested) = ?";
+        params.push(year);
+    }
+
+    sql += " ORDER BY hp.date_harvested DESC";
+
+    const [rows] = await db.execute(sql, params);
+    return rows;
+}
+
+
 };
 
 module.exports = Harvest;

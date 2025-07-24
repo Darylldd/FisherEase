@@ -8,6 +8,8 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // Store files in "uploads/" directory
 const app = express();
 
+const admeasurementRoutes = require('./routes/admeasurementRoutes');
+const fishingVesselRoutes = require('./routes/fishingVesselRoutes');
 const fishSpeciesRoutes = require('./routes/fishSpeciesRoutes');
 const harvestRoutes = require("./routes/harvest");
 const landingRoutes = require('./routes/landingRoutes');
@@ -72,6 +74,9 @@ app.get('/', (req, res) => {
   });
 
 
+
+  app.use('/', admeasurementRoutes);
+app.use('/', fishingVesselRoutes);
   app.use('/', fishSpeciesRoutes);
 app.use("/climateLoss", climateLossRoutes);
 app.use('/climate-analysis', climateRoutes)

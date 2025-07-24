@@ -318,7 +318,13 @@
                         <% fisherfolk.forEach(fisher => { %>
                             <tr>
                                 <td data-label="Number"><%= fisher.number %></td>
-                                <td data-label="Date Registered"><%= fisher.date_registered %></td>
+<td data-label="Date Registered">
+  <%= new Date(fisher.date_registered).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }) %>
+</td>
                                 <td data-label="First Name"><%= fisher.first_name %></td>
                                 <td data-label="Middle Name"><%= fisher.middle_name %></td>
                                 <td data-label="Last Name"><%= fisher.last_name %></td>
