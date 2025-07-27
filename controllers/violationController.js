@@ -3,11 +3,15 @@ const Violation = require('../models/violationModel');
 exports.getViolations = async (req, res) => {
     try {
         const search = req.query.search || '';
-        const violations = await Violation.getAllViolations(search);
-        const users = await Violation.getAllUsers(); // Fetch all users for the dropdown
-        const user = req.user || { name: 'Guest' };
+        const month = req.query.month || '';
+        const year = req.query.year || '';
+        const violations = await Violation.getAllViolations(search, month, year);
+        const users = await Violation.getAllUsers();
+        const user = req.session.user || req.user || { name: 'Guest' };
 
-        res.render('violations', { violations, user, search, users });
+        // Check the route to determine which template to render
+        const template = req.originalUrl === '/violations-table' ? 'violations-table' : 'violations';
+        res.render(template, { violations, user, search, users, month, year });
     } catch (error) {
         console.error('Error fetching violations or users:', error);
         res.status(500).send('Error fetching violations or users');
@@ -29,7 +33,7 @@ exports.updateViolation = async (req, res) => {
     const { id, status } = req.body;
     try {
         await Violation.updateViolationStatus(id, status);
-        res.redirect('/violation-notifications');
+        res.redirect('/violations-table');
     } catch (error) {
         console.error('Error updating violation:', error);
         res.status(500).send('Error updating violation');

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const catchReportController = require('../controllers/catchReportController');
-
+router.get('/clusters', catchReportController.getStockClusters);
 router.get('/', catchReportController.getUserReports);
 router.post('/', catchReportController.submitCatchReport);
 router.get('/review', catchReportController.getAllReportsForAdmin);

@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Report Calamity/Damage Loss - Fisheries Management</title>
-  <!-- Bootstrap CSS -->
+  <title>Climate Event Loss Reporting - Fisheries Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root {
-      --primary: #1e3a8a; /* Deep navy */
-      --accent: #3b82f6; /* Vibrant blue */
-      --background: #f0f4ff; /* Light blue-gray */
+      --primary: #1e3a8a;
+      --accent: #3b82f6;
+      --background: #f0f4ff;
       --card-bg: #ffffff;
       --text: #1f2937;
       --border: #d1d5db;
-      --highlight: #10b981; /* Green for success */
-      --warning: #ef4444; /* Red for alerts */
+      --highlight: #10b981;
+      --warning: #ef4444;
     }
 
     body {
@@ -31,7 +28,6 @@
       overflow-x: hidden;
     }
 
-    /* Navbar (reused from User Dashboard for consistency) */
     .navbar {
       background-color: var(--primary);
       padding: 1rem 1.5rem;
@@ -85,14 +81,12 @@
       margin-left: 0.5rem;
     }
 
-    /* Main Container */
     .main-container {
       max-width: 1600px;
       margin: 2rem auto;
       padding: 0 1.5rem;
     }
 
-    /* Section Headers */
     .section-header {
       font-size: 1.4rem;
       font-weight: 500;
@@ -106,158 +100,113 @@
       color: var(--accent);
     }
 
-    /* Form Container */
     .form-container {
       background-color: var(--card-bg);
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
-      max-width: 800px;
-      margin: 0 auto;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 2rem;
     }
-    .form-container:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Form Styling */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    label {
-      font-size: 0.95rem;
+    .form-container label {
       font-weight: 500;
-      color: var(--primary);
-      margin-bottom: 0.25rem;
-    }
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="file"],
-    select,
-    textarea {
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
       color: var(--text);
-      background-color: #f9fafb;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 0.5rem;
+      display: block;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    input[type="file"]:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
+    .form-container input,
+    .form-container select,
+    .form-container textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    .form-container input:focus,
+    .form-container select:focus,
+    .form-container textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
     }
-    textarea {
+    .form-container textarea {
       resize: vertical;
       min-height: 100px;
     }
-    button[type="submit"] {
-      padding: 0.75rem 1.5rem;
-      background-color: var(--accent);
-      border: none;
-      border-radius: 8px;
+    .form-container button, .form-container a.btn {
+      background-color: var(--primary);
       color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
       font-weight: 500;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      align-self: flex-start;
-    }
-    button[type="submit"]:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
-    }
-
-    /* Modal Styling */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1050;
-    }
-    .modal-content {
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: inline-block;
       text-align: center;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
+      text-decoration: none;
     }
-    .modal-content h2 {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-    .modal-content button {
-      padding: 0.75rem 1.5rem;
+    .form-container button:hover, .form-container a.btn:hover {
       background-color: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: #ffffff;
-      font-weight: 500;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .modal-content button:hover {
-      background-color: #2563eb;
-      transform: translateY(-2px);
     }
 
-    /* Responsive Design */
+    .modal-content {
+      border-radius: 12px;
+      border: none;
+      overflow: hidden;
+    }
+    .modal-header {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .modal-footer {
+      border-top: none;
+      padding: 1rem 1.5rem;
+    }
+    .btn-danger {
+      background-color: var(--warning);
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    .btn-secondary {
+      background-color: #6b7280;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .btn-secondary:hover {
+      background-color: #4b5563;
+    }
+
     @media (max-width: 1200px) {
       .main-container {
         padding: 0 1rem;
       }
-      .form-container {
-        max-width: 600px;
-      }
     }
     @media (max-width: 768px) {
+      .navbar-brand {
+        font-size: 1.3rem;
+      }
+      .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+      }
       .section-header {
         font-size: 1.2rem;
       }
       .form-container {
         padding: 1rem;
-      }
-      label {
-        font-size: 0.9rem;
-      }
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      input[type="file"],
-      select,
-      textarea {
-        font-size: 0.9rem;
-      }
-      button[type="submit"],
-      .modal-content button {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-      }
-      .modal-content h2 {
-        font-size: 1.1rem;
       }
     }
     @media (max-width: 576px) {
@@ -267,22 +216,10 @@
       .section-header {
         font-size: 1.1rem;
       }
-      .form-container {
-        padding: 0.75rem;
-      }
-      button[type="submit"],
-      .modal-content button {
-        width: 100%;
-        align-self: stretch;
-      }
-      .modal-content {
-        padding: 1rem;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar (reused from User Dashboard) -->
   <nav class="navbar navbar-expand-lg">
     <div class="main-container">
       <a class="navbar-brand" href="/">Fisheries Management Office</a>
@@ -292,7 +229,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
-            <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+            <a class="nav-link" href="/dashboard/user"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -300,6 +237,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
               <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+              <li><a class="dropdown-item" href="/climateLoss/view/reports"><i class="fas fa-table me-2"></i> View Loss Reports</a></li>
               <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
               <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
               <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
@@ -309,7 +247,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user ? user.name : 'User' %></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
@@ -319,7 +257,6 @@
     </div>
   </nav>
 
-  <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -332,14 +269,13 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger" onclick="logout()">Logout</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
         </div>
       </div>
     </div>
   </div>
 
   <div class="main-container">
-    <!-- Report Climate Loss Section -->
     <div class="section-header">
       <i class="fas fa-cloud-sun"></i> Report Calamity/Damage Event Loss
     </div>
@@ -375,60 +311,20 @@
         <textarea name="description" id="description" placeholder="Describe the loss" required></textarea>
 
         <button type="submit">Report Loss</button>
+        <a href="/climateLoss/view/reports" class="btn ms-2"><i class="fas fa-table me-1"></i> View Reports</a>
       </form>
     </div>
   </div>
 
-  <!-- Success Modal (Converted to Bootstrap Modal) -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="successModalLabel">Success</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <h2><i class="fas fa-check-circle me-1"></i> Loss report submitted successfully!</h2>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Hide all modals on page load to reset state
     document.addEventListener("DOMContentLoaded", function () {
-      const modals = document.querySelectorAll(".modal");
-      modals.forEach(modal => {
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) {
-          bsModal.hide();
-        }
-      });
-
-      // Show success modal if success parameter is present
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("success") === "true") {
-        const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-        successModal.show();
+        alert("Loss report submitted successfully!");
       }
     });
-
-    function logout() {
-      const logoutModal = document.getElementById("logoutModal");
-      const bsModal = bootstrap.Modal.getInstance(logoutModal);
-      if (bsModal) {
-        bsModal.hide();
-      }
-      setTimeout(() => {
-        window.location.href = "/auth/logout";
-      }, 300);
-    }
   </script>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -10,22 +10,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- jsPDF AutoTable Plugin -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- SheetJS for Excel export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF and autoTable for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --primary: #1e3a8a;
-            --accent: #3b82f6;
-            --background: #f0f4ff;
+            --primary: #1e3a8a; /* Deep navy */
+            --accent: #3b82f6; /* Vibrant blue */
+            --accent-light: #60a5fa; /* Lighter blue for subtle button */
+            --background: #f0f4ff; /* Light blue-gray */
             --card-bg: #ffffff;
             --text: #1f2937;
             --border: #d1d5db;
-            --highlight: #10b981;
-            --warning: #ef4444;
+            --highlight: #10b981; /* Green for success */
+            --warning: #ef4444; /* Red for alerts */
         }
 
         body {
@@ -37,6 +37,7 @@
             overflow-x: hidden;
         }
 
+        /* Navbar */
         .navbar {
             background-color: var(--primary);
             padding: 1rem 1.5rem;
@@ -45,14 +46,12 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         .navbar-brand {
             font-weight: 600;
             font-size: 1.5rem;
             color: #ffffff !important;
             letter-spacing: 0.5px;
         }
-
         .nav-link {
             color: #ffffff !important;
             font-weight: 400;
@@ -61,12 +60,10 @@
             border-radius: 5px;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .nav-link:hover {
             background-color: var(--accent);
             transform: translateY(-1px);
         }
-
         .dropdown-menu {
             background-color: var(--card-bg);
             border: none;
@@ -75,7 +72,6 @@
             margin-top: 0.75rem;
             padding: 0.5rem 0;
         }
-
         .dropdown-item {
             color: var(--text);
             font-weight: 400;
@@ -83,125 +79,263 @@
             border-radius: 4px;
             margin: 0 0.5rem;
         }
-
         .dropdown-item:hover {
             background-color: var(--background);
             color: var(--accent);
         }
-
         .dropdown-item i {
             width: 24px;
             text-align: center;
         }
+        .navbar-nav .nav-item {
+            margin-left: 0.5rem;
+        }
 
+        /* Main Container */
         .main-container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
 
+        /* Table Section */
         .table-section {
             background: var(--card-bg);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .table-section:hover {
+            transform: translateY(-4px);
+        }
+        .table-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .table-section h2 i {
+            color: var(--accent);
         }
 
+        /* Table */
         .table-responsive {
-            overflow-x: auto;
+            margin-top: 1.5rem;
         }
-
         .table {
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-            min-width: 1000px;
         }
-
-        .table th, .table td {
-            vertical-align: middle;
-            border-color: var(--border);
-            white-space: nowrap;
-        }
-
         .table th {
             background-color: var(--primary);
             color: #ffffff;
             font-weight: 500;
-            text-align: center;
+            font-size: 0.95rem;
+            padding: 1rem;
         }
-
         .table td {
-            text-align: center;
+            font-size: 0.9rem;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(59, 130, 246, 0.03);
+        }
+        .table-hover tbody tr:hover {
+            background-color: var(--background);
         }
 
+        /* Search Bar */
         .search-bar {
-            margin-bottom: 1rem;
-            width: 100%;
             max-width: 300px;
         }
-
-        .export-buttons {
-            margin-bottom: 1rem;
+        .form-control {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        .form-control::placeholder {
+            color: #9ca3af;
         }
 
+        /* Rows per page */
+        .form-select {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        /* Export Buttons */
         .btn-export {
-            margin-right: 0.5rem;
-            background-color: var(--highlight);
+            background-color: var(--accent);
             border: none;
             border-radius: 6px;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            color: #ffffff;
+            margin-left: 0.5rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .btn-export:hover {
-            background-color: #059669;
+            background-color: #2563eb;
+            transform: translateY(-2px);
         }
 
+        /* Action Buttons */
+        .btn-warning {
+            background-color: #f59e0b;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-warning:hover {
+            background-color: #d97706;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background-color: var(--warning);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Pagination */
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .page-link {
+            border-radius: 6px;
+            margin: 0 0.2rem;
+            color: var(--text);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .page-link:hover {
+            background-color: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+        .page-item.active .page-link {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+        .page-item.disabled .page-link {
+            color: #9ca3af;
+            background-color: var(--card-bg);
+            border-color: var(--border);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 1.5rem;
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+        }
         @media (max-width: 768px) {
-            .table {
-                font-size: 0.85rem;
-                min-width: 800px;
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+            .table-section h2 {
+                font-size: 1.5rem;
+            }
+            .table-section {
+                padding: 1.5rem;
             }
             .table th, .table td {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+            .search-bar {
+                max-width: 200px;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 1rem auto;
+            }
+            .table-section {
+                padding: 1rem;
+            }
+            .table-section h2 {
+                font-size: 1.3rem;
+            }
+            .table th, .table td {
+                font-size: 0.8rem;
+                padding: 0.5rem;
+            }
+            .btn-export, .btn-warning, .btn-danger {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .search-bar {
+                max-width: 150px;
+            }
+            .form-select {
+                font-size: 0.85rem;
                 padding: 0.4rem;
-            }
-            .table th {
-                font-size: 0.9rem;
-            }
-            @media (max-width: 576px) {
-                .table {
-                    display: block;
-                    overflow-x: auto;
-                    min-width: 600px;
-                }
-                .table thead {
-                    display: none;
-                }
-                .table tr {
-                    display: block;
-                    margin-bottom: 1rem;
-                    border: 1px solid var(--border);
-                    border-radius: 4px;
-                }
-                .table td {
-                    display: block;
-                    text-align: left;
-                    padding: 0.5rem;
-                    font-size: 0.8rem;
-                }
-                .table td:before {
-                    content: attr(data-label);
-                    font-weight: 600;
-                    margin-right: 0.5rem;
-                    color: var(--primary);
-                }
-                .table td[data-label] {
-                    padding-left: 30%;
-                }
-                .search-bar {
-                    max-width: 100%;
-                }
             }
         }
     </style>
@@ -223,8 +357,8 @@
                             <i class="fas fa-user-plus me-1"></i> Register
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
-                            <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
                             <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
+                            <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -240,7 +374,6 @@
                             <li><a class="dropdown-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a></li>
                             <li><a class="dropdown-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a></li>
                             <li><a class="dropdown-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a></li>
-                            <li><a class="dropdown-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -283,7 +416,7 @@
         </div>
     </div>
 
-    <!-- Fisherfolk Table Section -->
+    <!-- Fisherfolk Table -->
     <div class="main-container">
         <div class="table-section">
             <h2><i class="fas fa-table"></i> Fisherfolk Table</h2>
@@ -291,9 +424,17 @@
                 <div class="search-bar">
                     <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search">
                 </div>
-                <div class="export-buttons">
-                    <button class="btn btn-export" id="exportPdf"><i class="fas fa-file-pdf"></i> Export to PDF</button>
-                    <button class="btn btn-export" id="exportExcel"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                <div class="d-flex align-items-center">
+                    <div class="rows-per-page me-3">
+                        <select id="rowsPerPage" class="form-select">
+                            <option value="5" selected>5 per page</option>
+                            <option value="10">10 per page</option>
+                        </select>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-export" id="exportPdf"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                        <button class="btn btn-export" id="exportExcel"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                    </div>
                 </div>
             </div>
             <div class="table-responsive">
@@ -312,19 +453,20 @@
                             <th data-label="License Number">License Number</th>
                             <th data-label="Civil Status">Civil Status</th>
                             <th data-label="Barangay">Barangay</th>
+                            <th data-label="Actions">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% fisherfolk.forEach(fisher => { %>
-                            <tr>
+                    <tbody id="fisherfolkTableBody">
+                        <% fisherfolk.forEach((fisher, index) => { %>
+                            <tr data-page="<%= Math.floor(index / 5) + 1 %>">
                                 <td data-label="Number"><%= fisher.number %></td>
-<td data-label="Date Registered">
-  <%= new Date(fisher.date_registered).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }) %>
-</td>
+                                <td data-label="Date Registered">
+                                    <%= new Date(fisher.date_registered).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    }) %>
+                                </td>
                                 <td data-label="First Name"><%= fisher.first_name %></td>
                                 <td data-label="Middle Name"><%= fisher.middle_name %></td>
                                 <td data-label="Last Name"><%= fisher.last_name %></td>
@@ -335,52 +477,144 @@
                                 <td data-label="License Number"><%= fisher.license_number %></td>
                                 <td data-label="Civil Status"><%= fisher.civil_status %></td>
                                 <td data-label="Barangay"><%= fisher.barangay %></td>
+                                <td data-label="Actions">
+                                    <a href="/fisherfolk/edit/<%= fisher.id %>" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit me-1"></i> Edit</a>
+                                    <a href="/fisherfolk/delete/<%= fisher.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this fisherfolk?')"><i class="fas fa-trash me-1"></i> Delete</a>
+                                </td>
                             </tr>
                         <% }) %>
                     </tbody>
                 </table>
             </div>
+            <nav aria-label="Fisherfolk table pagination">
+                <ul class="pagination">
+                    <li class="page-item" id="prevPage">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">« Previous</span>
+                        </a>
+                    </li>
+                    <!-- Page numbers will be dynamically inserted here -->
+                    <li class="page-item" id="nextPage">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">Next »</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#fisherfolkTable tbody tr');
+        document.addEventListener('DOMContentLoaded', () => {
+            let rowsPerPage = 5; // Default rows per page
+            let currentPage = 1;
+            const rows = document.querySelectorAll('#fisherfolkTableBody tr');
+            const totalRows = rows.length;
 
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            function updatePagination() {
+                const totalPages = Math.ceil(totalRows / rowsPerPage);
+                const pagination = document.querySelector('.pagination');
+                const prevPage = document.querySelector('#prevPage');
+                const nextPage = document.querySelector('#nextPage');
+
+                document.querySelectorAll('.page-number').forEach(item => item.remove());
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    li.classList.add('page-item', 'page-number');
+                    if (i === currentPage) li.classList.add('active');
+                    
+                    const a = document.createElement('a');
+                    a.classList.add('page-link');
+                    a.href = '#';
+                    a.textContent = i;
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = i;
+                        updateTable();
+                        updatePagination();
+                    });
+
+                    li.appendChild(a);
+                    pagination.insertBefore(li, nextPage);
+                }
+
+                prevPage.classList.toggle('disabled', currentPage === 1);
+                nextPage.classList.toggle('disabled', currentPage === totalPages);
+            }
+
+            function updateTable() {
+                rows.forEach((row, index) => {
+                    const page = Math.floor(index / rowsPerPage) + 1;
+                    row.setAttribute('data-page', page);
+                    row.style.display = page === currentPage ? '' : 'none';
+                });
+            }
+
+            document.querySelector('#prevPage').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateTable();
+                    updatePagination();
+                }
             });
-        });
 
-        // Export to PDF
-        document.getElementById('exportPdf').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const table = document.getElementById('fisherfolkTable');
-            const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
-            const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => 
-                Array.from(tr.querySelectorAll('td')).map(td => td.textContent)
-            );
-
-            doc.autoTable({
-                head: [headers],
-                body: rows,
-                startY: 20,
-                styles: { overflow: 'linebreak', cellWidth: 'auto' },
-                columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 30 } } // Adjust column widths as needed
+            document.querySelector('#nextPage').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < Math.ceil(totalRows / rowsPerPage)) {
+                    currentPage++;
+                    updateTable();
+                    updatePagination();
+                }
             });
-            doc.save('fisherfolk_table.pdf');
-        });
 
-        // Export to Excel
-        document.getElementById('exportExcel').addEventListener('click', function() {
-            const table = document.getElementById('fisherfolkTable');
-            const wb = XLSX.utils.table_to_book(table, { sheet: 'Fisherfolk' });
-            XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
+            document.getElementById('rowsPerPage').addEventListener('change', function() {
+                rowsPerPage = parseInt(this.value);
+                currentPage = 1;
+                updateTable();
+                updatePagination();
+            });
+
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const page = parseInt(row.getAttribute('data-page'));
+                    row.style.display = text.includes(searchTerm) && page === currentPage ? '' : 'none';
+                });
+            });
+
+            document.getElementById('exportPdf').addEventListener('click', function() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const table = document.getElementById('fisherfolkTable');
+                const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+                const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => 
+                    Array.from(tr.querySelectorAll('td')).map(td => td.textContent)
+                );
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 20,
+                    styles: { overflow: 'linebreak', cellWidth: 'auto' },
+                    columnStyles: { 0: { cellWidth: 20 }, 1: { cellWidth: 30 } }
+                });
+                doc.save('fisherfolk_table.pdf');
+            });
+
+            document.getElementById('exportExcel').addEventListener('click', function() {
+                const table = document.getElementById('fisherfolkTable');
+                const wb = XLSX.utils.table_to_book(table, { sheet: 'Fisherfolk' });
+                XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
+            });
+
+            if (totalRows > 0) {
+                updateTable();
+                updatePagination();
+            }
         });
     </script>
 </body>

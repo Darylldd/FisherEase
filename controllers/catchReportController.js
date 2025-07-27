@@ -1,10 +1,135 @@
 const CatchReport = require('../models/catchReportModel');
 const auditController = require('./auditController');
-const ml = require('../utils/mlModel'); 
+const mlUtils = require('../utils/mlUtils');
+const { validationResult } = require('express-validator');
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
-const XLSX = require("xlsx"); // Import xlsx library
+const XLSX = require("xlsx");
+
+exports.getStockClusters = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).send("Unauthorized");
+
+    const reports = await CatchReport.getReportsWithLocation(userId);
+    console.log('Fetched reports:', JSON.stringify(reports, null, 2));
+
+    let clusters = [];
+    if (reports.length < 1) {
+      console.log('No reports, using fallback cluster');
+      clusters = [{
+        number: 0,
+        center: { lat: 14.5833, lng: 120.9667 },
+        averageQuantity: 0,
+        points: [],
+        indices: reports.map((_, i) => i) // Link all reports to fallback
+      }];
+    } else {
+      const data = mlUtils.prepareDataForClustering(reports);
+      clusters = mlUtils.performKMeansClustering(data);
+    }
+
+    console.log('Clusters before saving:', JSON.stringify(clusters, null, 2));
+    await CatchReport.clearClustersByUser(userId);
+
+    if (clusters.length === 0) {
+      console.log('No clusters generated, saving fallback cluster');
+      clusters = [{
+        number: 0,
+        center: { lat: 14.5833, lng: 120.9667 },
+        averageQuantity: reports.reduce((sum, r) => sum + parseFloat(r.quantity), 0) / reports.length || 0,
+        points: reports.map(r => [14.5833, 120.9667, parseFloat(r.quantity)]),
+        indices: reports.map((_, i) => i)
+      }];
+    }
+
+    for (const cluster of clusters) {
+      if (
+        isNaN(cluster.center.lat) || isNaN(cluster.center.lng) ||
+        cluster.center.lat < -90 || cluster.center.lat > 90 ||
+        cluster.center.lng < -180 || cluster.center.lng > 180
+      ) {
+        console.error('Invalid cluster coordinates:', JSON.stringify(cluster, null, 2));
+        continue;
+      }
+      const clusterId = await CatchReport.insertCluster(
+        userId,
+        cluster.number,
+        cluster.center.lat,
+        cluster.center.lng,
+        parseFloat(cluster.averageQuantity) || 0
+      );
+
+      if (cluster.indices && cluster.indices.length > 0) {
+        for (const idx of cluster.indices) {
+          if (reports[idx] && reports[idx].id) {
+            await CatchReport.linkReportToCluster(reports[idx].id, clusterId);
+          } else {
+            console.warn(`Invalid report index ${idx} for cluster ${cluster.number}`);
+          }
+        }
+      }
+    }
+
+    const savedClusters = await CatchReport.getClustersByUser(userId);
+    const clustersWithReports = await Promise.all(
+      savedClusters.map(async cluster => {
+        const reports = await CatchReport.getReportsForCluster(cluster.cluster_id);
+        return {
+          ...cluster,
+          average_quantity: parseFloat(cluster.average_quantity) || 0,
+          reports: reports.slice(0, 5)
+        };
+      })
+    );
+
+    console.log('Clusters to render:', JSON.stringify(clustersWithReports, null, 2));
+    res.render('stockClusters', { 
+      clusters: clustersWithReports,
+      error: clustersWithReports.length === 1 && clustersWithReports[0].average_quantity === 0 
+        ? 'No valid reports found, showing fallback cluster' 
+        : null,
+      user: req.session.user || { name: "Guest" },
+      mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN || 'your_mapbox_token'
+    });
+  } catch (error) {
+    console.error('Clustering Error:', {
+      message: error.message,
+      stack: error.stack,
+      userId: req.session.userId
+    });
+    const fallbackCluster = [{
+      cluster_id: 0,
+      cluster_number: 0,
+      center_latitude: 14.5833,
+      center_longitude: 120.9667,
+      average_quantity: 0,
+      report_count: 0,
+      species_list: null,
+      reports: []
+    }];
+    const clusterId = await CatchReport.insertCluster(
+      userId,
+      0,
+      14.5833,
+      120.9667,
+      0
+    );
+    if (reports && reports.length > 0) {
+      for (const report of reports) {
+        await CatchReport.linkReportToCluster(report.id, clusterId);
+      }
+    }
+    console.log('Saved fallback cluster:', clusterId);
+    res.status(500).render('stockClusters', { 
+      clusters: fallbackCluster,
+      error: 'Error generating clusters. Showing fallback cluster.',
+      user: req.session.user || { name: "Guest" },
+      mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN || 'your_mapbox_token'
+    });
+  }
+};
 
 exports.submitCatchReport = async (req, res) => {
   try {
@@ -53,7 +178,7 @@ exports.getUserReports = async (req, res) => {
     const userId = req.session.userId;
     const reports = await CatchReport.getReportsByUser(userId);
 
-    res.render('catch-report', { reports });
+    res.render('catch-report', { reports, user: req.session.user || { name: "Guest" } });
   } catch (error) {
     console.error("Error fetching user reports:", error);
     res.status(500).send("Internal Server Error");
@@ -62,7 +187,13 @@ exports.getUserReports = async (req, res) => {
 
 exports.getAllReportsForAdmin = async (req, res) => {
   try {
-    console.log("Fetching catch reports for admin...");
+    console.log("Session:", req.session); // Debug session
+    const userId = req.session.userId;
+    const userRole = req.session.role;
+    if (!userId || !userRole || userRole !== "admin") {
+      console.log("Access denied: Invalid session or non-admin role");
+      return res.redirect("/auth/login"); // Redirect to login
+    }
 
     const filters = {
       species: req.query.species || '',
@@ -77,7 +208,11 @@ exports.getAllReportsForAdmin = async (req, res) => {
     const reports = await CatchReport.getAllReports(filters);
     console.log("Reports fetched:", reports.length);
 
-    res.render('catchReportReview', { reports, filters, user: req.user || null });
+    res.render('catchReportReview', { 
+      reports, 
+      filters, 
+      user: req.session.user || { name: "Guest" } // Fallback for user
+    });
   } catch (error) {
     console.error("Error fetching reports:", error);
     res.status(500).send('Server Error');
@@ -126,7 +261,6 @@ exports.flagReport = async (req, res) => {
   }
 };
 
-
 exports.generateReport = async (req, res) => {
   try {
     const { startDate, endDate, species, location, month, year } = req.query;
@@ -142,7 +276,13 @@ exports.generateReport = async (req, res) => {
 
     const reports = await CatchReport.getFilteredReports(filters);
 
-    res.render("adminReport", { reports, speciesList: [], locationList: [], reportGenerated: true });
+    res.render("adminReport", { 
+      reports, 
+      speciesList: [], 
+      locationList: [], 
+      reportGenerated: true,
+      user: req.session.user || { name: "Guest" }
+    });
   } catch (error) {
     console.error("Error generating report:", error);
     res.status(500).send("Internal Server Error");
@@ -159,33 +299,61 @@ exports.downloadReport = async (req, res) => {
       year: req.query.year || ''
     };
 
-    const reports = await CatchReport.getAllReports(filters);
-    const pdfDoc = new PDFDocument();
-    const filePath = path.join(__dirname, "../public/reports/catch_report.pdf");
-    pdfDoc.pipe(fs.createWriteStream(filePath));
+    console.log('Received filters for PDF export:', filters);
 
-    let title = "Catch Report";
+    if (filters.month && !filters.year) {
+      return res.status(400).send("Year is required when filtering by month.");
+    }
+    if (filters.year && !filters.month) {
+      return res.status(400).send("Month is required when filtering by year.");
+    }
+
+    const reports = await CatchReport.getAllReports(filters);
+    console.log(`Fetched ${reports.length} reports for PDF:`, reports.map(r => ({
+      id: r.id,
+      date: r.date,
+      user_name: r.user_name,
+      species: r.species
+    })));
+
+    if (!reports || reports.length === 0) {
+      return res.status(404).send("No reports found for the specified filters.");
+    }
+
+    const pdfDoc = new PDFDocument({ size: 'A4', margin: 40 });
+    const filename = `catch_report${filters.month && filters.year ? `_${filters.month}_${filters.year}` : ''}.pdf`;
+
+    // Send PDF directly to response
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/pdf');
+    pdfDoc.pipe(res);
+
+    let title = 'Catch Report';
     if (filters.month && filters.year) {
       title += ` - ${filters.month}/${filters.year}`;
-    } else if (filters.month) {
-      title += ` - Month ${filters.month}`;
-    } else if (filters.year) {
-      title += ` - Year ${filters.year}`;
     }
-    pdfDoc.fontSize(18).text(title, { align: "center" });
+    pdfDoc.fontSize(18).text(title, { align: 'center' });
     pdfDoc.moveDown();
 
     reports.forEach((report, index) => {
-      pdfDoc.fontSize(12).text(`${index + 1}. User: ${report.user_name}, Species: ${report.species}, Quantity: ${report.quantity}, Location: ${report.location}, Method: ${report.method_of_fishing}, Status: ${report.status}, Date: ${new Date(report.date).toISOString().split('T')[0]}`);
+      const reportDate = report.date ? new Date(report.date).toISOString().split('T')[0] : 'N/A';
+      pdfDoc.fontSize(12).text(
+        `${index + 1}. User: ${report.user_name || 'N/A'}, ` +
+        `Species: ${report.species || 'N/A'}, ` +
+        `Quantity: ${report.quantity || 'N/A'}, ` +
+        `Location: ${report.location || 'N/A'}, ` +
+        `Method: ${report.method_of_fishing || 'N/A'}, ` +
+        `Status: ${report.status || 'N/A'}, ` +
+        `Date: ${reportDate}`
+      );
       pdfDoc.moveDown();
     });
 
     pdfDoc.end();
 
-    res.download(filePath, `catch_report${filters.month && filters.year ? `_${filters.month}_${filters.year}` : ''}.pdf`);
   } catch (error) {
-    console.error("Error downloading report:", error);
-    res.status(500).send("Internal Server Error");
+    console.error('Error in downloadReport:', error);
+    res.status(500).send(`Internal Server Error: ${error.message}`);
   }
 };
 
@@ -260,7 +428,6 @@ exports.getReportFilters = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 exports.exportUserReportPDF = async (req, res) => {
   try {
@@ -364,10 +531,10 @@ exports.exportUserReportExcel = async (req, res) => {
 exports.viewUserCatchHistory = async (req, res) => {
   try {
     const userId = req.session.userId;
-    if (!userId) return res.redirect('/login');
+    if (!userId) return res.redirect('/auth/login');
 
     const reports = await CatchReport.getReportsByUser(userId);
-    res.render('userCatchHistory', { reports });
+    res.render('userCatchHistory', { reports, user: req.session.user || { name: "Guest" } });
   } catch (error) {
     console.error("Error fetching user catch history:", error);
     res.status(500).send("Internal Server Error");
@@ -392,7 +559,7 @@ exports.filterReports = async (req, res) => {
     const result = await CatchReport.query(query, params);
     const reports = result.rows;
 
-    res.render('catch-report/partials/report-table', { reports });
+    res.render('catch-report/partials/report-table', { reports, user: req.session.user || { name: "Guest" } });
   } catch (err) {
     console.error('Error filtering reports:', err);
     res.status(500).send('Error loading filtered reports.');
@@ -406,7 +573,7 @@ exports.predictCatch = async (req, res) => {
 
     // Get reports specific to this user
     const userReports = await CatchReport.getReportsByUser(userId);
-    const predictions = await ml.trainAndPredict(userReports);
+    const predictions = await mlUtils.trainAndPredict(userReports);
 
     // Save predictions linked to user
     for (const pred of predictions) {
@@ -419,7 +586,6 @@ exports.predictCatch = async (req, res) => {
     res.status(500).send("Error generating predictions.");
   }
 };
-
 
 exports.getPredictionsPage = async (req, res) => {
   try {

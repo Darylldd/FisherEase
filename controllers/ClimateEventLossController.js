@@ -12,7 +12,7 @@ const ClimateEventLossController = {
             if (!userId) return res.status(401).send("Unauthorized");
 
             if (req.file) {
-                imagePath = `/uploads/${req.file.filename}`;
+                imagePath = `/Uploads/${req.file.filename}`;
             } else {
                 return res.status(400).send("Proof image is required");
             }
@@ -30,10 +30,72 @@ const ClimateEventLossController = {
             const userId = req.session.userId;
             if (!userId) return res.status(401).send("Unauthorized");
 
-            const lossReports = await ClimateEventLossModel.getUserLossReports(userId);
-            res.render("loss-form", { lossReports });
+            res.render("loss-form", { user: req.session.user });
         } catch (error) {
-            console.error("Error fetching loss reports:", error);
+            console.error("Error rendering loss form:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async viewUserLossReports(req, res) {
+        try {
+            const userId = req.session.userId;
+            if (!userId) return res.status(401).send("Unauthorized");
+
+            const lossReports = await ClimateEventLossModel.getUserLossReports(userId);
+            res.render("userLossReports", { lossReports, user: req.session.user });
+        } catch (error) {
+            console.error("Error fetching user loss reports:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async viewAllLossReports(req, res) {
+        try {
+            console.log("Session:", req.session);
+            const userRole = req.session.role;
+            if (!userRole || userRole !== "admin") {
+                return res.status(403).send("Access denied. Admin only.");
+            }
+
+            const lossReports = await ClimateEventLossModel.getAllLossReports();
+            const success = req.query.success; // Pass success query parameter
+            console.log("Loss Reports:", lossReports);
+            res.render("climateAnalysis", { lossReports, user: req.session.user, success });
+        } catch (error) {
+            console.error("Error fetching all loss reports:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async approveReport(req, res) {
+        try {
+            const { reportId } = req.params;
+            const userRole = req.session.role;
+            if (!userRole || userRole !== "admin") {
+                return res.status(403).send("Access denied. Admin only.");
+            }
+
+            await ClimateEventLossModel.updateReportStatus(reportId, "Approved");
+            res.redirect("/climateLoss/admin/analysis?success=approved");
+        } catch (error) {
+            console.error("Error approving report:", error);
+            res.status(500).send("Server Error");
+        }
+    },
+
+    async disapproveReport(req, res) {
+        try {
+            const { reportId } = req.params;
+            const userRole = req.session.role;
+            if (!userRole || userRole !== "admin") {
+                return res.status(403).send("Access denied. Admin only.");
+            }
+
+            await ClimateEventLossModel.updateReportStatus(reportId, "Disapproved");
+            res.redirect("/climateLoss/admin/analysis?success=disapproved");
+        } catch (error) {
+            console.error("Error disapproving report:", error);
             res.status(500).send("Server Error");
         }
     }

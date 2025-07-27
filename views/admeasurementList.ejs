@@ -119,7 +119,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
     .card-body {
-      padding: 2rem;
+      padding: 1.5rem;
     }
 
     /* Table Styling */
@@ -149,6 +149,53 @@
     .table-responsive {
       border-radius: 8px;
       overflow-x: auto;
+    }
+
+    /* Pagination Styling */
+    .pagination {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+    .page-item.active .page-link {
+      background-color: var(--accent);
+      border-color: #333;
+      color: #fff;
+    }
+    .page-link {
+      color: var(--primary);
+      border-radius: 6px;
+      margin: 0 3px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .page-link:hover {
+      background-color: var(--background);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .page-item.disabled .page-link {
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .rows-per-page {
+      margin-bottom: 1rem;
+      max-width: 150px;
+    }
+
+    .form-select {
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      padding: 0.5rem;
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+      outline: none;
     }
 
     /* Modal */
@@ -213,6 +260,16 @@
       .table {
         font-size: 0.9rem;
       }
+      .pagination {
+        flex-wrap: wrap;
+      }
+      .page-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      .rows-per-page {
+        max-width: 150px;
+      }
     }
     @media (max-width: 576px) {
       .main-container {
@@ -226,6 +283,9 @@
       }
       .table th, .table td {
         padding: 0.75rem;
+      }
+      .rows-per-page {
+        max-width: 100%;
       }
     }
   </style>
@@ -316,8 +376,16 @@
     </div>
     <div class="card">
       <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+          <div class="rows-per-page">
+            <select id="rowsPerPage" class="form-select">
+              <option value="5" selected>5 per page</option>
+              <option value="10">10 per page</option>
+            </select>
+          </div>
+        </div>
         <div class="table-responsive">
-          <table class="table">
+          <table class="table" id="admeasurementTable">
             <thead>
               <tr>
                 <th>FVR No</th>
@@ -327,9 +395,9 @@
                 <th>Date</th>
               </tr>
             </thead>
-            <tbody>
-              <% forms.forEach(form => { %>
-                <tr>
+            <tbody id="admeasurementTableBody">
+              <% forms.forEach((form, index) => { %>
+                <tr data-page="<%= Math.floor(index / 5) + 1 %>">
                   <td><%= form.fvr_no %></td>
                   <td><%= form.owner_fullname %></td>
                   <td><%= form.fishing_vessel_name %></td>
@@ -340,10 +408,110 @@
             </tbody>
           </table>
         </div>
+        <nav aria-label="Admeasurement table pagination">
+          <ul class="pagination">
+            <li class="page-item" id="prevPage">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">« Previous</span>
+              </a>
+            </li>
+            <!-- Page numbers will be dynamically inserted here -->
+            <li class="page-item" id="nextPage">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">Next »</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let rowsPerPage = 5; // Default rows per page
+      let currentPage = 1;
+      const rows = document.querySelectorAll('#admeasurementTableBody tr');
+      const totalRows = rows.length;
+
+      function updatePagination() {
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        // Clear existing page numbers
+        const pagination = document.querySelector('.pagination');
+        const prevPage = document.querySelector('#prevPage');
+        const nextPage = document.querySelector('#nextPage');
+
+        // Remove existing page numbers
+        document.querySelectorAll('.page-number').forEach(item => item.remove());
+
+        // Generate page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.classList.add('page-item', 'page-number');
+          if (i === currentPage) li.classList.add('active');
+          
+          const a = document.createElement('a');
+          a.classList.add('page-link');
+          a.href = '#';
+          a.textContent = i;
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = i;
+            updateTable();
+            updatePagination();
+          });
+
+          li.appendChild(a);
+          pagination.insertBefore(li, nextPage);
+        }
+
+        // Update Previous/Next button states
+        prevPage.classList.toggle('disabled', currentPage === 1);
+        nextPage.classList.toggle('disabled', currentPage === totalPages);
+      }
+
+      function updateTable() {
+        rows.forEach((row, index) => {
+          const page = Math.floor(index / rowsPerPage) + 1;
+          row.setAttribute('data-page', page);
+          row.style.display = page === currentPage ? '' : 'none';
+        });
+      }
+
+      // Event listeners for Previous/Next buttons
+      document.querySelector('#prevPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      document.querySelector('#nextPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < Math.ceil(totalRows / rowsPerPage)) {
+          currentPage++;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      // Rows per page dropdown
+      document.getElementById('rowsPerPage').addEventListener('change', function() {
+        rowsPerPage = parseInt(this.value);
+        currentPage = 1; // Reset to first page
+        updateTable();
+        updatePagination();
+      });
+
+      // Initialize table and pagination
+      if (totalRows > 0) {
+        updateTable();
+        updatePagination();
+      }
+    });
+  </script>
 </body>
 </html>

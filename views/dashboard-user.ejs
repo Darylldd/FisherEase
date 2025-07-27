@@ -320,14 +320,18 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
               <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+                            <li><a class="dropdown-item" href="/climateLoss/view/reports"><i class="fas fa-table me-2"></i> View Loss Reports</a></li>
+
+              <li><a class="dropdown-item" href="/fishing-activity-list"><i class="fas fa-anchor me-2"></i>Fishing Activity Table</a></li>
+
               <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
               <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
               <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
               <li><a class="dropdown-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
               <li><a class="dropdown-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
               <li><a class="dropdown-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
-                          <li><a class="dropdown-item" href="/catch-report/history"><i class="fas fa-exclamation-triangle me-2"></i> My Catch History</a></li>
-
+              <li><a class="dropdown-item" href="/catch-report/history"><i class="fas fa-exclamation-triangle me-2"></i> My Catch History</a></li>
+              <li><a class="dropdown-item" href="/catch-report/clusters"><i class="fas fa-map-marker-alt me-2"></i> View Clusters</a></li>
             </ul>
           </li>
           <li class="nav-item">
@@ -418,27 +422,28 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Weather Forecast
+      // Weather Forecast using Open-Meteo
       const weatherLat = '13.4139';
       const weatherLon = '121.0561';
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${weatherLat}&longitude=${weatherLon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${weatherLat}&longitude=${weatherLon}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max,windspeed_10m_max&timezone=auto`;
 
       fetch(weatherUrl)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to fetch weather data');
+          return response.json();
+        })
         .then(data => {
           const forecastCards = document.getElementById('forecast-cards');
           const indicators = document.getElementById('carousel-indicators');
-          const times = data.daily.time;
-          const maxTemps = data.daily.temperature_2m_max;
-          const minTemps = data.daily.temperature_2m_min;
-          const weatherCodes = data.daily.weathercode;
+          const { time, temperature_2m_max, temperature_2m_min, weathercode, precipitation_probability_max, windspeed_10m_max } = data.daily;
 
-          times.forEach((time, index) => {
-            const date = new Date(time);
-            const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
-            const maxTemp = maxTemps[index];
-            const minTemp = minTemps[index];
-            const weatherCode = weatherCodes[index];
+          time.forEach((date, index) => {
+            const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+            const maxTemp = temperature_2m_max[index];
+            const minTemp = temperature_2m_min[index];
+            const weatherCode = weathercode[index];
+            const precipitation = precipitation_probability_max[index];
+            const windSpeed = windspeed_10m_max[index];
             const weatherDescription = getWeatherDescription(weatherCode);
             const weatherIcon = getWeatherIcon(weatherCode);
 
@@ -451,6 +456,8 @@
                 <p class="card-text">Max: ${maxTemp}°C</p>
                 <p class="card-text">Min: ${minTemp}°C</p>
                 <p class="card-text">Weather: ${weatherDescription}</p>
+                <p class="card-text">Precipitation: ${precipitation}%</p>
+                <p class="card-text">Wind: ${windSpeed} km/h</p>
               </div>
             `;
             forecastCards.appendChild(card);
@@ -475,10 +482,14 @@
         })
         .catch(error => {
           console.error('Error fetching weather data:', error);
-          document.getElementById('forecast-cards').innerHTML = "<p class='text-danger'>Failed to load weather forecast.</p>";
+          document.getElementById('forecast-cards').innerHTML = `
+            <div class="weather-card text-center">
+              <p class="text-danger">Unable to load weather forecast. Please try again later.</p>
+            </div>
+          `;
         });
 
-      // Tide Forecast
+      // Tide Forecast (unchanged)
       const tideLat = '13.4139';
       const tideLon = '121.0561';
       const apiKey = 'c740ad90-683b-4777-83c9-7092b6cd1858'; // Replace with your WorldTides API key
@@ -551,30 +562,31 @@
 
       function getWeatherDescription(code) {
         const weatherMapping = {
-          0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-          45: 'Fog', 48: 'Depositing rime fog', 51: 'Light drizzle', 53: 'Moderate drizzle',
-          55: 'Dense drizzle', 56: 'Light freezing drizzle', 57: 'Dense freezing drizzle',
-          61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain', 66: 'Light freezing rain',
-          67: 'Heavy freezing rain', 71: 'Slight snowfall', 73: 'Moderate snowfall',
-          75: 'Heavy snowfall', 77: 'Snow grains', 80: 'Slight rain showers',
-          81: 'Moderate rain showers', 82: 'Violent rain showers', 85: 'Slight snow showers',
-          86: 'Heavy snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with slight hail',
-          99: 'Thunderstorm with heavy hail'
+          0: 'Clear Sky', 1: 'Mostly Clear', 2: 'Partly Cloudy', 3: 'Overcast',
+          45: 'Fog', 48: 'Rime Fog', 51: 'Light Drizzle', 53: 'Moderate Drizzle',
+          55: 'Heavy Drizzle', 56: 'Light Freezing Drizzle', 57: 'Heavy Freezing Drizzle',
+          61: 'Light Rain', 63: 'Moderate Rain', 65: 'Heavy Rain', 66: 'Light Freezing Rain',
+          67: 'Heavy Freezing Rain', 71: 'Light Snow', 73: 'Moderate Snow',
+          75: 'Heavy Snow', 77: 'Snow Grains', 80: 'Light Rain Showers',
+          81: 'Moderate Rain Showers', 82: 'Heavy Rain Showers', 85: 'Light Snow Showers',
+          86: 'Heavy Snow Showers', 95: 'Thunderstorm', 96: 'Thunderstorm with Light Hail',
+          99: 'Thunderstorm with Heavy Hail'
         };
         return weatherMapping[code] || 'Unknown';
       }
 
       function getWeatherIcon(code) {
         const iconMapping = {
-          0: '🌞', 1: '🌤', 2: '🌥', 3: '☁️', 45: '🌫', 48: '🌫', 51: '🌧',
-          53: '🌧', 55: '🌧', 56: '🌨', 57: '🌨', 61: '🌦', 63: '🌦', 65: '🌧',
-          66: '🌨', 67: '🌨', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
-          80: '🌧', 81: '🌧', 82: '🌧', 85: '❄️', 86: '❄️', 95: '🌩', 96: '🌩', 99: '🌩'
+          0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️', 
+          51: '🌦️', 53: '🌦️', 55: '🌧️', 56: '🌨️', 57: '🌨️', 
+          61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️', 
+          71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️', 
+          80: '🌦️', 81: '🌧️', 82: '🌧️', 85: '🌨️', 86: '🌨️', 
+          95: '⛈️', 96: '⛈️', 99: '⛈️'
         };
         return iconMapping[code] || '❓';
       }
     });
   </script>
-  
 </body>
 </html>

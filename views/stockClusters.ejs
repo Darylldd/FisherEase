@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fishing Stock Clusters - Fisheries Management</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    :root {
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
+      --cluster-1: #3b82f6; /* Blue for cluster 1 */
+      --cluster-2: #10b981; /* Green for cluster 2 */
+      --cluster-3: #f59e0b; /* Orange for cluster 3 */
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Navbar (Copied from first template) */
+    .navbar {
+      background-color: var(--primary);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #ffffff !important;
+      letter-spacing: 0.5px;
+    }
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 400;
+      font-size: 0.95rem;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link:hover {
+      background-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .dropdown-menu {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin-top: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    .dropdown-item {
+      color: var(--text);
+      font-weight: 400;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      margin: 0 0.5rem;
+    }
+    .dropdown-item:hover {
+      background-color: var(--background);
+      color: var(--accent);
+    }
+    .dropdown-item i {
+      width: 24px;
+      text-align: center;
+    }
+    .navbar-nav .nav-item {
+      margin-left: 0.5rem;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1600px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-header i {
+      color: var(--accent);
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      border-radius: 12px 12px 0 0;
+    }
+    .card-header h3 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Cluster Map */
+    #clusterMap {
+      height: 400px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    /* Cluster Badges */
+    .cluster-badge-1 {
+      background-color: var(--cluster-1);
+      color: #ffffff;
+    }
+    .cluster-badge-2 {
+      background-color: var(--cluster-2);
+      color: #ffffff;
+    }
+    .cluster-badge-3 {
+      background-color: var(--cluster-3);
+      color: #ffffff;
+    }
+
+    /* Cluster Cards */
+    .cluster-card {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .cluster-1 {
+      border-left: 4px solid var(--cluster-1);
+    }
+    .cluster-2 {
+      border-left: 4px solid var(--cluster-2);
+    }
+    .cluster-3 {
+      border-left: 4px solid var(--cluster-3);
+    }
+
+    /* Tables */
+    .table {
+      font-size: 0.9rem;
+    }
+    .table th {
+      font-weight: 500;
+      color: var(--primary);
+      background-color: var(--background);
+    }
+    .table td {
+      vertical-align: middle;
+    }
+    .table-responsive {
+      margin-bottom: 1rem;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+
+    /* Alert */
+    .alert {
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .alert-danger {
+      background-color: #fef2f2;
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    /* Text Styles */
+    .text-muted {
+      font-size: 0.85rem;
+    }
+    .text-muted i {
+      color: var(--accent);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .main-container {
+        padding: 0 1rem;
+      }
+      #clusterMap {
+        height: 350px;
+      }
+      .chart-container {
+        height: 250px;
+      }
+    }
+    @media (max-width: 768px) {
+      .section-header {
+        font-size: 1.2rem;
+      }
+      .card-header h3 {
+        font-size: 1.2rem;
+      }
+      .card-body {
+        padding: 1rem;
+      }
+      #clusterMap {
+        height: 300px;
+      }
+      .chart-container {
+        height: 200px;
+      }
+      .table {
+        font-size: 0.85rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .main-container {
+        margin: 1rem auto;
+      }
+      .section-header {
+        font-size: 1.1rem;
+      }
+      .card-header h3 {
+        font-size: 1.1rem;
+      }
+      #clusterMap {
+        height: 250px;
+      }
+      .chart-container {
+        height: 180px;
+      }
+      .table {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar (Copied from first template) -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="main-container">
+      <a class="navbar-brand" href="/">Fisheries Management Office</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-tools me-1"></i> User Tools
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+              <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
+              <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
+              <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
+              <li><a class="dropdown-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
+              <li><a class="dropdown-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
+              <li><a class="dropdown-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
+              <li><a class="dropdown-item" href="/catch-report/history"><i class="fas fa-exclamation-triangle me-2"></i> My Catch History</a></li>
+              <li><a class="dropdown-item" href="/catch-report/clusters"><i class="fas fa-map-marked-alt me-2"></i> View Clusters</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Logout Confirmation Modal (Copied from first template) -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to log out?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="section-header">
+      <i class="fas fa-fish"></i> Fishing Stock Clusters
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle"></i> <%= error %>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-map-marked-alt"></i> Cluster Map</h3>
+      </div>
+      <div class="card-body">
+        <div id="clusterMap"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-chart-bar"></i> Cluster Analysis</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="clusterChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-info-circle"></i> Cluster Summary</h3>
+          </div>
+          <div class="card-body">
+            <% if (clusters.length > 0) { %>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Cluster</th>
+                      <th>Avg Catch</th>
+                      <th>Reports</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% clusters.forEach(cluster => { %>
+                      <tr>
+                        <td>
+                          <span class="badge cluster-badge-<%= (cluster.cluster_number % 3) + 1 %>">
+                            Cluster <%= cluster.cluster_number + 1 %>
+                          </span>
+                        </td>
+                        <td><%= (typeof cluster.average_quantity === 'number' ? cluster.average_quantity.toFixed(2) : '0.00') %> kg</td>
+                        <td><%= cluster.report_count || 0 %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-muted mt-3">
+                <small>
+                  <i class="fas fa-lightbulb"></i> Clusters help identify productive fishing areas.
+                  Larger circles indicate higher average catch quantities.
+                </small>
+              </p>
+            <% } else { %>
+              <p class="text-center text-muted">No clusters available. Check your reports for valid locations.</p>
+            <% } %>
+          </div>
+        </div>
+
+        <% if (clusters.length > 0) { %>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-list"></i> Cluster Details</h3>
+            </div>
+            <div class="card-body">
+              <% clusters.forEach(cluster => { %>
+                <div class="card cluster-card mb-3 cluster-<%= (cluster.cluster_number % 3) + 1 %>">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h5 class="card-title mb-0">
+                        <span class="badge cluster-badge-<%= (cluster.cluster_number % 3) + 1 %> me-2">
+                          Cluster <%= cluster.cluster_number + 1 %>
+                        </span>
+                        Avg Catch: <strong><%= (typeof cluster.average_quantity === 'number' ? cluster.average_quantity.toFixed(2) : '0.00') %> kg</strong>
+                      </h5>
+                      <small class="text-muted"><%= cluster.report_count || 0 %> reports</small>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p class="mb-1">
+                          <i class="fas fa-map-marker-alt text-danger"></i> 
+                          <strong>Center Location:</strong> 
+                          <%= (typeof cluster.center_latitude === 'number' ? cluster.center_latitude.toFixed(4) : '0.0000') %>°N, 
+                          <%= (typeof cluster.center_longitude === 'number' ? cluster.center_longitude.toFixed(4) : '0.0000') %>°E
+                        </p>
+                        <p class="mb-1">
+                          <i class="fas fa-fish text-primary"></i> 
+                          <strong>Common Species:</strong> 
+                          <%= cluster.species_list ? cluster.species_list.split(',').slice(0, 3).join(', ') : 'None' %>
+                          <%= cluster.species_list && cluster.species_list.split(',').length > 3 ? '...' : '' %>
+                        </p>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <tr>
+                                <th>Recent Catches</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% cluster.reports.forEach(report => { %>
+                                <tr>
+                                  <td><%= report.species %></td>
+                                  <td><%= (typeof report.quantity === 'number' ? report.quantity.toFixed(2) : '0.00') %> kg</td>
+                                  <td><%= new Date(report.date).toLocaleDateString() %></td>
+                                </tr>
+                              <% }) %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-list"></i> Fallback Cluster Details</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-center text-muted">No valid clusters generated. Displaying fallback cluster at Manila Bay (14.5833°N, 120.9667°E) with all reports.</p>
+              <% if (clusters.length > 0 && clusters[0].reports.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Species</th>
+                        <th>Quantity</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% clusters[0].reports.forEach(report => { %>
+                        <tr>
+                          <td><%= report.species %></td>
+                          <td><%= (typeof report.quantity === 'number' ? report.quantity.toFixed(2) : '0.00') %> kg</td>
+                          <td><%= new Date(report.date).toLocaleDateString() %></td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <p class="text-center text-muted">No reports available for the fallback cluster.</p>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>console.log('Clusters:', <%- JSON.stringify(clusters, null, 2) %>);</script>
+
+  <script>
+    // Define clusterColors globally
+    const clusterColors = ['#3b82f6', '#10b981', '#f59e0b'];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const map = L.map('clusterMap');
+      const bounds = [];
+      <% clusters.forEach(cluster => { %>
+        bounds.push([<%= cluster.center_latitude %>, <%= cluster.center_longitude %>]);
+      <% }) %>
+      if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [50, 50] });
+      } else {
+        map.setView([14.5833, 120.9667], 6);
+      }
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      <% clusters.forEach(cluster => { %>
+        L.circleMarker(
+          [<%= cluster.center_latitude %>, <%= cluster.center_longitude %>], 
+          {
+            radius: <%= Math.max(Math.sqrt(typeof cluster.average_quantity === 'number' ? cluster.average_quantity : 0) * 2, 5) %>,
+            fillColor: clusterColors[<%= cluster.cluster_number %> % clusterColors.length],
+            color: '#fff',
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          }
+        ).addTo(map)
+        .bindPopup(`
+          <b>Cluster <%= cluster.cluster_number + 1 %></b><br>
+          Avg Catch: <%= (typeof cluster.average_quantity === 'number' ? cluster.average_quantity.toFixed(2) : '0.00') %> kg<br>
+          Reports: <%= cluster.report_count || 0 %><br>
+          Species: <%= cluster.species_list ? cluster.species_list.split(',').slice(0, 3).join(', ') : 'None' %>
+        `);
+      <% }) %>
+
+      const ctx = document.getElementById('clusterChart').getContext('2d');
+      <% if (clusters.length > 0) { %>
+        window.clusterChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [
+              <% clusters.forEach(cluster => { %>
+                'Cluster <%= cluster.cluster_number + 1 %>',
+              <% }) %>
+            ],
+            datasets: [{
+              label: 'Average Catch (kg)',
+              data: [
+                <% clusters.forEach(cluster => { %>
+                  <%= typeof cluster.average_quantity === 'number' ? cluster.average_quantity : 0 %>,
+                <% }) %>
+              ],
+              backgroundColor: clusterColors,
+              borderColor: clusterColors,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `Avg Catch: ${context.raw.toFixed(2)} kg`;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Kilograms', font: { family: 'Poppins' } },
+                ticks: { font: { family: 'Poppins' } }
+              },
+              x: {
+                ticks: { font: { family: 'Poppins' } }
+              }
+            }
+          }
+        });
+      <% } else { %>
+        ctx.font = '16px Poppins';
+        ctx.fillStyle = '#6b7280';
+        ctx.textAlign = 'center';
+        ctx.fillText('No clusters available', ctx.canvas.width / 2, ctx.canvas.height / 2);
+      <% } %>
+    });
+  </script>
+</body>
+</html>

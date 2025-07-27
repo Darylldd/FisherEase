@@ -159,6 +159,27 @@ exportPDF: async (req, res) => {
       console.error('Admin view error:', error);
       res.status(500).send('Server Error');
     }
+  },
+  getFishingActivityList: async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      if (!userId) return res.status(401).send('Unauthorized');
+
+      const filters = {
+        date: req.query.date || '',
+        location: req.query.location || '',
+        method: req.query.method || '',
+        sortBy: req.query.sortBy || 'date',
+      };
+
+      const activities = await FishingActivity.getAll(filters, userId);
+      const user = req.session.user;
+
+      res.render('fishing-activity-list', { activities, filters, user });
+    } catch (error) {
+      console.error('Error fetching fishing activities:', error);
+      res.status(500).send('Server Error');
+    }
   }
 };
 

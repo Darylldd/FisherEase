@@ -193,6 +193,34 @@
       transform: translateY(-2px);
     }
 
+    /* Pagination Styling */
+    .pagination {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+    .page-item.active .page-link {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .page-link {
+      color: var(--primary);
+      border-radius: 6px;
+      margin: 0 3px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .page-link:hover {
+      background-color: var(--background);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .page-item.disabled .page-link {
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
     /* Modal */
     .modal-content {
       border-radius: 12px;
@@ -272,6 +300,13 @@
       .btn-outline-success, .btn-outline-danger {
         font-size: 0.85rem;
         padding: 0.5rem 0.75rem;
+      }
+      .pagination {
+        flex-wrap: wrap;
+      }
+      .page-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -394,7 +429,7 @@
           </div>
         </form>
         <div class="table-responsive">
-          <table class="table table-hover">
+          <table class="table table-hover" id="vesselTable">
             <thead>
               <tr>
                 <th>Vessel Name</th>
@@ -406,10 +441,10 @@
                 <th>Submitted</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="vesselTableBody">
               <% if (registrations.length) { %>
-                <% registrations.forEach(function(r) { %>
-                  <tr>
+                <% registrations.forEach(function(r, index) { %>
+                  <tr data-page="<%= Math.floor(index / 10) + 1 %>">
                     <td><%= r.fishing_vessel_name || '-' %></td>
                     <td><%= r.vessel_type || '-' %></td>
                     <td><%= r.fisherfolk_name || 'Unknown' %></td>
@@ -427,10 +462,101 @@
             </tbody>
           </table>
         </div>
+        <nav aria-label="Vessel table pagination">
+          <ul class="pagination">
+            <li class="page-item" id="prevPage">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo; Previous</span>
+              </a>
+            </li>
+            <!-- Page numbers will be dynamically inserted here -->
+            <li class="page-item" id="nextPage">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">Next &raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const rowsPerPage = 10;
+      const rows = document.querySelectorAll('#vesselTableBody tr');
+      const totalRows = rows.length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      let currentPage = 1;
+
+      function updatePagination() {
+        // Clear existing page numbers
+        const pagination = document.querySelector('.pagination');
+        const prevPage = document.querySelector('#prevPage');
+        const nextPage = document.querySelector('#nextPage');
+
+        // Remove existing page numbers
+        document.querySelectorAll('.page-number').forEach(item => item.remove());
+
+        // Generate page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.classList.add('page-item', 'page-number');
+          if (i === currentPage) li.classList.add('active');
+          
+          const a = document.createElement('a');
+          a.classList.add('page-link');
+          a.href = '#';
+          a.textContent = i;
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = i;
+            updateTable();
+            updatePagination();
+          });
+
+          li.appendChild(a);
+          pagination.insertBefore(li, nextPage);
+        }
+
+        // Update Previous/Next button states
+        prevPage.classList.toggle('disabled', currentPage === 1);
+        nextPage.classList.toggle('disabled', currentPage === totalPages);
+      }
+
+      function updateTable() {
+        rows.forEach(row => {
+          const page = parseInt(row.getAttribute('data-page'));
+          row.style.display = page === currentPage ? '' : 'none';
+        });
+      }
+
+      // Event listeners for Previous/Next buttons
+      document.querySelector('#prevPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      document.querySelector('#nextPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      // Initialize table and pagination
+      if (totalRows > 0 && !rows[0].querySelector('.text-muted')) {
+        updateTable();
+        updatePagination();
+      }
+    });
+  </script>
 </body>
 </html>

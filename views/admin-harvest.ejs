@@ -211,6 +211,34 @@
         .btn-secondary:hover {
             background-color: #4b5563;
         }
+        .pagination-container {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pagination-btn {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .pagination-btn:hover {
+            background-color: #2563eb;
+        }
+        .pagination-btn:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background-color: var(--primary);
+            font-weight: 600;
+        }
         @media (max-width: 1200px) {
             .main-container { padding: 0 1rem; }
             .table-container { max-height: 350px; }
@@ -223,6 +251,7 @@
             .table-container { max-height: 300px; }
             .table th, .table td { padding: 0.5rem; font-size: 0.85rem; }
             .export-btn-group { text-align: center; }
+            .pagination-container { flex-wrap: wrap; }
         }
         @media (max-width: 576px) {
             .main-container { margin: 1rem auto; }
@@ -230,6 +259,7 @@
             .harvest-section h2 { font-size: 1.3rem; }
             .table-container { max-height: 250px; }
             .table { font-size: 0.8rem; }
+            .pagination-btn { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -342,10 +372,10 @@
                         <i class="fas fa-download me-1"></i> Export
                     </button>
                     <ul class="dropdown-menu dropdown-menu-export" aria-labelledby="exportDropdown">
-             <!-- Pass filters as query string -->
-<li><a class="dropdown-item dropdown-item-export" href="/harvest/export/pdf?<%= filters ? new URLSearchParams(filters).toString() : '' %>">PDF</a></li>
-<li><a class="dropdown-item dropdown-item-export" href="/harvest/export/excel?<%= filters ? new URLSearchParams(filters).toString() : '' %>">Excel</a></li>
- </ul>
+                        <!-- Pass filters as query string -->
+                        <li><a class="dropdown-item dropdown-item-export" href="/harvest/export/pdf?<%= filters ? new URLSearchParams(filters).toString() : '' %>">PDF</a></li>
+                        <li><a class="dropdown-item dropdown-item-export" href="/harvest/export/excel?<%= filters ? new URLSearchParams(filters).toString() : '' %>">Excel</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="table-container">
@@ -363,11 +393,11 @@
                             <th>Date Harvested</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="harvestTableBody">
                         <% if (harvests && harvests.length > 0) { %>
                             <% harvests.forEach(harvest => { %>
                                 <tr>
-                                   <td><%= harvest.user_name %></td>
+                                    <td><%= harvest.user_name %></td>
                                     <td><%= harvest.fish_type %></td>
                                     <td><%= harvest.weight %></td>
                                     <td><%= harvest.unit %></td>
@@ -386,11 +416,120 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination-container" id="paginationControls" style="display: none;">
+                <button class="pagination-btn" id="prevPage" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+                <div id="pageNumbers"></div>
+                <button class="pagination-btn" id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
+        // Pagination logic
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let totalPages = 1;
+
+        function setupPagination() {
+            const tableBody = document.getElementById('harvestTableBody');
+            const rows = tableBody.querySelectorAll('tr:not(.no-harvests)');
+            totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationControls = document.getElementById('paginationControls');
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+
+            if (rows.length > rowsPerPage) {
+                paginationControls.style.display = 'flex';
+            }
+
+            function updateTable() {
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage) ? '' : 'none';
+                });
+                updatePaginationControls();
+            }
+
+            function updatePaginationControls() {
+                pageNumbersContainer.innerHTML = '';
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                if (startPage > 1) {
+                    const firstPageBtn = document.createElement('button');
+                    firstPageBtn.className = 'pagination-btn';
+                    firstPageBtn.textContent = '1';
+                    firstPageBtn.addEventListener('click', () => {
+                        currentPage = 1;
+                        updateTable();
+                    });
+                    pageNumbersContainer.appendChild(firstPageBtn);
+
+                    if (startPage > 2) {
+                        const dots = document.createElement('span');
+                        dots.textContent = '...';
+                        dots.style.margin = '0 0.5rem';
+                        pageNumbersContainer.appendChild(dots);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', () => {
+                        currentPage = i;
+                        updateTable();
+                    });
+                    pageNumbersContainer.appendChild(pageBtn);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const dots = document.createElement('span');
+                        dots.textContent = '...';
+                        dots.style.margin = '0 0.5rem';
+                        pageNumbersContainer.appendChild(dots);
+                    }
+
+                    const lastPageBtn = document.createElement('button');
+                    lastPageBtn.className = 'pagination-btn';
+                    lastPageBtn.textContent = totalPages;
+                    lastPageBtn.addEventListener('click', () => {
+                        currentPage = totalPages;
+                        updateTable();
+                    });
+                    pageNumbersContainer.appendChild(lastPageBtn);
+                }
+
+                document.getElementById('prevPage').disabled = currentPage === 1;
+                document.getElementById('nextPage').disabled = currentPage === totalPages;
+            }
+
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateTable();
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateTable();
+                }
+            });
+
+            updateTable();
+        }
+
+        // Initialize pagination on page load
+        document.addEventListener('DOMContentLoaded', setupPagination);
+
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();

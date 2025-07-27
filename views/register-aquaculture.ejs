@@ -275,6 +275,8 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
                             <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
+                            <li><a class="dropdown-item" href="/aquaculture/list"><i class="fas fa-water me-2"></i> Aquaculture Facility Table</a></li>
+
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -302,9 +304,9 @@
                             <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-                    </li>
+                               <li class="nav-item">
+    <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user ? user.name : 'Admin' %></a>
+</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
                     </li>
@@ -338,6 +340,9 @@
             <h2><i class="fas fa-water"></i> Aquaculture Facility Registration</h2>
             <div class="mb-3">
                 <a href="/register/fisherfolk" class="btn btn-fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+            </div>
+                        <div class="mb-3">
+                <a href="/aquaculture/list" class="btn btn-fisherfolk"><i class="fas fa-fish me-2"></i>Aquaculture Table</a>
             </div>
             <form action="/aquaculture/register" method="POST">
                 <div class="mb-3">

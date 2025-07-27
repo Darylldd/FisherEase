@@ -28,7 +28,7 @@ const CatchReport = {
     localStorage.remove('offlineReports');
   },
 
-  getAllReports: async (filters = {}) => {
+getAllReports: async (filters = {}) => {
   let query = `SELECT catch_reports.*, users.name AS user_name 
                FROM catch_reports 
                JOIN users ON catch_reports.user_id = users.id
@@ -55,13 +55,9 @@ const CatchReport = {
     query += " AND catch_reports.date = ?";
     params.push(filters.date);
   }
-  if (filters.month) {
-    query += " AND MONTH(catch_reports.date) = ?";
-    params.push(filters.month);
-  }
-  if (filters.year) {
-    query += " AND YEAR(catch_reports.date) = ?";
-    params.push(filters.year);
+  if (filters.month && filters.year) {
+    query += " AND MONTH(catch_reports.date) = ? AND YEAR(catch_reports.date) = ?";
+    params.push(filters.month, filters.year);
   }
   if (filters.sortBy) {
     query += ` ORDER BY catch_reports.${filters.sortBy} ASC`;
@@ -69,6 +65,7 @@ const CatchReport = {
     query += " ORDER BY catch_reports.date DESC";
   }
 
+  console.log('Executing query:', query, 'with params:', params); // Log query for debugging
   const [rows] = await db.execute(query, params);
   return rows;
 },
@@ -227,9 +224,98 @@ getPredictionsByUser: async (userId) => {
 
   const [rows] = await db.execute(query, params);
   return rows;
-}
+},  
 
+getReportsWithLocation: async (userId) => {
+  const query = `
+    SELECT id, species, quantity, location, 
+           latitude, 
+           longitude
+    FROM catch_reports 
+    WHERE user_id = ? 
+    AND (latitude IS NOT NULL OR location IS NOT NULL)
+    AND quantity > 0
+  `;
+  const [rows] = await db.execute(query, [userId]);
+  console.log('Fetched reports from DB:', JSON.stringify(rows, null, 2));
+  return rows;
+},
 
+  insertCluster: async (userId, clusterNumber, centerLat, centerLng, avgQuantity) => {
+    const query = `
+      INSERT INTO catch_clusters 
+      (user_id, cluster_number, center_latitude, center_longitude, average_quantity)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const [result] = await db.execute(query, [
+      userId, 
+      clusterNumber, 
+      centerLat, 
+      centerLng, 
+      parseFloat(avgQuantity) || 0 // Ensure number
+    ]);
+    console.log(`Inserted cluster ${clusterNumber} for user ${userId}: ID ${result.insertId}`);
+    return result.insertId;
+  },
+
+  linkReportToCluster: async (reportId, clusterId) => {
+    const query = `
+      INSERT INTO catch_report_clusters (report_id, cluster_id)
+      VALUES (?, ?)
+    `;
+    console.log(`Linking report ${reportId} to cluster ${clusterId}`);
+    await db.execute(query, [reportId, clusterId]);
+  },
+
+  clearClustersByUser: async (userId) => {
+    await db.execute(`
+      DELETE crc FROM catch_report_clusters crc
+      JOIN catch_clusters cc ON crc.cluster_id = cc.cluster_id
+      WHERE cc.user_id = ?
+    `, [userId]);
+    
+    await db.execute(`
+      DELETE FROM catch_clusters WHERE user_id = ?
+    `, [userId]);
+    console.log(`Cleared clusters for user ${userId}`);
+  },
+
+  getClustersByUser: async (userId) => {
+    const query = `
+      SELECT 
+        cc.cluster_id,
+        cc.cluster_number,
+        cc.center_latitude,
+        cc.center_longitude,
+        COALESCE(cc.average_quantity, 0) as average_quantity,
+        COUNT(crc.report_id) as report_count,
+        GROUP_CONCAT(DISTINCT cr.species) as species_list
+      FROM catch_clusters cc
+      LEFT JOIN catch_report_clusters crc ON cc.cluster_id = crc.cluster_id
+      LEFT JOIN catch_reports cr ON crc.report_id = cr.id
+      WHERE cc.user_id = ?
+      GROUP BY cc.cluster_id
+      ORDER BY cc.cluster_number
+    `;
+    const [rows] = await db.execute(query, [userId]);
+    console.log('Fetched clusters from DB:', JSON.stringify(rows, null, 2));
+    return rows.map(row => ({
+      ...row,
+      average_quantity: parseFloat(row.average_quantity) || 0 // Ensure number
+    }));
+  },
+
+  getReportsForCluster: async (clusterId) => {
+    const query = `
+      SELECT cr.* 
+      FROM catch_reports cr
+      JOIN catch_report_clusters crc ON cr.id = crc.report_id
+      WHERE crc.cluster_id = ?
+    `;
+    const [rows] = await db.execute(query, [clusterId]);
+    console.log(`Fetched reports for cluster ${clusterId}:`, JSON.stringify(rows, null, 2));
+    return rows;
+  }
 };
 
 module.exports = CatchReport;

@@ -142,6 +142,9 @@
     .table thead {
       background-color: var(--primary);
       color: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .table thead th {
       font-weight: 500;
@@ -164,18 +167,36 @@
     /* Chart Container */
     .chart-container {
       position: relative;
-      height: 360px;
-      margin-top: 1.5rem;
+      height: 300px; /* Reduced height for better viewport fit */
+      margin: 1rem 0;
     }
     .chart-container h5 {
       font-size: 1.1rem;
       font-weight: 500;
       color: var(--text);
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     canvas {
       width: 100% !important;
       height: 100% !important;
+    }
+
+    /* Pagination Styling */
+    .pagination .page-link {
+      color: var(--primary);
+      border-radius: 6px;
+      margin: 0 0.2rem;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+    }
+    .pagination .page-link:hover {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+    .pagination .page-item.disabled .page-link {
+      background-color: var(--border);
+      color: #6b7280;
+      cursor: not-allowed;
     }
 
     /* Responsive Design */
@@ -184,7 +205,7 @@
         padding: 0 1rem;
       }
       .chart-container {
-        height: 320px;
+        height: 280px;
       }
     }
     @media (max-width: 768px) {
@@ -203,7 +224,11 @@
         padding: 0.5rem;
       }
       .chart-container {
-        height: 280px;
+        height: 260px;
+      }
+      .pagination .page-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
       }
     }
     @media (max-width: 576px) {
@@ -227,7 +252,11 @@
         padding: 0.4rem;
       }
       .chart-container {
-        height: 240px;
+        height: 220px;
+      }
+      .pagination .page-link {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -300,42 +329,6 @@
       </div>
       <div class="card-body">
         <% if (predictions.length > 0) { %>
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Species</th>
-                  <th>Predicted Best Time</th>
-                  <th>Quantity</th>
-                  <th>Confidence</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% predictions.forEach(prediction => { %>
-                  <tr>
-                    <td><%= prediction.species %></td>
-                     <td><%= new Date(prediction.predicted_best_time).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
-
-                    <td><%= prediction.predicted_quantity %></td>
-                    <td><%= (prediction.confidence * 100).toFixed(2) %>%</td>
-                    <td>
-  <%= new Date(prediction.date).toLocaleString('en-PH', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }) %>
-</td>
-
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-
           <!-- Chart Section -->
           <div class="row">
             <div class="col-md-6">
@@ -352,6 +345,52 @@
             </div>
           </div>
 
+          <!-- Table Section -->
+          <div class="table-responsive" id="predictionTableContainer">
+            <table class="table table-bordered" id="predictionTable">
+              <thead>
+                <tr>
+                  <th>Species</th>
+                  <th>Predicted Best Time</th>
+                  <th>Quantity</th>
+                  <th>Confidence</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% predictions.forEach(prediction => { %>
+                  <tr>
+                    <td><%= prediction.species %></td>
+                    <td><%= new Date(prediction.predicted_best_time).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                    <td><%= prediction.predicted_quantity %></td>
+                    <td><%= (prediction.confidence * 100).toFixed(2) %>%</td>
+                    <td>
+                      <%= new Date(prediction.date).toLocaleString('en-PH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      }) %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <nav class="mt-3 d-flex justify-content-end">
+              <ul class="pagination" id="paginationControls">
+                <li class="page-item" id="prevPage">
+                  <button class="page-link"><i class="fas fa-chevron-left"></i> Previous</button>
+                </li>
+                <li class="page-item" id="nextPage">
+                  <button class="page-link">Next <i class="fas fa-chevron-right"></i></button>
+                </li>
+              </ul>
+            </nav>
+          </div>
         <% } else { %>
           <p class="text-center text-danger">No predictions available.</p>
         <% } %>
@@ -360,44 +399,32 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Data Extraction from EJS
+    document.addEventListener("DOMContentLoaded", function () {
+      // Chart.js logic...
       let species = <%- JSON.stringify(predictions.map(p => p.species)) %>;
       let confidenceLevels = <%- JSON.stringify(predictions.map(p => p.confidence * 100)) %>;
       let dates = <%- JSON.stringify(predictions.map(p => p.date)) %>;
       let bestTimes = <%- JSON.stringify(predictions.map(p => p.predicted_best_time)) %>;
 
-      // Convert Time (e.g., "06:30 AM" → 6.5)
       function convertTimeToHours(timeStr) {
-        let match = timeStr.match(/(\d+):(\d+) (\w{2})/); // Match HH:MM AM/PM format
+        let match = timeStr.match(/(\d+):(\d+) (\w{2})/);
         if (!match) return null;
-
         let hours = parseInt(match[1]);
         let minutes = parseInt(match[2]);
-        let period = match[3]; // AM or PM
-
+        let period = match[3];
         if (period === "PM" && hours !== 12) hours += 12;
         if (period === "AM" && hours === 12) hours = 0;
-
-        return hours + (minutes / 60); // Convert to decimal (e.g., 6:30 AM → 6.5)
+        return hours + (minutes / 60);
       }
 
-      // Convert all predicted best times
       let bestTimeNumeric = bestTimes.map(time => convertTimeToHours(time));
 
-      // Store chart instances in the window object to avoid redeclaration
       window.quantityChartInstance = window.quantityChartInstance || null;
       window.confidenceChartInstance = window.confidenceChartInstance || null;
 
-      // Destroy existing charts if they exist
-      if (window.quantityChartInstance) {
-        window.quantityChartInstance.destroy();
-      }
-      if (window.confidenceChartInstance) {
-        window.confidenceChartInstance.destroy();
-      }
+      if (window.quantityChartInstance) window.quantityChartInstance.destroy();
+      if (window.confidenceChartInstance) window.confidenceChartInstance.destroy();
 
-      // Bar Chart: Confidence Level per Species
       window.quantityChartInstance = new Chart(document.getElementById("quantityChart"), {
         type: "bar",
         data: {
@@ -405,7 +432,7 @@
           datasets: [{
             label: "Confidence Level (%)",
             data: confidenceLevels,
-            backgroundColor: "rgba(59, 130, 246, 0.7)", /* Match dashboard's chart color */
+            backgroundColor: "rgba(59, 130, 246, 0.7)",
             borderColor: "rgba(59, 130, 246, 1)",
             borderWidth: 1
           }]
@@ -441,7 +468,6 @@
         }
       });
 
-      // Line Chart: Predicted Best Time Over Date
       window.confidenceChartInstance = new Chart(document.getElementById("confidenceChart"), {
         type: "line",
         data: {
@@ -450,7 +476,7 @@
             label: "Predicted Best Time (Hours)",
             data: bestTimeNumeric,
             fill: false,
-            borderColor: "rgba(16, 185, 129, 1)", /* Match dashboard's highlight color */
+            borderColor: "rgba(16, 185, 129, 1)",
             backgroundColor: "rgba(16, 185, 129, 0.7)",
             tension: 0.1
           }]
@@ -485,6 +511,49 @@
           }
         }
       });
+
+      // Pagination logic
+      const table = document.getElementById("predictionTable");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const prevPageBtn = document.getElementById("prevPage");
+      const nextPageBtn = document.getElementById("nextPage");
+      const rowsPerPage = 5;
+      let currentPage = 1;
+
+      function displayPage(page) {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+          row.style.display = (index >= start && index < end) ? "" : "none";
+        });
+
+        renderPagination(rows.length, page);
+      }
+
+      function renderPagination(totalRows, currentPage) {
+        const pageCount = Math.ceil(totalRows / rowsPerPage);
+        prevPageBtn.classList.toggle("disabled", currentPage === 1);
+        nextPageBtn.classList.toggle("disabled", currentPage === pageCount || totalRows === 0);
+      }
+
+      function updatePage(direction) {
+        const pageCount = Math.ceil(rows.length / rowsPerPage);
+        if (direction === "prev" && currentPage > 1) {
+          currentPage--;
+        } else if (direction === "next" && currentPage < pageCount) {
+          currentPage++;
+        }
+        displayPage(currentPage);
+      }
+
+      prevPageBtn.addEventListener("click", () => updatePage("prev"));
+      nextPageBtn.addEventListener("click", () => updatePage("next"));
+
+      if (rows.length > rowsPerPage) {
+        displayPage(currentPage);
+      }
     });
   </script>
 

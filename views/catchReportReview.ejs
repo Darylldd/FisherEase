@@ -10,11 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- jsPDF for PDF export -->
+    <!-- jsPDF and autotable for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- SheetJS for Excel export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary: #1e3a8a; /* Deep navy */
@@ -246,6 +246,45 @@
             color: var(--warning);
         }
 
+        /* Pagination */
+        .pagination-container {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pagination-controls .btn {
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+        }
+        .pagination-controls .btn-primary {
+            background-color: var(--accent);
+            border: none;
+        }
+        .pagination-controls .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .pagination-controls .btn-primary:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+        }
+        .pagination-controls .form-select {
+            width: auto;
+            font-size: 0.9rem;
+        }
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
         /* Modal */
         .modal-content {
             border-radius: 12px;
@@ -326,6 +365,10 @@
             .export-btn-group {
                 text-align: center;
             }
+            .pagination-container {
+                flex-direction: column;
+                align-items: center;
+            }
         }
         @media (max-width: 576px) {
             .main-container {
@@ -358,6 +401,13 @@
             .dropdown-toggle {
                 font-size: 0.8rem;
                 padding: 0.3rem 0.6rem;
+            }
+            .pagination-controls .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.85rem;
+            }
+            .pagination-controls .form-select {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -408,9 +458,9 @@
                             <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-                    </li>
+                   <li class="nav-item">
+    <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user ? user.name : 'Admin' %></a>
+</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
                     </li>
@@ -438,201 +488,359 @@
         </div>
     </div>
 
-  <!-- Catch Report Review Section -->
-<div class="main-container">
-  <div class="report-section">
-    <h3><i class="fas fa-clipboard-check"></i> Catch Report Review</h3>
+    <!-- Catch Report Review Section -->
+    <div class="main-container">
+        <div class="report-section">
+            <h3><i class="fas fa-clipboard-check"></i> Catch Report Review</h3>
 
-    <!-- Export Button -->
-    <div class="export-btn-group">
-      <div class="dropdown">
-        <button class="btn btn-export dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fas fa-download me-1"></i> Export
-        </button>
-        <ul class="dropdown-menu dropdown-menu-export" aria-labelledby="exportDropdown">
-          <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToPDF()">PDF</a></li>
-          <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToExcel()">Excel</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Filtering Form -->
-    <form method="GET" action="/catch-report/review" class="filters-container">
-      <div class="row g-2">
-        <div class="col-md-2">
-          <input type="text" name="species" class="form-control" placeholder="Species" value="<%= filters.species || '' %>">
-        </div>
-        <div class="col-md-2">
-          <input type="text" name="location" class="form-control" placeholder="Location" value="<%= filters.location || '' %>">
-        </div>
-        <div class="col-md-2">
-          <select name="status" class="form-select">
-            <option value="">Status</option>
-            <option value="Under Review" <%= filters.status === 'Under Review' ? 'selected' : '' %>>Under Review</option>
-            <option value="Approved" <%= filters.status === 'Approved' ? 'selected' : '' %>>Approved</option>
-            <option value="Flagged" <%= filters.status === 'Flagged' ? 'selected' : '' %>>Flagged</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <input type="date" name="date" class="form-control" value="<%= filters.date || '' %>">
-        </div>
-        <div class="col-md-2">
-          <select name="month" class="form-select">
-            <option value="">Month</option>
-            <% for (let i = 1; i <= 12; i++) { %>
-              <option value="<%= i %>" <%= filters.month == i ? 'selected' : '' %>><%= i %></option>
-            <% } %>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select name="year" class="form-select">
-            <option value="">Year</option>
-            <% for (let i = new Date().getFullYear() - 5; i <= new Date().getFullYear(); i++) { %>
-              <option value="<%= i %>" <%= filters.year == i ? 'selected' : '' %>><%= i %></option>
-            <% } %>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select name="sortBy" class="form-select">
-            <option value="">Sort By</option>
-            <option value="species" <%= filters.sortBy === 'species' ? 'selected' : '' %>>Species</option>
-            <option value="quantity" <%= filters.sortBy === 'quantity' ? 'selected' : '' %>>Quantity</option>
-            <option value="location" <%= filters.sortBy === 'location' ? 'selected' : '' %>>Location</option>
-            <option value="date" <%= filters.sortBy === 'date' ? 'selected' : '' %>>Date</option>
-          </select>
-        </div>
-        <div class="col-md-2 text-end">
-          <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i> Filter</button>
-        </div>
-      </div>
-    </form>
-
-    <!-- Catch Reports Table -->
-    <div class="table-container">
-      <table class="table table-striped" id="catchReportTable">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Species</th>
-            <th>Methods Of Fishing</th>
-            <th>Quantity</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (reports && reports.length) { %>
-            <% reports.forEach(report => { %>
-              <tr>
-                <td><%= report.user_name %></td>
-                <td><%= report.species %></td>
-                <td><%= report.method_of_fishing %></td>
-                <td><%= report.quantity %></td>
-                <td><%= report.location %></td>
-                <td><%= report.status %></td>
-                <td>
-                  <% 
-                    const dateOnly = new Date(report.date).toISOString().split('T')[0]; 
-                  %>
-                  <%= dateOnly %>
-                </td>
-                <td>
-                  <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-cog"></i>
+            <!-- Export Button -->
+            <div class="export-btn-group">
+                <div class="dropdown">
+                    <button class="btn btn-export dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-1"></i> Export
                     </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item approve-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-check me-1"></i> Approve</a></li>
-                      <li><a class="dropdown-item flag-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-flag me-1"></i> Flag</a></li>
+                    <ul class="dropdown-menu dropdown-menu-export" aria-labelledby="exportDropdown">
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToPDF()">PDF</a></li>
+                        <li><a class="dropdown-item dropdown-item-export" href="#" onclick="exportToExcel()">Excel</a></li>
                     </ul>
-                  </div>
-                </td>
-              </tr>
-            <% }); %>
-          <% } else { %>
-            <tr>
-              <td colspan="8" class="no-reports">No reports found.</td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
+                </div>
+            </div>
+
+            <!-- Filtering Form -->
+            <form method="GET" action="/catch-report/review" class="filters-container">
+                <div class="row g-2">
+                    <div class="col-md-2">
+                        <input type="text" name="species" class="form-control" placeholder="Species" value="<%= filters.species || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="location" class="form-control" placeholder="Location" value="<%= filters.location || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="">Status</option>
+                            <option value="Under Review" <%= filters.status === 'Under Review' ? 'selected' : '' %>>Under Review</option>
+                            <option value="Approved" <%= filters.status === 'Approved' ? 'selected' : '' %>>Approved</option>
+                            <option value="Flagged" <%= filters.status === 'Flagged' ? 'selected' : '' %>>Flagged</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" name="date" class="form-control" value="<%= filters.date || '' %>">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="month" class="form-select">
+                            <option value="">Month</option>
+                            <% for (let i = 1; i <= 12; i++) { %>
+                                <option value="<%= i %>" <%= filters.month == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="year" class="form-select">
+                            <option value="">Year</option>
+                            <% for (let i = new Date().getFullYear() - 5; i <= new Date().getFullYear(); i++) { %>
+                                <option value="<%= i %>" <%= filters.year == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="sortBy" class="form-select">
+                            <option value="">Sort By</option>
+                            <option value="species" <%= filters.sortBy === 'species' ? 'selected' : '' %>>Species</option>
+                            <option value="quantity" <%= filters.sortBy === 'quantity' ? 'selected' : '' %>>Quantity</option>
+                            <option value="location" <%= filters.sortBy === 'location' ? 'selected' : '' %>>Location</option>
+                            <option value="date" <%= filters.sortBy === 'date' ? 'selected' : '' %>>Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i> Filter</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Catch Reports Table -->
+            <div class="table-container">
+                <table class="table table-striped" id="catchReportTable">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Species</th>
+                            <th>Methods Of Fishing</th>
+                            <th>Quantity</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <% if (reports && reports.length) { %>
+                            <% reports.forEach(report => { %>
+                                <tr>
+                                    <td><%= report.user_name %></td>
+                                    <td><%= report.species %></td>
+                                    <td><%= report.method_of_fishing %></td>
+                                    <td><%= report.quantity %></td>
+                                    <td><%= report.location %></td>
+                                    <td><%= report.status %></td>
+                                    <td>
+                                        <% 
+                                            const dateOnly = new Date(report.date).toISOString().split('T')[0]; 
+                                        %>
+                                        <%= dateOnly %>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item approve-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-check me-1"></i> Approve</a></li>
+                                                <li><a class="dropdown-item flag-btn" href="#" data-id="<%= report.id %>"><i class="fas fa-flag me-1"></i> Flag</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8" class="no-reports">No reports found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-container">
+                <div class="pagination-info" id="paginationInfo"></div>
+                <div class="pagination-controls">
+                    <select id="pageSizeSelect" class="form-select">
+                        <option value="5" selected>5 per page</option>
+                        <option value="10">10 per page</option>
+                        <option value="20">20 per page</option>
+                        <option value="50">50 per page</option>
+                    </select>
+                    <button class="btn btn-primary" id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn btn-primary" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script src="/js/catchReport.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-  function exportToPDF() {
-    const species = document.querySelector('input[name="species"]').value;
-    const location = document.querySelector('input[name="location"]').value;
-    const status = document.querySelector('select[name="status"]').value;
-    const date = document.querySelector('input[name="date"]').value;
-    const month = document.querySelector('select[name="month"]').value;
-    const year = document.querySelector('select[name="year"]').value;
+    <script src="/js/catchReport.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // Pagination logic
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableBody = document.getElementById('reportTableBody');
+            const prevPageBtn = document.getElementById('prevPage');
+            const nextPageBtn = document.getElementById('nextPage');
+            const pageSizeSelect = document.getElementById('pageSizeSelect');
+            const paginationInfo = document.getElementById('paginationInfo');
 
-    const queryParams = new URLSearchParams({
-      species, location, status, date, month, year
-    }).toString();
+            let currentPage = 1;
+            let pageSize = parseInt(pageSizeSelect.value);
+            let allRows = Array.from(tableBody.getElementsByTagName('tr'));
 
-    fetch(`/catch-report/admin/download-report?${queryParams}`)
-      .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.blob();
-      })
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const filename = month && year ? `catch_report_${month}_${year}.pdf` : 'catch_report.pdf';
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(error => {
-        console.error('Error exporting to PDF:', error);
-        alert('Failed to export PDF');
-      });
+            function updatePagination() {
+                const totalRows = allRows.filter(row => !row.classList.contains('no-reports')).length;
+                const totalPages = Math.ceil(totalRows / pageSize);
+
+                // Ensure current page is within bounds
+                if (currentPage < 1) currentPage = 1;
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                // Hide all rows initially
+                allRows.forEach(row => row.style.display = 'none');
+
+                // Show rows for the current page
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+                const rowsToShow = allRows.slice(start, end);
+                rowsToShow.forEach(row => row.style.display = '');
+
+                // Update pagination info
+                const startRow = totalRows === 0 ? 0 : start + 1;
+                const endRow = Math.min(start + pageSize, totalRows);
+                paginationInfo.textContent = `Showing ${startRow} to ${endRow} of ${totalRows} reports`;
+
+                // Enable/disable buttons
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages || totalRows === 0;
+            }
+
+            // Initial pagination setup
+            updatePagination();
+
+            // Event listeners
+            pageSizeSelect.addEventListener('change', function () {
+                pageSize = parseInt(this.value);
+                currentPage = 1; // Reset to first page
+                updatePagination();
+            });
+
+            prevPageBtn.addEventListener('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', function () {
+                const totalRows = allRows.filter(row => !row.classList.contains('no-reports')).length;
+                const totalPages = Math.ceil(totalRows / pageSize);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+        });
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const species = document.querySelector('input[name="species"]').value;
+  const location = document.querySelector('input[name="location"]').value;
+  const status = document.querySelector('select[name="status"]').value;
+  const date = document.querySelector('input[name="date"]').value;
+  const month = document.querySelector('select[name="month"]').value;
+  const year = document.querySelector('select[name="year"]').value;
+
+  if (month && !year) {
+    alert("Please select a year when filtering by month.");
+    return;
+  }
+  if (year && !month) {
+    alert("Please select a month when filtering by year.");
+    return;
   }
 
-  function exportToExcel() {
-    const species = document.querySelector('input[name="species"]').value;
-    const location = document.querySelector('input[name="location"]').value;
-    const status = document.querySelector('select[name="status"]').value;
-    const date = document.querySelector('input[name="date"]').value;
-    const month = document.querySelector('select[name="month"]').value;
-    const year = document.querySelector('select[name="year"]').value;
+  const queryParams = new URLSearchParams({
+    species, location, status, date, month, year
+  }).toString();
 
-    const queryParams = new URLSearchParams({
-      species, location, status, date, month, year
-    }).toString();
+  fetch(`/catch-report/admin/download-report?${queryParams}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/pdf'
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Server responded with status ${response.status}: ${text}`);
+        });
+      }
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+        throw new Error('Response is not a PDF');
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const filename = month && year ? `catch_report_${month}_${year}.pdf` : 'catch_report.pdf';
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Error exporting to PDF from server:', error);
+      alert(`Server-side PDF export failed: ${error.message}. Falling back to local PDF generation.`);
 
-    fetch(`/catch-report/admin/download-excel-report?${queryParams}`)
-      .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.blob();
-      })
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const filename = month && year ? `catch_report_${month}_${year}.xlsx` : 'catch_report.xlsx';
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(error => {
-        console.error('Error exporting to Excel:', error);
-        alert('Failed to export Excel');
+      // Fallback to client-side PDF generation
+      const doc = new jsPDF();
+      doc.setFont('Poppins', 'normal');
+      doc.text('Catch Report', 14, 20);
+
+      const table = document.getElementById('catchReportTable');
+      const rows = Array.from(table.querySelectorAll('tbody tr'))
+        .filter(row => !row.classList.contains('no-reports'))
+        .filter(row => {
+          if (month && year) {
+            const dateCell = row.querySelector('td:nth-child(7)').textContent;
+            const [rowYear, rowMonth] = dateCell.split('-');
+            return rowMonth === String(parseInt(month)).padStart(2, '0') && rowYear === year;
+          }
+          return true;
+        });
+
+      const tableData = rows.map(row => {
+        const cells = row.querySelectorAll('td');
+        return [
+          cells[0].textContent || 'N/A',
+          cells[1].textContent || 'N/A',
+          cells[2].textContent || 'N/A',
+          cells[3].textContent || 'N/A',
+          cells[4].textContent || 'N/A',
+          cells[5].textContent || 'N/A',
+          cells[6].textContent || 'N/A'
+        ];
       });
-  }
-</script>
+
+      if (tableData.length === 0) {
+        doc.text('No reports found for the specified filters.', 14, 30);
+      } else {
+        doc.autoTable({
+          head: [['User', 'Species', 'Methods Of Fishing', 'Quantity', 'Location', 'Status', 'Date']],
+          body: tableData,
+          startY: 30,
+          theme: 'striped',
+          headStyles: { fillColor: [30, 58, 138] },
+          styles: { font: 'Poppins', fontSize: 8 }
+        });
+      }
+
+      let filterInfo = 'Filters Applied:';
+      if (species) filterInfo += ` Species: ${species}`;
+      if (location) filterInfo += ` Location: ${location}`;
+      if (status) filterInfo += ` Status: ${status}`;
+      if (date) filterInfo += ` Date: ${date}`;
+      if (month) filterInfo += ` Month: ${month}`;
+      if (year) filterInfo += ` Year: ${year}`;
+      doc.text(filterInfo, 14, doc.lastAutoTable?.finalY + 10 || 40);
+
+      const filename = month && year ? `catch_report_${month}_${year}.pdf` : 'catch_report.pdf';
+      doc.save(filename);
+    });
+}        
+
+function exportToExcel() {
+            const species = document.querySelector('input[name="species"]').value;
+            const location = document.querySelector('input[name="location"]').value;
+            const status = document.querySelector('select[name="status"]').value;
+            const date = document.querySelector('input[name="date"]').value;
+            const month = document.querySelector('select[name="month"]').value;
+            const year = document.querySelector('select[name="year"]').value;
+
+            const queryParams = new URLSearchParams({
+                species, location, status, date, month, year
+            }).toString();
+
+            fetch(`/catch-report/admin/download-excel-report?${queryParams}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const filename = month && year ? `catch_report_${month}_${year}.xlsx` : 'catch_report.xlsx';
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error exporting to Excel:', error);
+                    alert('Failed to export Excel');
+                });
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Aquaculture Facility</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep navy */
+            --accent: #3b82f6; /* Vibrant blue */
+            --accent-light: #60a5fa; /* Lighter blue for subtle button */
+            --background: #f0f4ff; /* Light blue-gray */
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --highlight: #10b981; /* Green for success */
+            --warning: #ef4444; /* Red for alerts */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #ffffff !important;
+            letter-spacing: 0.5px;
+        }
+        .nav-link {
+            color: #ffffff !important;
+            font-weight: 400;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-top: 0.75rem;
+            padding: 0.5rem 0;
+        }
+        .dropdown-item {
+            color: var(--text);
+            font-weight: 400;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            margin: 0 0.5rem;
+        }
+        .dropdown-item:hover {
+            background-color: var(--background);
+            color: var(--accent);
+        }
+        .dropdown-item i {
+            width: 24px;
+            text-align: center;
+        }
+        .navbar-nav .nav-item {
+            margin-left: 0.5rem;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 800px; /* Compact width */
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .form-section:hover {
+            transform: translateY(-4px);
+        }
+        .form-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .form-section h2 i {
+            color: var(--accent);
+        }
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        .form-control {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+        .btn-success {
+            background-color: var(--highlight);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.75rem;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 1.5rem;
+        }
+        .btn-danger {
+            background-color: var(--warning);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+            .form-section h2 {
+                font-size: 1.5rem;
+            }
+            .form-section {
+                padding: 1.5rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-container {
+                margin: 1rem auto;
+            }
+            .form-section {
+                padding: 1rem;
+            }
+            .form-section h2 {
+                font-size: 1.3rem;
+            }
+            .form-label {
+                font-size: 0.85rem;
+            }
+            .form-control {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+            .btn-success, .btn-secondary {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="main-container">
+            <a class="navbar-brand" href="#">Fisheries Management Office</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
+                            <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-file-alt me-1"></i> Reports & Tracking
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+                            <li><a class="dropdown-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a></li>
+                            <li><a class="dropdown-item" href="/fishing-activity-log"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a></li>
+                            <li><a class="dropdown-item" href="/enforcement-compliance-logging"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a></li>
+                            <li><a class="dropdown-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a></li>
+                            <li><a class="dropdown-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a></li>
+                            <li><a class="dropdown-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a></li>
+                            <li><a class="dropdown-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a></li>
+                            <li><a class="dropdown-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-tools me-1"></i> Tools
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
+                            <li><a class="dropdown-item" href="/catch-report/admin/report"><i class="fas fa-file-export me-2"></i> Generate Catch Report</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-signature me-2"></i> Gov Reports</a></li>
+                            <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Aquaculture Facility Form -->
+    <div class="main-container">
+        <div class="form-section">
+            <h2><i class="fas fa-water"></i> Edit Aquaculture Facility</h2>
+            <form action="/aquaculture/edit/<%= facility.id %>" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Facility Name</label>
+                    <input type="text" class="form-control" name="facility_name" value="<%= facility.facility_name %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Owner's Name</label>
+                    <input type="text" class="form-control" name="owner" value="<%= facility.owner %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contact Info</label>
+                    <input type="text" class="form-control" name="contact_info" value="<%= facility.contact_info %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" name="location" value="<%= facility.location %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fish Species Being Raised</label>
+                    <input type="text" class="form-control" name="species" value="<%= facility.species %>" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Production Capacity</label>
+                    <input type="text" class="form-control" name="capacity" value="<%= facility.capacity %>" required>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <a href="/aquaculture/list" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

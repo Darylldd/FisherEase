@@ -25,61 +25,50 @@ const enforcementComplianceRoutes = require('./routes/enforcementComplianceRoute
 const violationRoutes = require('./routes/violationRoutes');
 const analyticsRoutes = require('./routes/analytics'); 
 const auditRoutes = require('./routes/auditRoutes');
-const climateRoutes = require("./routes/climateRoutes");
+
 const climateLossRoutes = require("./routes/climateLoss");
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
-app.set('views', './views');
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "uploads")));  // For parsing application/x-www-form-urlencoded (HTML forms)
-app.use(express.json());  // For parsing application/json
-
-
- 
 // Session middleware
 app.use(session({
-  secret: '2025',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
+    secret: "2025",
+    resave: false,
+    saveUninitialized: false, // Changed to false for security
+    cookie: { secure: false } // Set secure: true for HTTPS in production
 }));
 
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null; // Available in EJS
-  req.user = req.session.user;  // Attach to `req`
-  next();
-});
+// Set EJS as view engine
+app.set("view engine", "ejs");
+app.set("views", "./views");
 
+// Serve static files
+app.use(express.static("public"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Parse form data
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
+// Flash messages
 app.use(flash());
 
+// Make user and flash messages available in templates
 app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  next();
+    res.locals.user = req.session.user || null;
+    res.locals.success_msg = req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    next();
 });
 
-
 // Routes
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     if (req.session.userId) {
-      return res.redirect(`/dashboard/${req.session.role}`);
+        return res.redirect(`/dashboard/${req.session.role}`);
     }
-    res.redirect('/auth/login');
-  });
-
-
-
+    res.redirect("/auth/login");
+});
   app.use('/', admeasurementRoutes);
 app.use('/', fishingVesselRoutes);
   app.use('/', fishSpeciesRoutes);
 app.use("/climateLoss", climateLossRoutes);
-app.use('/climate-analysis', climateRoutes)
 app.use('/audit', auditRoutes);  
 app.use('/landing', landingRoutes);
 app.use('/auth', authRoutes);
