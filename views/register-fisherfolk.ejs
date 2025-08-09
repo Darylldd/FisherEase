@@ -344,9 +344,9 @@
                 <a href="/aquaculture/register" class="btn btn-aquaculture"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
             </div>
             <form action="/register/fisherfolk" method="POST">
-                <div class="mb-3">
-                    <label class="form-label">Number</label>
-                    <input type="number" class="form-control" name="number" required>
+             <div class="mb-3">
+                    <label class="form-label">ID or License Number</label>
+                    <input type="text" class="form-control" name="license_number" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Date Registered</label>
@@ -380,10 +380,7 @@
                     <label class="form-label">Fishing Zone / Area</label>
                     <input type="text" class="form-control" name="fishing_zone" required>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">ID or License Number</label>
-                    <input type="text" class="form-control" name="license_number" required>
-                </div>
+              
                 <div class="mb-3">
                     <label class="form-label">Civil Status</label>
                     <select class="form-select" name="civil_status" required>
@@ -394,10 +391,7 @@
                         <option value="Divorced">Divorced</option>
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Barangay</label>
-                    <input type="text" class="form-control" name="barangay" required>
-                </div>
+               
                 <button type="submit" class="btn btn-success">Register</button>
             </form>
         </div>

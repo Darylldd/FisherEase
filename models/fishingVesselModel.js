@@ -129,7 +129,7 @@ class FishingVesselModel {
 }
 static async getAll() {
   try {
-    const [rows] = await db.query(`SELECT id, fishing_vessel_name FROM fishing_vessel_registrations`);
+    const [rows] = await db.query(`SELECT id, fishing_vessel_name, vessel_type, fisherfolk_id FROM fishing_vessel_registrations`);
     return rows;
   } catch (error) {
     console.error('Error fetching all vessels:', error);

@@ -3,10 +3,11 @@ const db = require('./db');
 class Violation {
     static async getAllViolations(search = '', month = '', year = '') {
         let query = `
-            SELECT v.id, u.name, v.violation_type, v.specific_violation, v.location, v.details, v.status, v.created_at
-            FROM violations v
-            JOIN users u ON v.user_id = u.id
-            WHERE (u.name LIKE ? OR v.violation_type LIKE ? OR v.status LIKE ?)
+           SELECT v.id, u.name, v.violation_type, v.specific_violation, 
+               v.location, v.fines, v.details, v.status, v.created_at
+        FROM violations v
+        JOIN users u ON v.user_id = u.id
+        WHERE (u.name LIKE ? OR v.violation_type LIKE ? OR v.status LIKE ?)
         `;
         const queryParams = [`%${search}%`, `%${search}%`, `%${search}%`];
 
@@ -36,15 +37,17 @@ class Violation {
         }
     }
 
-    static async addViolation(user_id, violation_type, specific_violation, location, details) {
-        try {
-            await db.query(
-                'INSERT INTO violations (user_id, violation_type, specific_violation, location, details, status, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())',
-                [user_id, violation_type, specific_violation, location, details, 'Pending']
-            );
-        } catch (error) {
-            throw error;
-        }
+    static async addViolation(user_id, violation_type, specific_violation, location, fines,details) {
+         try {
+        await db.query(
+            `INSERT INTO violations 
+             (user_id, violation_type, specific_violation, location, fines, details, status, created_at) 
+             VALUES (?, ?, ?, ?, ?, ?, 'Pending', NOW())`,
+            [user_id, violation_type, specific_violation, location, fines, details]
+        );
+    } catch (error) {
+        throw error;
+    }
     }
 
     static async updateViolationStatus(id, status) {
@@ -58,7 +61,7 @@ class Violation {
     static async getUserViolations(userId) {
         try {
             const [rows] = await db.query(
-                'SELECT v.id, u.name, v.violation_type, v.specific_violation, v.location, v.details, v.status, v.created_at ' +
+                'SELECT v.id, u.name, v.violation_type, v.specific_violation, v.location, v.fines, v.details, v.status, v.created_at ' +
                 'FROM violations v JOIN users u ON v.user_id = u.id WHERE v.user_id = ?',
                 [userId]
             );

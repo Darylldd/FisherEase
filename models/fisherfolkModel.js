@@ -3,10 +3,10 @@ const db = require('./db'); // Assumes db is a mysql2/promise pool
 class Fisherfolk {
     static async create(data) {
         try {
-            const { number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay } = data;
+            const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status } = data;
             const [result] = await db.query(
-                "INSERT INTO fisherfolk (number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay]
+                "INSERT INTO fisherfolk ( license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status]
             );
             return result;
         } catch (error) {
@@ -19,7 +19,7 @@ class Fisherfolk {
             const [rows] = await db.query(`
                 SELECT 
                     f.id,
-                    f.number,
+                    f.license_number,
                     f.date_registered,
                     f.first_name,
                     f.middle_name,
@@ -29,9 +29,9 @@ class Fisherfolk {
                     f.contact_info,
                     f.fishing_methods,
                     f.fishing_zone,
-                    f.license_number,
+                    
                     f.civil_status,
-                    f.barangay,
+                    
                     r.id AS vessel_id,
                     r.fishing_vessel_name
                 FROM fisherfolk f
@@ -49,7 +49,7 @@ class Fisherfolk {
             const [rows] = await db.query(`
                 SELECT 
                     id,
-                    number,
+                    license_number,
                     date_registered,
                     first_name,
                     middle_name,
@@ -58,9 +58,9 @@ class Fisherfolk {
                     contact_info,
                     fishing_methods,
                     fishing_zone,
-                    license_number,
+                  
                     civil_status,
-                    barangay
+                  
                 FROM fisherfolk 
                 WHERE id = ?
             `, [id]);
@@ -72,10 +72,10 @@ class Fisherfolk {
 
     static async update(id, data) {
         try {
-            const { number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay } = data;
+            const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status} = data;
             const [result] = await db.query(
-                "UPDATE fisherfolk SET number = ?, date_registered = ?, first_name = ?, middle_name = ?, last_name = ?, address = ?, contact_info = ?, fishing_methods = ?, fishing_zone = ?, license_number = ?, civil_status = ?, barangay = ? WHERE id = ?",
-                [number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay, id]
+                "UPDATE fisherfolk SET license_number = ?, date_registered = ?, first_name = ?, middle_name = ?, last_name = ?, address = ?, contact_info = ?, fishing_methods = ?, fishing_zone = ?, license_number = ?, civil_status = ? WHERE id = ?",
+                [license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status,  id]
             );
             return result;
         } catch (error) {

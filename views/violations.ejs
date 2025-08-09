@@ -356,20 +356,76 @@
                         <% }) %>
                     </select>
                 </div>
+<div class="mb-3">
+    <label for="violation_type" class="form-label">City Ordinance</label>
+    <select name="violation_type" id="violation_type" class="form-control" required>
+        <option value="">-- Select City Ordinance --</option>
+        <option value="City Ordinance No. 51-2019">City Ordinance No. 51-2019</option>
+        <option value="City Ordinance No. 88-2021">City Ordinance No. 88-2021</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label for="specific_violation" class="form-label">Code</label>
+    <select name="specific_violation" id="specific_violation" class="form-control" required>
+        <option value="">-- Select Code --</option>
+      
+        <option value="Seksyon 6: Letter A">Seksyon 6: Letter A</option>
+        <option value="Seksyon 6: Letter B">Seksyon 6: Letter B</option>
+        <option value="Seksyon 6: Letter C">Seksyon 6: Letter C</option>
+        <option value="Seksyon 6: Letter D">Seksyon 6: Letter D</option>
+        <option value="Seksyon 6: Letter E">Seksyon 6: Letter E</option>
+        <option value="Seksyon 6: Letter F">Seksyon 6: Letter F</option>
+        <option value="Seksyon 6: Letter G">Seksyon 6: Letter G</option>
+        <option value="Seksyon 6: Letter H">Seksyon 6: Letter H</option>
+        <option value="Seksyon 6: Letter I">Seksyon 6: Letter I</option>
+        <option value="Seksyon 6: Letter J">Seksyon 6: Letter J</option>
+        <option value="Seksyon 6: Letter K">Seksyon 6: Letter K</option>
+        <option value="Seksyon 6: Letter L">Seksyon 6: Letter L</option>
+        <option value="Seksyon 6: Letter M">Seksyon 6: Letter M</option>
+        <option value="Seksyon 6: Letter N">Seksyon 6: Letter N</option>
+        <option value="Seksyon 6: Letter O">Seksyon 6: Letter O</option>
+        <option value="Seksyon 6: Letter P">Seksyon 6: Letter P</option>
+
+  
+        <option value="Seksyon 17">Seksyon 17</option>
+        <option value="Seksyon 18">Seksyon 18</option>
+
+      
+        <option value="Seksyon 52">Seksyon 52</option>
+        <option value="Seksyon 53">Seksyon 53</option>
+        <option value="Seksyon 54">Seksyon 54</option>
+        <option value="Seksyon 55">Seksyon 55</option>
+        <option value="Seksyon 56">Seksyon 56</option>
+        <option value="Seksyon 57">Seksyon 57</option>
+        <option value="Seksyon 58">Seksyon 58</option>
+        <option value="Seksyon 59">Seksyon 59</option>
+        <option value="Seksyon 60">Seksyon 60</option>
+        <option value="Seksyon 61">Seksyon 61</option>
+        <option value="Seksyon 62">Seksyon 62</option>
+        <option value="Seksyon 63">Seksyon 63</option>
+        <option value="Seksyon 64">Seksyon 64</option>
+        <option value="Seksyon 65">Seksyon 65</option>
+        <option value="Seksyon 66">Seksyon 66</option>
+        <option value="Seksyon 67">Seksyon 67</option>
+        <option value="Seksyon 68">Seksyon 68</option>
+        <option value="Seksyon 69">Seksyon 69</option>
+        <option value="Seksyon 70">Seksyon 70</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label for="location" class="form-label">Location of Illegal Activities</label>
+    <input type="text" name="location" id="location" class="form-control" required>
+</div>
+
+<div class="mb-3">
+    <label for="fines" class="form-label">Fines</label>
+    <input type="number" name="fines" id="fines" class="form-control" placeholder="Enter fine amount" required>
+</div>
+
                 <div class="mb-3">
-                    <label for="violation_type" class="form-label">Violation Type</label>
-                    <input type="text" name="violation_type" id="violation_type" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="specific_violation" class="form-label">Specific Violation</label>
-                    <input type="text" name="specific_violation" id="specific_violation" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location/Barangay</label>
-                    <input type="text" name="location" id="location" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="details" class="form-label">Details</label>
+                    <label for="details" class="form-label">Remarks</label>
                     <textarea name="details" id="details" class="form-control" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-success">Submit</button>

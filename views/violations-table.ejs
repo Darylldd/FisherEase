@@ -467,10 +467,11 @@
                         <tr>
                             <th>ID</th>
                             <th>User</th>
-                            <th>Violation Type</th>
-                            <th>Specific Violation</th>
-                            <th>Location/Barangay</th>
-                            <th>Details</th>
+                             <th>City Ordinance</th>
+  <th>Code</th>
+  <th>Location of Illegal Activities</th>
+  <th>Fines</th>
+                            <th>Remarks</th>
                             <th>Date</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -485,6 +486,7 @@
                                     <td><%= violation.violation_type %></td>
                                     <td><%= violation.specific_violation %></td>
                                     <td><%= violation.location %></td>
+                                    <td><%= violation.fines %></td>
                                     <td><%= violation.details %></td>
                                     <td><%= new Date(violation.created_at).toLocaleDateString() %></td>
                                     <td><%= violation.status %></td>
@@ -516,115 +518,119 @@
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script>
-    function getFilteredRows() {
-        const month = document.querySelector('select[name="month"]').value;
-        const year = document.querySelector('select[name="year"]').value;
-        const rows = document.querySelectorAll('#violationsTable tbody tr:not(.no-violations)');
-        const filteredRows = [];
+<script>
+function getFilteredRows() {
+    const month = document.querySelector('select[name="month"]').value;
+    const year = document.querySelector('select[name="year"]').value;
+    const rows = document.querySelectorAll('#violationsTable tbody tr:not(.no-violations)');
+    const filteredRows = [];
 
-        rows.forEach(row => {
-            const dateStr = row.getAttribute('data-date');
-            if (!dateStr) return;
+    rows.forEach(row => {
+        const dateStr = row.getAttribute('data-date');
+        if (!dateStr) return;
 
-            const date = new Date(dateStr);
-            const rowMonth = date.getMonth() + 1; // JavaScript months are 0-based
-            const rowYear = date.getFullYear();
+        const date = new Date(dateStr);
+        const rowMonth = date.getMonth() + 1;
+        const rowYear = date.getFullYear();
 
-            const matchesMonth = !month || rowMonth == parseInt(month);
-            const matchesYear = !year || rowYear == parseInt(year);
+        const matchesMonth = !month || rowMonth == parseInt(month);
+        const matchesYear = !year || rowYear == parseInt(year);
 
-            if (matchesMonth && matchesYear) {
-                filteredRows.push(row);
-            }
-        });
-
-        return filteredRows;
-    }
-
-    function exportToPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const month = document.querySelector('select[name="month"]').value;
-        const year = document.querySelector('select[name="year"]').value;
-        let title = 'Violation Notifications';
-        if (month && year) {
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            title += ` - ${monthNames[parseInt(month) - 1]} ${year}`;
-        } else if (month) {
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            title += ` - ${monthNames[parseInt(month) - 1]}`;
-        } else if (year) {
-            title += ` - ${year}`;
+        if (matchesMonth && matchesYear) {
+            filteredRows.push(row);
         }
-        doc.text(title, 10, 10);
+    });
 
-        const filteredRows = getFilteredRows();
-        const tableData = [];
-        filteredRows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 8) { // Ensure row has enough cells
-                tableData.push([
-                    cells[0].innerText, // ID
-                    cells[1].innerText, // User
-                    cells[2].innerText, // Violation Type
-                    cells[3].innerText, // Specific Violation
-                    cells[4].innerText, // Location
-                    cells[5].innerText, // Details
-                    cells[6].innerText, // Date
-                    cells[7].innerText  // Status
-                ]);
-            }
-        });
+    return filteredRows;
+}
 
-        doc.autoTable({
-            head: [['ID', 'User', 'Violation Type', 'Specific Violation', 'Location/Barangay', 'Details', 'Date', 'Status']],
-            body: tableData,
-            theme: 'striped',
-            headStyles: { fillColor: [30, 58, 138] }, // Match --primary color
-            margin: { top: 20 }
-        });
-
-        doc.save(`violations${month ? `_${month}` : ''}${year ? `_${year}` : ''}.pdf`);
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const month = document.querySelector('select[name="month"]').value;
+    const year = document.querySelector('select[name="year"]').value;
+    let title = 'Violation Notifications';
+    if (month && year) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        title += ` - ${monthNames[parseInt(month) - 1]} ${year}`;
+    } else if (month) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        title += ` - ${monthNames[parseInt(month) - 1]}`;
+    } else if (year) {
+        title += ` - ${year}`;
     }
+    doc.text(title, 10, 10);
 
-    function exportToExcel() {
-        const filteredRows = getFilteredRows();
-        const tableData = [];
-        filteredRows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 8) { // Ensure row has enough cells
-                tableData.push({
-                    ID: cells[0].innerText,
-                    User: cells[1].innerText,
-                    'Violation Type': cells[2].innerText,
-                    'Specific Violation': cells[3].innerText,
-                    'Location/Barangay': cells[4].innerText,
-                    Details: cells[5].innerText,
-                    Date: cells[6].innerText,
-                    Status: cells[7].innerText
-                });
-            }
-        });
-
-        const ws = XLSX.utils.json_to_sheet(tableData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Violations');
-        
-        const month = document.querySelector('select[name="month"]').value;
-        const year = document.querySelector('select[name="year"]').value;
-        let filename = 'violations';
-        if (month && year) {
-            filename += `_${month}_${year}`;
-        } else if (month) {
-            filename += `_${month}`;
-        } else if (year) {
-            filename += `_${year}`;
+    const filteredRows = getFilteredRows();
+    const tableData = [];
+    filteredRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 9) { // now with Fines column
+            tableData.push([
+                cells[0].innerText, // ID
+                cells[1].innerText, // User
+                cells[2].innerText, // City Ordinance
+                cells[3].innerText, // Code
+                cells[4].innerText, // Location of Illegal Activities
+                cells[5].innerText, // Fines
+                cells[6].innerText, // Remarks
+                cells[7].innerText, // Date
+                cells[8].innerText  // Status
+            ]);
         }
-        filename += '.xlsx';
+    });
 
-        XLSX.write(wb, filename);
+    doc.autoTable({
+        head: [['ID', 'User', 'City Ordinance', 'Code', 'Location of Illegal Activities', 'Fines', 'Remarks', 'Date', 'Status']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [30, 58, 138] },
+        margin: { top: 20 }
+    });
+
+    doc.save(`violations${month ? `_${month}` : ''}${year ? `_${year}` : ''}.pdf`);
+}
+
+function exportToExcel() {
+    const filteredRows = getFilteredRows();
+    const tableData = [];
+    filteredRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 9) {
+            tableData.push({
+                ID: cells[0].innerText,
+                User: cells[1].innerText,
+                'City Ordinance': cells[2].innerText,
+                'Code': cells[3].innerText,
+                'Location of Illegal Activities': cells[4].innerText,
+                'Fines': cells[5].innerText,
+                'Remarks': cells[6].innerText,
+                Date: cells[7].innerText,
+                Status: cells[8].innerText
+            });
+        }
+    });
+
+    const ws = XLSX.utils.json_to_sheet(tableData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Violations');
+
+    const month = document.querySelector('select[name="month"]').value;
+    const year = document.querySelector('select[name="year"]').value;
+    let filename = 'violations';
+    if (month && year) {
+        filename += `_${month}_${year}`;
+    } else if (month) {
+        filename += `_${month}`;
+    } else if (year) {
+        filename += `_${year}`;
     }
-    </script>
+    filename += '.xlsx';
+
+    XLSX.writeFile(wb, filename);
+}
+</script>
+
+
 </body>
 </html>

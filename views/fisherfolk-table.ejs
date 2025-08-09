@@ -441,7 +441,7 @@
                 <table class="table table-striped table-hover" id="fisherfolkTable">
                     <thead>
                         <tr>
-                            <th data-label="Number">Number</th>
+           <th data-label="License Number">License Number</th>
                             <th data-label="Date Registered">Date Registered</th>
                             <th data-label="First Name">First Name</th>
                             <th data-label="Middle Name">Middle Name</th>
@@ -450,16 +450,16 @@
                             <th data-label="Contact Info">Contact Info</th>
                             <th data-label="Fishing Methods">Fishing Methods</th>
                             <th data-label="Fishing Zone">Fishing Zone</th>
-                            <th data-label="License Number">License Number</th>
+                           
                             <th data-label="Civil Status">Civil Status</th>
-                            <th data-label="Barangay">Barangay</th>
+                
                             <th data-label="Actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="fisherfolkTableBody">
                         <% fisherfolk.forEach((fisher, index) => { %>
                             <tr data-page="<%= Math.floor(index / 5) + 1 %>">
-                                <td data-label="Number"><%= fisher.number %></td>
+                            <td data-label="License Number"><%= fisher.license_number %></td>
                                 <td data-label="Date Registered">
                                     <%= new Date(fisher.date_registered).toLocaleDateString('en-US', {
                                         year: 'numeric',
@@ -474,9 +474,9 @@
                                 <td data-label="Contact Info"><%= fisher.contact_info %></td>
                                 <td data-label="Fishing Methods"><%= fisher.fishing_methods %></td>
                                 <td data-label="Fishing Zone"><%= fisher.fishing_zone %></td>
-                                <td data-label="License Number"><%= fisher.license_number %></td>
+                              
                                 <td data-label="Civil Status"><%= fisher.civil_status %></td>
-                                <td data-label="Barangay"><%= fisher.barangay %></td>
+                              
                                 <td data-label="Actions">
                                     <a href="/fisherfolk/edit/<%= fisher.id %>" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit me-1"></i> Edit</a>
                                     <a href="/fisherfolk/delete/<%= fisher.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this fisherfolk?')"><i class="fas fa-trash me-1"></i> Delete</a>
@@ -605,11 +605,26 @@
                 doc.save('fisherfolk_table.pdf');
             });
 
-            document.getElementById('exportExcel').addEventListener('click', function() {
-                const table = document.getElementById('fisherfolkTable');
-                const wb = XLSX.utils.table_to_book(table, { sheet: 'Fisherfolk' });
-                XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
-            });
+      document.getElementById('exportExcel').addEventListener('click', function () {
+    const table = document.getElementById('fisherfolkTable');
+
+    // Clone the table so we don't modify the original
+    const clonedTable = table.cloneNode(true);
+
+    // Remove "Actions" column from header
+    clonedTable.querySelectorAll('thead tr').forEach(tr => {
+        tr.deleteCell(tr.cells.length - 1);
+    });
+
+    // Remove "Actions" column from body
+    clonedTable.querySelectorAll('tbody tr').forEach(tr => {
+        tr.deleteCell(tr.cells.length - 1);
+    });
+
+    // Convert the modified table to workbook
+    const wb = XLSX.utils.table_to_book(clonedTable, { sheet: 'Fisherfolk' });
+    XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
+});
 
             if (totalRows > 0) {
                 updateTable();

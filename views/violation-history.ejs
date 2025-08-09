@@ -274,15 +274,16 @@
           <div class="table-responsive">
             <table class="table table-bordered">
               <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Type</th>
-                  <th>Specific Violation</th>
-                  <th>Location/Barangay</th>
-                  <th>Details</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
+              <tr>
+  <th>#</th>
+  <th>City Ordinance</th>
+  <th>Code</th>
+  <th>Location of Illegal Activities</th>
+  <th>Fines</th>
+  <th>Remarks</th>
+  <th>Status</th>
+  <th>Date</th>
+</tr>
               </thead>
               <tbody>
                 <% violations.forEach((v, index) => { %>
@@ -291,6 +292,7 @@
                     <td><%= v.violation_type %></td>
                     <td><%= v.specific_violation %></td>
                     <td><%= v.location %></td>
+                    <td><%= v.fines %></td>
                     <td><%= v.details %></td>
                     <td><%= v.status %></td>
                     <td><%= new Date(v.created_at).toLocaleDateString() %></td>

@@ -366,142 +366,180 @@
     </div>
   </div>
 
-  <div class="main-container">
-    <div class="card">
-      <div class="card-body">
-        <form method="POST" action="/admeasurement-form" id="admeasurementForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="fvr_no" class="form-label">FVR No:</label>
-              <input type="text" id="fvr_no" name="fvr_no" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="date" class="form-label">Date:</label>
-              <input type="date" id="date" name="date" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="fisherfolk_id" class="form-label">Owner (Fisherfolk)</label>
-              <select id="fisherfolk_id" name="fisherfolk_id" class="form-select" required>
-                <option value="">-- Select Owner --</option>
-                <% fisherfolk.forEach(person => { %>
-                  <option value="<%= person.id %>"><%= person.fullname %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="vesselId" class="form-label">Vessel Name</label>
-              <select id="vesselId" name="vesselId" class="form-select" required>
-                <option value="">-- Select Vessel --</option>
-                <% vessels.forEach(vessel => { %>
-                  <option value="<%= vessel.id %>"><%= vessel.fishing_vessel_name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div class="col-12">
-              <label for="address" class="form-label">Address:</label>
-              <input type="text" id="address" name="address" class="form-control" readonly>
-            </div>
-            <div class="col-md-6">
-              <label for="vessel_type" class="form-label">Vessel Type:</label>
-              <select id="vessel_type" name="vessel_type" class="form-select" required>
-                <option value="">-- Select Vessel Type --</option>
-                <option value="Motorized">Motorized</option>
-                <option value="Non-motorized">Non-motorized</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="length_meters" class="form-label">Length (m):</label>
-              <input type="number" id="length_meters" name="length_meters" step="0.01" min="0" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="breadth_meters" class="form-label">Breadth (m):</label>
-              <input type="number" id="breadth_meters" name="breadth_meters" step="0.01" min="0" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="depth_meters" class="form-label">Depth (m):</label>
-              <input type="number" id="depth_meters" name="depth_meters" step="0.01" min="0" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="gross_tonnage" class="form-label">Gross Tonnage:</label>
-              <input type="number" id="gross_tonnage" name="gross_tonnage" step="0.01" min="0" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="net_tonnage" class="form-label">Net Tonnage:</label>
-              <input type="number" id="net_tonnage" name="net_tonnage" step="0.01" min="0" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="engine_make" class="form-label">Engine Make:</label>
-              <input type="text" id="engine_make" name="engine_make" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label for="serial_number" class="form-label">Serial Number:</label>
-              <input type="text" id="serial_number" name="serial_number" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label for="horse_power" class="form-label">Horse Power:</label>
-              <input type="number" id="horse_power" name="horse_power" min="0" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label for="number_of_cylinders" class="form-label">No. of Cylinders:</label>
-              <input type="number" id="number_of_cylinders" name="number_of_cylinders" min="0" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label for="place_of_inspection" class="form-label">Place of Inspection:</label>
-              <input type="text" id="place_of_inspection" name="place_of_inspection" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label for="date_of_inspection" class="form-label">Date of Inspection:</label>
-              <input type="date" id="date_of_inspection" name="date_of_inspection" class="form-control" required>
-            </div>
-            <div class="col-12">
-              <label for="remarks" class="form-label">Remarks:</label>
-              <textarea id="remarks" name="remarks" class="form-control" rows="4"></textarea>
-            </div>
-            <div class="col-12">
-              <label for="fishing_vessel_id" class="form-label">Linked Fishing Vessel:</label>
-              <select id="fishing_vessel_id" name="fishing_vessel_id" class="form-select">
-                <option value="">-- Select Vessel --</option>
-                <% vessels.forEach(v => { %>
-                  <option value="<%= v.id %>"><%= v.fishing_vessel_name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Submit</button>
-              <button type="button" class="btn btn-print" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Form</button>
-            </div>
+<div class="main-container">
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="/admeasurement-form" id="admeasurementForm">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="fvr_no" class="form-label">FVR No:</label>
+            <input type="text" id="fvr_no" name="fvr_no" class="form-control" required>
           </div>
-        </form>
-      </div>
+          <div class="col-md-6">
+            <label for="date" class="form-label">Date:</label>
+            <input type="date" id="date" name="date" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="fisherfolk_id" class="form-label">Owner (Fisherfolk)</label>
+            <select id="fisherfolk_id" name="fisherfolk_id" class="form-select" required>
+              <option value="">-- Select Owner --</option>
+              <% fisherfolk.forEach(person => { %>
+                <option value="<%= person.id %>"><%= person.fullname %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="vesselId" class="form-label">Vessel Name</label>
+            <select id="vesselId" name="vesselId" class="form-select" required>
+              <option value="">-- Select Vessel --</option>
+              <% vessels.forEach(vessel => { %>
+                <option value="<%= vessel.id %>"><%= vessel.fishing_vessel_name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="address" class="form-label">Address:</label>
+            <input type="text" id="address" name="address" class="form-control" readonly>
+          </div>
+          <div class="col-md-6">
+            <label for="vessel_type" class="form-label">Vessel Type:</label>
+            <select id="vessel_type" name="vessel_type" class="form-select" required>
+              <option value="">-- Select Vessel Type --</option>
+              <option value="Motorized">Motorized</option>
+              <option value="Non-motorized">Non-motorized</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="length_meters" class="form-label">Length (m):</label>
+            <input type="number" id="length_meters" name="length_meters" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="breadth_meters" class="form-label">Breadth (m):</label>
+            <input type="number" id="breadth_meters" name="breadth_meters" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="depth_meters" class="form-label">Depth (m):</label>
+            <input type="number" id="depth_meters" name="depth_meters" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="gross_tonnage" class="form-label">Gross Tonnage:</label>
+            <input type="number" id="gross_tonnage" name="gross_tonnage" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="net_tonnage" class="form-label">Net Tonnage:</label>
+            <input type="number" id="net_tonnage" name="net_tonnage" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="engine_make" class="form-label">Engine Make:</label>
+            <input type="text" id="engine_make" name="engine_make" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="serial_number" class="form-label">Serial Number:</label>
+            <input type="text" id="serial_number" name="serial_number" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="horse_power" class="form-label">Horse Power:</label>
+            <input type="number" id="horse_power" name="horse_power" min="0" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="number_of_cylinders" class="form-label">No. of Cylinders:</label>
+            <input type="number" id="number_of_cylinders" name="number_of_cylinders" min="0" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="place_of_inspection" class="form-label">Place of Inspection:</label>
+            <input type="text" id="place_of_inspection" name="place_of_inspection" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="date_of_inspection" class="form-label">Date of Inspection:</label>
+            <input type="date" id="date_of_inspection" name="date_of_inspection" class="form-control" required>
+          </div>
+          <div class="col-12">
+            <label for="remarks" class="form-label">Remarks:</label>
+            <textarea id="remarks" name="remarks" class="form-control" rows="4"></textarea>
+          </div>
+          <div class="col-12">
+            <label for="fishing_vessel_id" class="form-label">Linked Fishing Vessel:</label>
+            <select id="fishing_vessel_id" name="fishing_vessel_id" class="form-select">
+              <option value="">-- Select Vessel --</option>
+              <% vessels.forEach(v => { %>
+                <option value="<%= v.id %>"><%= v.fishing_vessel_name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Submit</button>
+            <button type="button" class="btn btn-print" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Form</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
-    // Client-side JavaScript for dynamic address and vessel selection
+    // Client-side JavaScript for dynamic form field autofill
     const fisherfolkList = <%- JSON.stringify(fisherfolk) %>;
+    const vesselList = <%- JSON.stringify(vessels) %>;
     const fisherfolkSelect = document.getElementById('fisherfolk_id');
     const addressInput = document.getElementById('address');
     const vesselSelect = document.getElementById('vesselId');
+    const vesselTypeSelect = document.getElementById('vessel_type');
+    const fishingVesselSelect = document.getElementById('fishing_vessel_id');
+    const dateInput = document.getElementById('date');
 
+    // Set current date in date field
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    // Function to update form fields based on selected fisherfolk
     fisherfolkSelect.addEventListener('change', function () {
-      const selected = fisherfolkList.find(f => f.id === Number(this.value));
-      if (selected) {
-        addressInput.value = selected.address || '';
-        vesselSelect.value = selected.vessel_id ? String(selected.vessel_id) : '';
+      const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(this.value));
+      if (selectedFisherfolk) {
+        addressInput.value = selectedFisherfolk.address || '';
+        vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+        fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+        
+        // Update vessel type based on selected vessel
+        const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
+        if (selectedVessel && selectedVessel.vessel_type) {
+          vesselTypeSelect.value = selectedVessel.vessel_type;
+        } else {
+          vesselTypeSelect.value = '';
+        }
       } else {
         addressInput.value = '';
         vesselSelect.value = '';
+        fishingVesselSelect.value = '';
+        vesselTypeSelect.value = '';
+      }
+    });
+
+    // Update vessel type and linked fishing vessel when vessel selection changes
+    vesselSelect.addEventListener('change', function () {
+      const selectedVessel = vesselList.find(v => v.id === Number(this.value));
+      if (selectedVessel && selectedVessel.vessel_type) {
+        vesselTypeSelect.value = selectedVessel.vessel_type;
+        fishingVesselSelect.value = this.value; // Sync fishing_vessel_id with vesselId
+      } else {
+        vesselTypeSelect.value = '';
+        fishingVesselSelect.value = '';
       }
     });
 
     // Initialize form state
     if (fisherfolkSelect.value) {
-      const selected = fisherfolkList.find(f => f.id === Number(fisherfolkSelect.value));
-      if (selected) {
-        addressInput.value = selected.address || '';
-        vesselSelect.value = selected.vessel_id ? String(selected.vessel_id) : '';
+      const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(fisherfolkSelect.value));
+      if (selectedFisherfolk) {
+        addressInput.value = selectedFisherfolk.address || '';
+        vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+        fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+        
+        // Initialize vessel type
+        const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
+        if (selectedVessel && selectedVessel.vessel_type) {
+          vesselTypeSelect.value = selectedVessel.vessel_type;
+        }
       }
     }
 
@@ -527,7 +565,7 @@
           <tr><th>NAME OF OWNER (Surname, First Name, M.I.)</th><td>${document.querySelector('#fisherfolk_id option:checked')?.text || 'N/A'}</td></tr>
           <tr><th>ADDRESS (No. of Street, Barangay, Municipality/City, Province)</th><td>${document.getElementById('address').value || 'N/A'}</td></tr>
           <tr><th>NAME OF FISHING VESSEL</th><td>${document.querySelector('#vesselId option:checked')?.text || 'N/A'}</td></tr>
-          <tr><th>VESSEL TYPE</th><td>( ) Motorized   ( ) Non-motorized ${document.getElementById('vessel_type').value === 'Motorized' ? '(X) Motorized' : '(X) Non-motorized' || 'N/A'}</td></tr>
+          <tr><th>VESSEL TYPE</th><td>( ) Motorized   ( ) Non-motorized ${document.getElementById('vessel_type').value === 'Motorized' ? '(X) Motorized' : document.getElementById('vessel_type').value === 'Non-motorized' ? '(X) Non-motorized' : '' || 'N/A'}</td></tr>
         </table>
         <div class="section-header">FISHING VESSEL DIMENSIONS AND TONNAGES</div>
         <table class="main-table">

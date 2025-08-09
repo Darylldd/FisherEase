@@ -2,9 +2,9 @@ const Fisherfolk = require('../models/fisherfolkModel');
 
 exports.registerFisherfolk = async (req, res) => {
     try {
-        const { number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay } = req.body;
+        const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status } = req.body;
         
-        await Fisherfolk.create({ number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay });
+        await Fisherfolk.create({ license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status});
 
         res.redirect('/fisherfolk/table');
     } catch (error) {
@@ -38,8 +38,8 @@ exports.editFisherfolkForm = async (req, res) => {
 
 exports.updateFisherfolk = async (req, res) => {
     try {
-        const { number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay } = req.body;
-        await Fisherfolk.update(req.params.id, { number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, license_number, civil_status, barangay });
+        const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status } = req.body;
+        await Fisherfolk.update(req.params.id, { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone,  civil_status});
         res.redirect('/fisherfolk/table');
     } catch (error) {
         console.error("Error updating fisherfolk:", error);

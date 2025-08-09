@@ -19,9 +19,9 @@ exports.getViolations = async (req, res) => {
 };
 
 exports.addViolation = async (req, res) => {
-    const { user_id, violation_type, specific_violation, location, details } = req.body;
+    const { user_id, violation_type, specific_violation, location, fines, details } = req.body;
     try {
-        await Violation.addViolation(user_id, violation_type, specific_violation, location, details);
+        await Violation.addViolation(user_id, violation_type, specific_violation, location, fines, details);
         res.redirect('/violation-notifications');
     } catch (error) {
         console.error('Error adding violation:', error);
