@@ -30,58 +30,71 @@
     }
 
     /* Navbar */
-    .navbar {
-      background-color: var(--primary);
-      padding: 1rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .navbar-brand {
-      font-weight: 600;
-      font-size: 1.5rem;
-      color: #ffffff !important;
-      letter-spacing: 0.5px;
-    }
-    .nav-link {
-      color: #ffffff !important;
-      font-weight: 400;
-      font-size: 0.95rem;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .nav-link:hover {
-      background-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .dropdown-menu {
-      background-color: var(--card-bg);
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      margin-top: 0.75rem;
-      padding: 0.5rem 0;
-    }
-    .dropdown-item {
-      color: var(--text);
-      font-weight: 400;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      margin: 0 0.5rem;
-    }
-    .dropdown-item:hover {
-      background-color: var(--background);
-      color: var(--accent);
-    }
-    .dropdown-item i {
-      width: 24px;
-      text-align: center;
-    }
-    .navbar-nav .nav-item {
-      margin-left: 0.5rem;
-    }
+.navbar {
+  background-color: var(--primary);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #fff !important;
+}
+.navbar .nav-link {
+  color: #fff !important;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: var(--card-bg);
+  padding-top: 1rem;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo img {
+  max-width: 100%;
+  height: auto;
+}
+.sidebar-logo {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.sidebar .nav-link {
+  color: var(--text);
+  padding: 0.75rem 1rem;
+}
+.sidebar .sub-item {
+  padding-left: 2.5rem;
+  font-size: 0.9rem;
+}
+
+/* Default visible on desktop */
+body {
+  margin-left: 250px;
+}
+
+/* Hide sidebar on mobile */
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  body {
+    margin-left: 0;
+  }
+  .sidebar.active {
+    transform: translateX(0);
+    z-index: 1050;
+  }
+}
+
 
     /* Main Container */
     .main-container {
@@ -287,93 +300,123 @@
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg">
-    <div class="main-container">
-      <a class="navbar-brand" href="#">Fisheries Management Office</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto align-items-center">
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRegister" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-plus me-1"></i> Register
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRegister">
-              <li><a class="dropdown-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a></li>
-              <li><a class="dropdown-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-file-alt me-1"></i> Reports & Tracking
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-              <li><a class="dropdown-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a></li>
-              <li><a class="dropdown-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a></li>
-              <li><a class="dropdown-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a></li>
-              <li><a class="dropdown-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a></li>
-              <li><a class="dropdown-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a></li>
-              <li><a class="dropdown-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a></li>
-              <li><a class="dropdown-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a></li>
-              <li><a class="dropdown-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a></li>
-              <li><a class="dropdown-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a></li>
-              <li><a class="dropdown-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a></li>
-              <li><a class="dropdown-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a></li>
-              <li><a class="dropdown-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTools" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-tools me-1"></i> Tools
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownTools">
-              <li><a class="dropdown-item" href="/catch-report/admin/report"><i class="fas fa-file-export me-2"></i> Generate Catch Report</a></li>
-              <li><a class="dropdown-item" href="#"><i class="fas fa-file-signature me-2"></i> Gov Reports</a></li>
-              <li><a class="dropdown-item" href="/climate-analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid justify-content-between">
+    <!-- Sidebar Toggle (Hamburger) -->
+    <button class="btn btn-light d-lg-none" id="sidebarToggle">
+      <i class="fas fa-bars"></i>
+    </button>
 
-  <!-- Logout Confirmation Modal -->
-  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Are you sure you want to log out?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <a href="/auth/logout" class="btn btn-danger">Logout</a>
-        </div>
+    <!-- Brand -->
+    <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
+
+    <!-- Right side (Welcome + Logout) -->
+    <ul class="navbar-nav flex-row align-items-center">
+      <li class="nav-item me-3">
+        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+          <i class="fas fa-sign-out-alt me-1"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <!-- Sidebar Logo / Branding -->
+  <div class="sidebar-logo text-center py-3">
+    <a href="/dashboard/admin">
+      <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
+    </a>
+  </div>
+
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    </li>
+
+    <!-- Register -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
+        <i class="fas fa-user-plus me-2"></i> Register
+      </a>
+      <div class="collapse" id="registerMenu">
+        <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+        <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+      </div>
+    </li>
+
+    <!-- Reports -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
+        <i class="fas fa-file-alt me-2"></i> Reports & Tracking
+      </a>
+      <div class="collapse" id="reportsMenu">
+        <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
+        <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
+        <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
+        <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
+        <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+        <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
+        <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
+        <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
+        <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
+      </div>
+    </li>
+
+    <!-- Tools -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
+        <i class="fas fa-tools me-2"></i> Tools
+      </a>
+      <div class="collapse" id="toolsMenu">
+        <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
+        <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
+        <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
+        <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to log out?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/auth/logout" class="btn btn-danger">Logout</a>
       </div>
     </div>
   </div>
+</div>
 
-<div class="main-container">
+
+ <div class="main-container">
   <div class="card">
     <div class="card-body">
       <form method="POST" action="/admeasurement-form" id="admeasurementForm">
         <div class="row g-3">
           <div class="col-md-6">
             <label for="fvr_no" class="form-label">FVR No:</label>
-            <input type="text" id="fvr_no" name="fvr_no" class="form-control" required>
+<select id="fvr_no" name="fvr_no" class="form-select" required>
+  <option value="">-- Select FVR No. --</option>
+  <% vessels.forEach(v => { %>
+    <% if (v.fvr_no) { %>
+      <option value="<%= v.fvr_no %>"><%= v.fvr_no %></option>
+    <% } %>
+  <% }) %>
+</select>
           </div>
           <div class="col-md-6">
             <label for="date" class="form-label">Date:</label>
@@ -474,39 +517,75 @@
       </form>
     </div>
   </div>
-
+ </div>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
-    // Client-side JavaScript for dynamic form field autofill
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Existing lists from backend
     const fisherfolkList = <%- JSON.stringify(fisherfolk) %>;
     const vesselList = <%- JSON.stringify(vessels) %>;
+
+    // Existing DOM elements
     const fisherfolkSelect = document.getElementById('fisherfolk_id');
     const addressInput = document.getElementById('address');
-    const vesselSelect = document.getElementById('vesselId');
+    const vesselSelect = document.getElementById('vesselId'); // make sure matches HTML id
     const vesselTypeSelect = document.getElementById('vessel_type');
     const fishingVesselSelect = document.getElementById('fishing_vessel_id');
     const dateInput = document.getElementById('date');
+    const fvrNoSelect = document.getElementById('fvr_no'); // renamed for clarity
 
-    // Set current date in date field
+    // Set current date
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
 
-    // Function to update form fields based on selected fisherfolk
+    // 🔹 New: Autofill from FVR No.
+    fvrNoSelect.addEventListener('change', function () {
+      const selectedFvrNo = this.value.trim().toLowerCase();
+
+      console.log('Selected FVR No:', selectedFvrNo); // Debug log to console
+
+      if (!selectedFvrNo) {
+        fisherfolkSelect.value = '';
+        addressInput.value = '';
+        vesselSelect.value = '';
+        fishingVesselSelect.value = '';
+        vesselTypeSelect.value = '';
+        return;
+      }
+      const matchedVessel = vesselList.find(v => v.fvr_no && v.fvr_no.toLowerCase() === selectedFvrNo);
+      if (matchedVessel) {
+        vesselSelect.value = String(matchedVessel.id);
+        vesselTypeSelect.value = matchedVessel.vessel_type || '';
+        fishingVesselSelect.value = String(matchedVessel.id);
+
+        const matchedFisherfolk = fisherfolkList.find(f => f.id === Number(matchedVessel.fisherfolk_id));
+        if (matchedFisherfolk) {
+          fisherfolkSelect.value = String(matchedFisherfolk.id);
+          addressInput.value = matchedFisherfolk.address || '';
+        } else {
+          fisherfolkSelect.value = '';
+          addressInput.value = '';
+        }
+      } else {
+        fisherfolkSelect.value = '';
+        addressInput.value = '';
+        vesselSelect.value = '';
+        fishingVesselSelect.value = '';
+        vesselTypeSelect.value = '';
+        console.warn('No vessel matched FVR No:', selectedFvrNo);
+      }
+    });
+
+    // Existing: Update form when fisherfolk changes
     fisherfolkSelect.addEventListener('change', function () {
       const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(this.value));
       if (selectedFisherfolk) {
         addressInput.value = selectedFisherfolk.address || '';
         vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
         fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        
-        // Update vessel type based on selected vessel
         const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
-        if (selectedVessel && selectedVessel.vessel_type) {
-          vesselTypeSelect.value = selectedVessel.vessel_type;
-        } else {
-          vesselTypeSelect.value = '';
-        }
+        vesselTypeSelect.value = selectedVessel?.vessel_type || '';
       } else {
         addressInput.value = '';
         vesselSelect.value = '';
@@ -515,31 +594,27 @@
       }
     });
 
-    // Update vessel type and linked fishing vessel when vessel selection changes
+    // Existing: Update vessel type on vessel change
     vesselSelect.addEventListener('change', function () {
       const selectedVessel = vesselList.find(v => v.id === Number(this.value));
-      if (selectedVessel && selectedVessel.vessel_type) {
-        vesselTypeSelect.value = selectedVessel.vessel_type;
-        fishingVesselSelect.value = this.value; // Sync fishing_vessel_id with vesselId
+      if (selectedVessel) {
+        vesselTypeSelect.value = selectedVessel.vessel_type || '';
+        fishingVesselSelect.value = this.value;
       } else {
         vesselTypeSelect.value = '';
         fishingVesselSelect.value = '';
       }
     });
 
-    // Initialize form state
+    // Existing: Initialize form state
     if (fisherfolkSelect.value) {
       const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(fisherfolkSelect.value));
       if (selectedFisherfolk) {
         addressInput.value = selectedFisherfolk.address || '';
         vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
         fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        
-        // Initialize vessel type
         const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
-        if (selectedVessel && selectedVessel.vessel_type) {
-          vesselTypeSelect.value = selectedVessel.vessel_type;
-        }
+        vesselTypeSelect.value = selectedVessel?.vessel_type || '';
       }
     }
 
@@ -607,6 +682,16 @@
       const printContent = document.querySelector('.form-container');
       if (printContent) printContent.remove();
     });
-  </script>
+  });
+</script>
+
+
+  <script>
+  document.getElementById('sidebarToggle').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.toggle('active');
+  });
+</script>
+
+
 </body>
 </html>

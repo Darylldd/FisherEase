@@ -36,59 +36,71 @@
       overflow-x: hidden;
     }
 
-    /* Navbar (Copied from first template) */
-    .navbar {
-      background-color: var(--primary);
-      padding: 1rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .navbar-brand {
-      font-weight: 600;
-      font-size: 1.5rem;
-      color: #ffffff !important;
-      letter-spacing: 0.5px;
-    }
-    .nav-link {
-      color: #ffffff !important;
-      font-weight: 400;
-      font-size: 0.95rem;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .nav-link:hover {
-      background-color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .dropdown-menu {
-      background-color: var(--card-bg);
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      margin-top: 0.75rem;
-      padding: 0.5rem 0;
-    }
-    .dropdown-item {
-      color: var(--text);
-      font-weight: 400;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      margin: 0 0.5rem;
-    }
-    .dropdown-item:hover {
-      background-color: var(--background);
-      color: var(--accent);
-    }
-    .dropdown-item i {
-      width: 24px;
-      text-align: center;
-    }
-    .navbar-nav .nav-item {
-      margin-left: 0.5rem;
-    }
+    /* Navbar */
+.navbar {
+  background-color: var(--primary);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #fff !important;
+}
+.navbar .nav-link {
+  color: #fff !important;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: var(--card-bg);
+  padding-top: 1rem;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo img {
+  max-width: 100%;
+  height: auto;
+}
+.sidebar-logo {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.sidebar .nav-link {
+  color: var(--text);
+  padding: 0.75rem 1rem;
+}
+.sidebar .sub-item {
+  padding-left: 2.5rem;
+  font-size: 0.9rem;
+}
+
+/* Default visible on desktop */
+body {
+  margin-left: 250px;
+}
+
+/* Tablet & Mobile - hide sidebar until toggled */
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.active {
+    transform: translateX(0);
+    z-index: 1050;
+  }
+  body {
+    margin-left: 0;
+  }
+}
 
     /* Main Container */
     .main-container {
@@ -280,63 +292,85 @@
   </style>
 </head>
 <body>
-  <!-- Navbar (Copied from first template) -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="main-container">
-      <a class="navbar-brand" href="/">Fisheries Management Office</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto align-items-center">
-          <li class="nav-item">
-            <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-tools me-1"></i> User Tools
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-              <li><a class="dropdown-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
-              <li><a class="dropdown-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
-              <li><a class="dropdown-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
-              <li><a class="dropdown-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
-              <li><a class="dropdown-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
-              <li><a class="dropdown-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
-              <li><a class="dropdown-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
-              <li><a class="dropdown-item" href="/catch-report/history"><i class="fas fa-exclamation-triangle me-2"></i> My Catch History</a></li>
-              <li><a class="dropdown-item" href="/catch-report/clusters"><i class="fas fa-map-marked-alt me-2"></i> View Clusters</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
-          </li>
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid justify-content-between">
+
+    <!-- Sidebar Toggle (Hamburger) -->
+    <button class="btn btn-light d-lg-none" id="sidebarToggle">
+  <i class="fas fa-bars"></i>
+</button>
+
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">Fisheries Management Office</a>
+
+    <!-- Right side (Welcome + Logout) -->
+    <ul class="navbar-nav flex-row align-items-center">
+      <li class="nav-item me-3">
+        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+          <i class="fas fa-sign-out-alt me-1"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+
+  <!-- Sidebar Logo / Branding -->
+  <div class="sidebar-logo text-center py-3">
+    <a href="/dashboard/admin">
+      <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
+    </a>
+  </div>
+
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="/"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#userTools" role="button" aria-expanded="false">
+        <i class="fas fa-tools me-2"></i> User Tools
+      </a>
+      <div class="collapse" id="userTools">
+        <ul class="list-unstyled ps-3">
+          <li><a class="nav-link sub-item" href="/climateLoss/view"><i class="fas fa-cloud-sun me-2"></i> Post-Climate Event Loss Reporting</a></li>
+          <li><a class="nav-link sub-item" href="/climateLoss/view/reports"><i class="fas fa-table me-2"></i> View Loss Reports</a></li>
+          <li><a class="nav-link sub-item" href="/fishing-activity-list"><i class="fas fa-anchor me-2"></i> Fishing Activity Table</a></li>
+          <li><a class="nav-link sub-item" href="/catch-report/predictions"><i class="fas fa-clock me-2"></i> Predict Best Catch Time</a></li>
+          <li><a class="nav-link sub-item" href="/catch-report"><i class="fas fa-fish me-2"></i> Report Daily Catch</a></li>
+          <li><a class="nav-link sub-item" href="/fishing-activity-tracking"><i class="fas fa-anchor me-2"></i> Log Fishing Activity</a></li>
+          <li><a class="nav-link sub-item" href="/harvest/user-view"><i class="fas fa-chart-line me-2"></i> Harvest</a></li>
+          <li><a class="nav-link sub-item" href="/harvest/add"><i class="fas fa-plus me-2"></i> Add Harvest</a></li>
+          <li><a class="nav-link sub-item" href="/violation-history"><i class="fas fa-exclamation-triangle me-2"></i> My Violations</a></li>
+          <li><a class="nav-link sub-item" href="/catch-report/history"><i class="fas fa-exclamation-triangle me-2"></i> My Catch History</a></li>
+          <li><a class="nav-link sub-item" href="/catch-report/clusters"><i class="fas fa-map-marker-alt me-2"></i> View Clusters</a></li>
         </ul>
       </div>
-    </div>
-  </nav>
+    </li>
+  </ul>
+</div>
 
-  <!-- Logout Confirmation Modal (Copied from first template) -->
-  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Are you sure you want to log out?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <a href="/auth/logout" class="btn btn-danger">Logout</a>
-        </div>
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to log out?</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/auth/logout" class="btn btn-danger">Logout</a>
       </div>
     </div>
   </div>
+</div>
 
   <div class="main-container">
     <div class="section-header">
@@ -615,5 +649,26 @@
       <% } %>
     });
   </script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebarToggle.addEventListener("click", function() {
+      sidebar.classList.toggle("active");
+    });
+
+    // Optional: Close sidebar when clicking outside (on mobile/tablet)
+    document.addEventListener("click", function(e) {
+      if (window.innerWidth <= 991 && 
+          !sidebar.contains(e.target) && 
+          !sidebarToggle.contains(e.target)) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
+</script>
 </body>
 </html>

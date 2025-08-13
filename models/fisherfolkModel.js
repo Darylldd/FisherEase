@@ -58,8 +58,7 @@ class Fisherfolk {
                     contact_info,
                     fishing_methods,
                     fishing_zone,
-                  
-                    civil_status,
+                    civil_status
                   
                 FROM fisherfolk 
                 WHERE id = ?
@@ -74,7 +73,7 @@ class Fisherfolk {
         try {
             const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status} = data;
             const [result] = await db.query(
-                "UPDATE fisherfolk SET license_number = ?, date_registered = ?, first_name = ?, middle_name = ?, last_name = ?, address = ?, contact_info = ?, fishing_methods = ?, fishing_zone = ?, license_number = ?, civil_status = ? WHERE id = ?",
+                "UPDATE fisherfolk SET license_number = ?, date_registered = ?, first_name = ?, middle_name = ?, last_name = ?, address = ?, contact_info = ?, fishing_methods = ?, fishing_zone = ?, civil_status = ? WHERE id = ?",
                 [license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status,  id]
             );
             return result;

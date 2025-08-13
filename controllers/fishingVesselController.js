@@ -4,9 +4,9 @@ const FishingVesselModel = require('../models/fishingVesselModel');
 
 async function showRegistrationForm(req, res) {
   const fisherfolkList = await FishingVesselModel.getFisherfolkList();
-  res.render('fishingVesselForm', { user: req.user || { name: 'Admin' }, fisherfolkList });
+  const user = req.session.user || req.user || { name: 'Admin' };
+  res.render('fishingVesselForm', { user, fisherfolkList });
 }
-
 async function submitRegistration(req, res) {
   try {
     req.body.submitted_by = req.user?.name || 'Admin'; // fallback
@@ -21,10 +21,11 @@ async function submitRegistration(req, res) {
 async function listRegistrations(req, res) {
   try {
     const registrations = await FishingVesselModel.getAllRegistrations(req.query);
+    const user = req.session.user || req.user || { name: 'Admin' };
     res.render('fishingVesselList', {
       registrations,
-      user: req.user || { name: 'Admin' },
-      filters: req.query // ← pass filters (month/year)
+      user,
+      filters: req.query
     });
   } catch (err) {
     console.error('Error loading registration list:', err);
@@ -91,6 +92,8 @@ async function exportPDF(req, res) {
 
   doc.end();
 }
+
+
 
 module.exports = {
  showRegistrationForm,

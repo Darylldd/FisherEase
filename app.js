@@ -58,6 +58,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || req.user || { name: 'Admin' };
+  next();
+});
+
+
 // Routes
 app.get("/", (req, res) => {
     if (req.session.userId) {

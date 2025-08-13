@@ -16,7 +16,8 @@ exports.registerFisherfolk = async (req, res) => {
 exports.getFisherfolkTable = async (req, res) => {
     try {
         const fisherfolk = await Fisherfolk.getAll();
-        res.render('fisherfolk-table', { fisherfolk, user: req.user || { name: 'Admin' } });
+        const user = req.session.user || req.user || { name: 'Admin' }; // ✅
+        res.render('fisherfolk-table', { fisherfolk, user });
     } catch (error) {
         console.error("Error fetching fisherfolk table:", error);
         res.status(500).send('Error fetching fisherfolk table');
@@ -29,12 +30,14 @@ exports.editFisherfolkForm = async (req, res) => {
         if (!fisher) {
             return res.status(404).send('Fisherfolk not found');
         }
-        res.render('fisherfolk-edit', { fisher, user: req.user || { name: 'Admin' } });
+        const user = req.session.user || req.user || { name: 'Admin' }; // ✅
+        res.render('fisherfolk-edit', { fisher, user });
     } catch (error) {
         console.error("Error fetching fisherfolk for edit:", error);
         res.status(500).send('Error fetching fisherfolk');
     }
 };
+
 
 exports.updateFisherfolk = async (req, res) => {
     try {
