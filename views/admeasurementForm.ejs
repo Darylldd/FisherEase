@@ -362,6 +362,8 @@ body {
         <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
         <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
         <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+        
         <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
         <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
         <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
@@ -687,10 +689,24 @@ body {
 
 
   <script>
-  document.getElementById('sidebarToggle').addEventListener('click', function () {
-    document.getElementById('sidebar').classList.toggle('active');
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebarToggle.addEventListener("click", function() {
+      sidebar.classList.toggle("active");
+    });
+
+    // Optional: Close sidebar when clicking outside (on mobile/tablet)
+    document.addEventListener("click", function(e) {
+      if (window.innerWidth <= 991 && 
+          !sidebar.contains(e.target) && 
+          !sidebarToggle.contains(e.target)) {
+        sidebar.classList.remove("active");
+      }
+    });
   });
-</script>
+</script
 
 
 </body>

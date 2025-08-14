@@ -20,7 +20,7 @@
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background-color: var(--background);
       color: var(--text);
       margin: 0;
@@ -246,6 +246,34 @@ body {
         max-width: 60px;
       }
     }
+
+     /* Pagination */
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .page-link {
+            border-radius: 6px;
+            margin: 0 0.2rem;
+            color: var(--text);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .page-link:hover {
+            background-color: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+        .page-item.active .page-link {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+        .page-item.disabled .page-link {
+            color: #9ca3af;
+            background-color: var(--card-bg);
+            border-color: var(--border);
+        }
   </style>
 </head>
 <body>
@@ -311,6 +339,8 @@ body {
         <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
         <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
         <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+        
         <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
         <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
         <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
@@ -351,93 +381,166 @@ body {
 </div>
 
 
-  <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="imagePreviewModalLabel">Proof Image</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <img id="previewImage" class="image-preview" src="" alt="Full-size Proof Image">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-container">
-    <% if (success) { %>
-      <div class="alert-container">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          Report <%= success === 'approved' ? 'approved' : 'disapproved' %> successfully.
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      </div>
-    <% } %>
-
-    <div class="section-header">
-      <i class="fas fa-cloud-sun"></i> Climate Event Loss Analysis
-    </div>
-    <div class="table-container">
-      <table class="table table-striped table-bordered">
-        <thead class="table-dark">
+  <div class="table-container">
+  <table class="table table-striped table-bordered" id="lossReportsTable">
+    <thead class="table-dark">
+      <tr>
+        <th>User</th>
+        <th>Event Type</th>
+        <th>Date</th>
+        <th>Species Lost</th>
+        <th>Loss (Kg)</th>
+        <th>Loss Value</th>
+        <th>Location</th>
+        <th>Description</th>
+        <th>Proof Image</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="lossReportsBody">
+      <% if (lossReports && lossReports.length > 0) { %>
+        <% lossReports.forEach(report => { %>
           <tr>
-            <th>User</th>
-            <th>Event Type</th>
-            <th>Date</th>
-            <th>Species Lost</th>
-            <th>Loss (Kg)</th>
-            <th>Loss Value</th>
-            <th>Location</th>
-            <th>Description</th>
-            <th>Proof Image</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <td><%= report.user_name || 'Unknown' %></td>
+            <td><%= report.event_type %></td>
+            <td><%= new Date(report.date).toLocaleDateString() %></td>
+            <td><%= report.species_lost %></td>
+            <td><%= report.estimated_loss_kg %></td>
+            <td><%= report.estimated_loss_value %></td>
+            <td><%= report.location %></td>
+            <td><%= report.description %></td>
+            <td>
+              <% if (report.image_path) { %>
+                <img src="<%= report.image_path %>" alt="Proof Image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal" onclick="showImage('<%= report.image_path %>')">
+              <% } else { %>
+                No Image
+              <% } %>
+            </td>
+            <td class="status-<%= report.status.toLowerCase() %>"><%= report.status %></td>
+            <td>
+              <% if (report.status === 'Pending') { %>
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-cog"></i> Actions
+                  </button>
+                  <ul class="dropdown-menu p-2">
+                    <li>
+                      <form action="/climateLoss/admin/approve/<%= report.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm w-100 mb-1">
+                          <i class="fas fa-check"></i> Approve
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <form action="/climateLoss/admin/disapprove/<%= report.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                          <i class="fas fa-times"></i> Disapprove
+                        </button>
+                      </form>
+                    </li>
+                  </ul>
+                </div>
+              <% } else { %>
+                -
+              <% } %>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          <% if (lossReports && lossReports.length > 0) { %>
-            <% lossReports.forEach(report => { %>
-              <tr>
-                <td><%= report.user_name || 'Unknown' %></td>
-                <td><%= report.event_type %></td>
-                <td><%= new Date(report.date).toLocaleDateString() %></td>
-                <td><%= report.species_lost %></td>
-                <td><%= report.estimated_loss_kg %></td>
-                <td><%= report.estimated_loss_value %></td>
-                <td><%= report.location %></td>
-                <td><%= report.description %></td>
-                <td>
-                  <% if (report.image_path) { %>
-                    <img src="<%= report.image_path %>" alt="Proof Image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal" onclick="showImage('<%= report.image_path %>')">
-                  <% } else { %>
-                    No Image
-                  <% } %>
-                </td>
-                <td class="status-<%= report.status.toLowerCase() %>"><%= report.status %></td>
-                <td>
-                  <% if (report.status === 'Pending') { %>
-                    <form action="/climateLoss/admin/approve/<%= report.id %>" method="POST" class="d-inline">
-                      <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Approve</button>
-                    </form>
-                    <form action="/climateLoss/admin/disapprove/<%= report.id %>" method="POST" class="d-inline">
-                      <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Disapprove</button>
-                    </form>
-                  <% } else { %>
-                    -
-                  <% } %>
-                </td>
-              </tr>
-            <% }) %>
-          <% } else { %>
-            <tr>
-              <td colspan="11" class="text-center">No loss reports found.</td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="11" class="text-center">No loss reports found.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <!-- Pagination Controls -->
+<nav aria-label="Loss Reports table pagination">
+  <ul class="pagination justify-content-center" id="paginationControls">
+    <li class="page-item" id="prevPage">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">« Previous</span>
+      </a>
+    </li>
+    <!-- Page numbers will be inserted here -->
+    <li class="page-item" id="nextPage">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">Next »</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tableBody = document.getElementById("lossReportsBody");
+    const rows = tableBody.querySelectorAll("tr");
+    const rowsPerPage = 5;
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    let currentPage = 1;
+
+    function renderTable() {
+      rows.forEach((row, index) => {
+        row.style.display =
+          index >= (currentPage - 1) * rowsPerPage &&
+          index < currentPage * rowsPerPage
+            ? ""
+            : "none";
+      });
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const pagination = document.getElementById("paginationControls");
+
+      // Remove existing page number buttons
+      pagination.querySelectorAll(".page-number").forEach(el => el.remove());
+
+      // Insert numbered pages between prev and next
+      const nextPageBtn = document.getElementById("nextPage");
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item page-number ${i === currentPage ? "active" : ""}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", function (e) {
+          e.preventDefault();
+          currentPage = i;
+          renderTable();
+        });
+        pagination.insertBefore(li, nextPageBtn);
+      }
+
+      // Enable/disable prev/next buttons
+      document.getElementById("prevPage").classList.toggle("disabled", currentPage === 1);
+      document.getElementById("nextPage").classList.toggle("disabled", currentPage === totalPages);
+    }
+
+    // Prev button click
+    document.getElementById("prevPage").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+
+    // Next button click
+    document.getElementById("nextPage").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+      }
+    });
+
+    renderTable();
+  });
+</script>
+
+
+
+  
 
   <script>
     function showImage(src) {
