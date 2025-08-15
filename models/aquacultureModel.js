@@ -1,11 +1,11 @@
 const db = require('./db'); // Assumes db is a mysql2/promise pool
 
 module.exports.registerAquaculture = async (data) => {
-    const { facility_name, location, species, capacity, owner, contact_info } = data;
-    const query = `INSERT INTO aquaculture_facilities (facility_name, location, species, capacity, owner, contact_info) 
-                   VALUES (?, ?, ?, ?, ?, ?)`;
+    const { facility_name, location, species, capacity, owner, contact_info, pond_size} = data;
+    const query = `INSERT INTO aquaculture_facilities (facility_name, location, species, capacity, owner, contact_info, pond_size) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
     try {
-        const [results] = await db.query(query, [facility_name, location, species, capacity, owner, contact_info]);
+        const [results] = await db.query(query, [facility_name, location, species, capacity, owner, contact_info, pond_size]);
         return results;
     } catch (err) {
         throw err;
@@ -47,12 +47,12 @@ module.exports.getFacilityById = async (id) => {
 };
 
 module.exports.updateFacility = async (id, data) => {
-    const { facility_name, location, species, capacity, owner, contact_info } = data;
+    const { facility_name, location, species, capacity, owner, contact_info, pond_size } = data;
     const query = `UPDATE aquaculture_facilities 
-                   SET facility_name = ?, location = ?, species = ?, capacity = ?, owner = ?, contact_info = ?
+                   SET facility_name = ?, location = ?, species = ?, capacity = ?, owner = ?, contact_info = ?, pond_size = ?
                    WHERE id = ?`;
     try {
-        const [results] = await db.query(query, [facility_name, location, species, capacity, owner, contact_info, id]);
+        const [results] = await db.query(query, [facility_name, location, species, capacity, owner, contact_info, pond_size, id]);
         return results;
     } catch (err) {
         throw err;

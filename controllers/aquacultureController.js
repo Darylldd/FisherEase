@@ -1,7 +1,7 @@
 const aquacultureModel = require('../models/aquacultureModel');
 
 exports.registerAquaculture = async (req, res) => {
-  const { facility_name, location, species, capacity, owner, contact_info } = req.body;
+  const { facility_name, location, species, capacity, owner, contact_info, pond_size } = req.body;
   try {
     const userId = req.session.userId;
     const userRole = req.session.role;
@@ -10,7 +10,7 @@ exports.registerAquaculture = async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    await aquacultureModel.registerAquaculture({ facility_name, location, species, capacity, owner, contact_info });
+    await aquacultureModel.registerAquaculture({ facility_name, location, species, capacity, owner, contact_info, pond_size });
     res.redirect('/aquaculture/list');
   } catch (err) {
     console.error("Error registering aquaculture facility:", err);
@@ -92,7 +92,7 @@ exports.editFacilityForm = async (req, res) => {
 };
 
 exports.updateFacility = async (req, res) => {
-  const { facility_name, location, species, capacity, owner, contact_info } = req.body;
+  const { facility_name, location, species, capacity, owner, contact_info, pond_size } = req.body;
   try {
     const userId = req.session.userId;
     const userRole = req.session.role;
@@ -101,7 +101,7 @@ exports.updateFacility = async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    await aquacultureModel.updateFacility(req.params.id, { facility_name, location, species, capacity, owner, contact_info });
+    await aquacultureModel.updateFacility(req.params.id, { facility_name, location, species, capacity, owner, contact_info, pond_size });
     res.redirect('/aquaculture/list');
   } catch (err) {
     console.error("Error updating facility:", err);

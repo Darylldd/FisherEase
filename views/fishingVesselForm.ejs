@@ -375,6 +375,9 @@ body {
       <div class="collapse" id="registerMenu">
         <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
         <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
       </div>
     </li>
 
@@ -431,6 +434,7 @@ body {
 </div>
 
   <div class="main-container">
+
     <div class="card">
       <div class="card-body">
         <form method="POST" action="/fishing-vessel-registration" id="vesselRegistrationForm">
@@ -529,89 +533,194 @@ body {
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
- // Ensure DOM is loaded before adding event listeners
-  document.addEventListener('DOMContentLoaded', () => {
-    window.addEventListener('beforeprint', () => {
-      const inputs = document.querySelectorAll('#vesselRegistrationForm input, #vesselRegistrationForm select, #vesselRegistrationForm textarea');
-      inputs.forEach(input => {
-        input.setAttribute('disabled', 'true');
-      });
+document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('beforeprint', () => {
+    // Disable form inputs during printing
+    const inputs = document.querySelectorAll('#vesselRegistrationForm input, #vesselRegistrationForm select, #vesselRegistrationForm textarea');
+    inputs.forEach(input => input.setAttribute('disabled', 'true'));
 
-      // Generate print content dynamically
-      const printContent = document.createElement('div');
-      printContent.className = 'form-container';
-      printContent.innerHTML = `
-        <style>
-          .sub-header { font-size: 14px; text-align: center; margin: 5px 0; }
-          .header { font-size: 18px; text-align: center; font-weight: bold; margin: 10px 0; }
-          .main-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-          .main-table th, .main-table td { border: 1px solid black; padding: 5px; text-align: left; }
-          .section-header { font-size: 16px; font-weight: bold; margin: 10px 0; }
-          .signature { text-align: center; margin: 20px 0; }
-          .signature img { max-width: 150px; height: auto; display: block; margin: 0 auto 5px; }
-          .signature .name { font-size: 14px; }
-        </style>
-        <div class="sub-header">Republic of the Philippines</div>
-        <div class="sub-header">Province of Oriental Mindoro</div>
-        <div class="sub-header">Office of the City Mayor</div>
-        <div class="sub-header">City of Calapan</div>
-        <div class="header">FISHING VESSEL REGISTRATION</div>
-        <table class="main-table">
-                    <tr><th>FVR NO.</th><td>${document.getElementById('fvr_no')?.value || 'N/A'}</td></tr> 
-          <tr><th>FISHERFOLK OWNER</th><td>${document.querySelector('#fisherfolk_id option:checked')?.text || 'N/A'}</td></tr>
-          <tr><th>TYPE OF REGISTRATION</th><td>${document.getElementById('registration_type').value || 'N/A'}</td></tr>
-          <tr><th>FISHING VESSEL NAME</th><td>${document.getElementById('fishing_vessel_name').value || 'N/A'}</td></tr>
-          <tr><th>VESSEL TYPE</th><td>${document.getElementById('vessel_type').value || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">VESSEL DETAILS</div>
-        <table class="main-table">
-          <tr><th>BOAT BUILDER NAME</th><td>${document.getElementById('boat_builder_name').value || 'N/A'}</td></tr>
-          <tr><th>PLACE BUILT</th><td>${document.getElementById('place_built').value || 'N/A'}</td></tr>
-          <tr><th>YEAR BUILT</th><td>${document.getElementById('year_built').value || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">PREVIOUS DETAILS</div>
-        <table class="main-table">
-          <tr><th>PREVIOUS HOMEPORT</th><td>${document.getElementById('previous_homeport').value || 'N/A'}</td></tr>
-          <tr><th>CHANGE HOMEPORT DATE</th><td>${new Date(document.getElementById('change_homeport_date').value).toLocaleDateString('en-PH') || 'N/A'}</td></tr>
-          <tr><th>PREVIOUS OWNER NAME</th><td>${document.getElementById('previous_owner_name').value || 'N/A'}</td></tr>
-          <tr><th>PREVIOUS OWNER ADDRESS</th><td>${document.getElementById('previous_owner_address').value || 'N/A'}</td></tr>
-          <tr><th>ORIGINAL VESSEL NAME</th><td>${document.getElementById('original_vessel_name').value || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">PROPOSED CHANGES</div>
-        <table class="main-table">
-          <tr><th>PROPOSED NAME 1</th><td>${document.getElementById('proposed_name_1').value || 'N/A'}</td></tr>
-          <tr><th>PROPOSED NAME 2</th><td>${document.getElementById('proposed_name_2').value || 'N/A'}</td></tr>
-          <tr><th>REASON FOR CANCELLATION</th><td>${document.getElementById('cancellation_reason').value || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">REMARKS</div>
-        <table class="main-table">
-          <tr><th>REMARKS</th><td>${document.getElementById('remarks').value || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">I HEREBY CERTIFY THAT ALL INFORMATION CONTAINED HEREIN IS TRUE AND CORRECT TO THE BEST OF MY KNOWLEDGE.</div>
-        <table class="main-table">
-          <tr><th>PRINTED NAME & SIGNATURE OF AUTHORIZED OFFICER</th><th>DATE</th><td></td></tr>
-          <tr><td>______________________________</td><td>${new Date().toLocaleDateString('en-PH')}</td><td></td></tr>
-        </table>
-        <div class="signature-container" style="position: relative; height: 130px; text-align: center; margin-top: 40px;">
-<img src=""</img>    style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); height: 100px; opacity: 0.9; z-index: 2;"/>
-      <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); z-index: 1;">
-    <div style="font-weight: bold;">Marlou P. Morillo</div>
-    <div>City Mayor</div>
-    </div>
-        </div>
-      `;
-      document.body.appendChild(printContent);
-    });
+    const blue = '#004fa3';
+    const check = (value, target) => value === target ? '☑' : '☐';
 
-    window.addEventListener('afterprint', () => {
-      const inputs = document.querySelectorAll('#vesselRegistrationForm input, #vesselRegistrationForm select, #vesselRegistrationForm textarea');
-      inputs.forEach(input => {
-        input.removeAttribute('disabled');
-      });
-      const printContent = document.querySelector('.form-container');
-      if (printContent) printContent.remove();
-    });
+    // Create print container
+    const printContent = document.createElement('div');
+    printContent.className = 'form-container';
+    printContent.innerHTML = `
+      <style>
+        .official-form {
+          font-family: Arial, sans-serif;
+          color: ${blue};
+          font-size: 12px;
+          border: 2px solid ${blue};
+          padding: 10px;
+        }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th {
+          border: 1px solid ${blue};
+          padding: 3px;
+          vertical-align: top;
+        }
+        .no-border td { border: none; }
+        .checkbox { font-family: monospace; }
+
+        .annex{text-align: left; font-size: 12px;}
+      </style>
+      <div class="annex">ANNEX A: City Fishing Vessel Registration Application Form</div>
+      <div class="official-form">
+        <div class="center bold">Republic of the Philippines</div>
+        <div class="center">Province of Oriental Mindoro</div>
+        <div class="center bold">City of Calapan</div>
+        <div class="center bold">Office of the City Mayor</div>
+        <div class="center bold" style="font-size:14px;">FISHERIES MANAGEMENT OFFICE</div>
+
+        <table>
+          <tr>
+            <td class="annex bold" style="font-size:14px; margin:5px 0;">CITY FISHING VESSEL <br>REGISTRATION APPLICATION FORM</td>
+            <td>FVR NO.<br>${document.getElementById('fvr_no')?.value || ''}</td>
+            <td>DATE OF APPLICATION<br>${new Date().toLocaleDateString()}</td>
+          </tr>
+          <tr>
+            <td colspan="3" class="bold">TYPE OF REGISTRATION
+           
+            <br>
+            <br>
+              ${check(document.getElementById('registration_type')?.value, 'Initial Registration')} Initial Registration &nbsp;
+              ${check(document.getElementById('registration_type')?.value, 'New CN')} Issuance of New Certificate of Number (CN) &nbsp;
+              ${check(document.getElementById('registration_type')?.value, 'Re-issuance')} Re-issuance of Certificate of Number (CN)
+            </td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td>HOMEPORT<br>${document.getElementById('homeport')?.value || ''}</td>
+            <td>NAME OF FISHING VESSEL<br>${document.getElementById('fishing_vessel_name')?.value || ''}</td>
+            <td>VESSEL TYPE<br>
+              ${check(document.getElementById('vessel_type')?.value, 'Non-motorized')} Non-motorized &nbsp;
+              ${check(document.getElementById('vessel_type')?.value, 'Motorized')} Motorized
+            </td>
+          </tr>
+          <tr>
+            <td>NAME OF BOAT BUILDER (Surname, First Name, M.I.)
+              <br>
+              
+              ${document.getElementById('boat_builder_name')?.value || ''}
+            </td>
+
+            <td>PLACE BUILT<br>${document.getElementById('place_built')?.value || ''}</td>
+            <td>YEAR BUILT<br>${document.getElementById('year_built')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold center">FOR CHANGE IN HOMEPORT</td></tr>
+          <tr>
+            <td>PREVIOUS HOMEPORT
+              <br>
+              ${document.getElementById('previous_homeport')?.value || ''}
+            </td>
+
+            <td>ORIGINAL ON<br>${document.getElementById('homeport_original')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold center">FOR CHANGE IN OWNERSHIP</td></tr>
+          <tr>
+            <td>NAME OF PREVIOUS OWNER (Surname, First Name, M.I.)
+              <br>
+              <br>
+              <br>
+              ${document.getElementById('previous_owner_name')?.value || ''}
+            </td>
+
+            <td>ADDRESS OF PREVIOUS OWNER (No. of street, <br> Barangay, Municipality, City, Province)<br>${document.getElementById('previous_owner_address')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold center">FOR CHANGE IN TECHNICAL SPECIFICATION</td></tr>
+          <tr>
+            <td>
+              ${check(document.getElementById('mod_ada')?.checked)} Modified vessel admeasurements &nbsp;
+              <br>
+              ${check(document.getElementById('new_engine')?.checked)} New Engine
+              
+            </td>
+
+            <td>ORIGINAL ON<br>${document.getElementById('tech_original')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold center">FOR CHANGE IN FISHING VESSEL</td></tr>
+          <tr>
+            <td>ORIGINAL NAME OF FISHING VESSEL
+              <br>
+              <br>
+              ${document.getElementById('original_vessel_name')?.value || ''}
+            </td>
+            <td>ORIGINAL ON<br>${document.getElementById('change_vessel_original')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold ">PROPOSED NAME
+            <br>
+            <br>
+              1. Principal: &nbsp${document.getElementById('proposed_name_1')?.value || ''}  &nbsp; 
+                     
+              2. Alternate: &nbsp${document.getElementById('proposed_name_2')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="3" class="bold ">FOR DELETION / CANCELLATION OF FISHING VESSEL REGISTRATION
+            <br>
+                ${check(document.getElementById('reason_decay')?.checked)} Decay of Fishing Vessel
+            <br>
+                ${check(document.getElementById('reason_loss')?.checked)} Loss of Fishing Vessel
+            <br>
+                ${check(document.getElementById('reason_other')?.checked)} Other:&nbsp;${document.getElementById('reason_other_text')?.value || ''}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td colspan="2" class="bold center">I HEREBY CERTIFY THAT ALL INFORMATION <br>CONTAINED HEREIN IS TRUE AND CORRECT</td>
+            <td>PRINTED NAME AND SIGNATURE OF OWNER</td>
+            
+          </tr>
+        </table>
+
+        <table>
+        <tr> 
+          <td colspan="3" class="bold center">REMARKS FINDINGS AND RECOMENDATION</td> </tr>
+
+          <td colspan="3">${document.getElementById('remarks')?.value || ''}</td>
+
+          <td colspan="3" class="bold center"> <br>
+              ATTY. DOY C. LEACHON <br> City Mayor
+          </td>
+
+          </tr>
+         </table>
+
+      </div>
+    `;
+
+    document.body.appendChild(printContent);
   });
+
+  window.addEventListener('afterprint', () => {
+    const inputs = document.querySelectorAll('#vesselRegistrationForm input, #vesselRegistrationForm select, #vesselRegistrationForm textarea');
+    inputs.forEach(input => input.removeAttribute('disabled'));
+    const printContent = document.querySelector('.form-container');
+    if (printContent) printContent.remove();
+  });
+});
 </script>
 
 

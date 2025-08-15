@@ -11,7 +11,7 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    :root {
+     :root {
       --primary: #1e3a8a; /* Deep navy */
       --accent: #3b82f6; /* Vibrant blue */
       --background: #f0f4ff; /* Light blue-gray */
@@ -326,184 +326,158 @@ body {
 </head>
 <body>
   <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid justify-content-between">
-    <!-- Sidebar Toggle (Hamburger) -->
-    <button class="btn btn-light d-lg-none" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+  <nav class="navbar navbar-expand-lg" aria-label="Main navigation">
+    <div class="container-fluid justify-content-between">
+      <!-- Sidebar Toggle (Hamburger) -->
+      <button class="btn btn-light d-lg-none" id="sidebarToggle" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
 
-    <!-- Brand -->
-    <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
+      <!-- Brand -->
+      <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
 
-    <!-- Right side (Welcome + Logout) -->
-    <ul class="navbar-nav flex-row align-items-center">
-      <li class="nav-item me-3">
-        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-          <i class="fas fa-sign-out-alt me-1"></i> Logout
-        </a>
-      </li>
-    </ul>
-  </div>
-</nav>
+      <!-- Right side (Welcome + Logout) -->
+      <ul class="navbar-nav flex-row align-items-center">
+        <li class="nav-item me-3">
+          <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-
-  <!-- Sidebar Logo / Branding -->
-  <div class="sidebar-logo text-center py-3">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+    <!-- Sidebar Logo / Branding -->
+    <div class="sidebar-logo text-center py-3">
     <a href="/dashboard/admin">
       <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
     </a>
   </div>
 
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    </li>
 
-    <!-- Register -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
-        <i class="fas fa-user-plus me-2"></i> Register
-      </a>
-      <div class="collapse" id="registerMenu">
-        <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
-        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
-        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
-      </div>
-    </li>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+      </li>
+      <!-- Register -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu" aria-expanded="false" aria-controls="registerMenu">
+          <i class="fas fa-user-plus me-2"></i> Register
+        </a>
+        <div class="collapse" id="registerMenu">
+          <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+          <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+          <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+          <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+          <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+        </div>
+      </li>
+      <!-- Reports -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu" aria-expanded="false" aria-controls="reportsMenu">
+          <i class="fas fa-file-alt me-2"></i> Reports & Tracking
+        </a>
+        <div class="collapse" id="reportsMenu">
+          <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
+          <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
+          <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
+          <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
+          <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+          <a class="nav-link sub-item" href="/violations-table"><i class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+          <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
+          <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
+          <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
+          <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
+        </div>
+      </li>
+      <!-- Tools -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu" aria-expanded="false" aria-controls="toolsMenu">
+          <i class="fas fa-tools me-2"></i> Tools
+        </a>
+        <div class="collapse" id="toolsMenu">
+          <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
+          <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
+          <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
+          <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
+        </div>
+      </li>
+    </ul>
+  </div>
 
-    <!-- Reports -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
-        <i class="fas fa-file-alt me-2"></i> Reports & Tracking
-      </a>
-      <div class="collapse" id="reportsMenu">
-        <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
-        <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
-        <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
-        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
-        
-        <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
-        <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
-        <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
-        <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
-      </div>
-    </li>
-
-    <!-- Tools -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
-        <i class="fas fa-tools me-2"></i> Tools
-      </a>
-      <div class="collapse" id="toolsMenu">
-        <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
-        <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
-        <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
-        <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<!-- Logout Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Logout</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Are you sure you want to log out?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/auth/logout" class="btn btn-danger">Logout</a>
+  <!-- Logout Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="/auth/logout" class="btn btn-danger">Logout</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-
+  <!-- Main Content -->
   <div class="main-container">
     <div class="section-header">
-      <i class="fas fa-ship"></i> Registered Fishing Vessels
+      <i class="fas fa-fish"></i> Post-Harvest Records
     </div>
+
     <div class="card">
       <div class="card-body">
-        <form class="row g-3 mb-4" method="get" action="">
-          <div class="col-md-2">
-            <select name="month" class="form-select">
-              <option value="">All Months</option>
-              <% for (let m = 1; m <= 12; m++) { %>
-                <option value="<%= m %>" <%= filters.month == m.toString() ? 'selected' : '' %>>
-                  <%= new Date(0, m - 1).toLocaleString('default', { month: 'long' }) %>
-                </option>
-              <% } %>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <select name="year" class="form-select">
-              <option value="">All Years</option>
-              <% const currentYear = new Date().getFullYear();
-                 for (let y = currentYear; y >= currentYear - 10; y--) { %>
-                <option value="<%= y %>" <%= filters.year == y.toString() ? 'selected' : '' %>><%= y %></option>
-              <% } %>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <a class="btn btn-outline-success me-2" target="_blank"
-               href="/fishing-vessel-registrations/export/excel?<%= `month=${filters.month || ''}&year=${filters.year || ''}` %>">
-              <i class="fas fa-file-excel me-1"></i> Export to Excel
-            </a>
-            <a class="btn btn-outline-danger" target="_blank"
-               href="/fishing-vessel-registrations/export/pdf?<%= `month=${filters.month || ''}&year=${filters.year || ''}` %>">
-              <i class="fas fa-file-pdf me-1"></i> Export to PDF
-            </a>
-          </div>
-        </form>
-        <div class="table-responsive">
-          <table class="table table-hover" id="vesselTable">
-            <thead>
-              <tr>
-                <th>Vessel Name</th>
-                <th>Type</th>
-                <th>Owner</th>
-                <th>Homeport</th>
-                <th>Year Built</th>
-                <th>Builder</th>
-                <th>Submitted</th>
-              </tr>
-            </thead>
-            <tbody id="vesselTableBody">
-              <% if (registrations.length) { %>
-                <% registrations.forEach(function(r, index) { %>
-                  <tr data-page="<%= Math.floor(index / 10) + 1 %>">
-                    <td><%= r.fishing_vessel_name || '-' %></td>
-                    <td><%= r.vessel_type || '-' %></td>
-                    <td><%= r.fisherfolk_name || 'Unknown' %></td>
-                    <td><%= r.homeport || 'Calapan City' %></td>
-                    <td><%= r.year_built || '-' %></td>
-                    <td><%= r.boat_builder_name || '-' %></td>
-                    <td><%= new Date(r.created_at).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+        <div class="form-section">
+          <% if (error) { %>
+            <div class="alert alert-danger" role="alert"><%= error %></div>
+          <% } %>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">License Number</th>
+                  <th scope="col">Date Registered</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Contact Info</th>
+                  <th scope="col">Processing Method</th>
+                  <th scope="col">Processing Location</th>
+                  <th scope="col">Civil Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% records.forEach(record => { %>
+                  <tr>
+                    <td><%= record.id %></td>
+                    <td><%= record.license_number %></td>
+                    <td>
+                      <%= new Date(record.date_registered).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                      }) %>
+                    </td>
+                    <td><%= record.first_name %> <%= record.middle_name || '' %> <%= record.last_name %></td>
+                    <td><%= record.address %></td>
+                    <td><%= record.contact_info %></td>
+                    <td><%= record.processing_method %></td>
+                    <td><%= record.processing_location %></td>
+                    <td><%= record.civil_status %></td>
                   </tr>
                 <% }) %>
-              <% } else { %>
-                <tr>
-                  <td colspan="7" class="text-center text-muted">No registered vessels found.</td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
-        </div>
-        <nav aria-label="Vessel table pagination">
+              </tbody>
+            </table>
+          </div>
+          <nav aria-label="Vessel table pagination">
           <ul class="pagination">
             <li class="page-item" id="prevPage">
               <a class="page-link" href="#" aria-label="Previous">
@@ -518,11 +492,21 @@ body {
             </li>
           </ul>
         </nav>
+
+        <div class="mb-3">
+            <a href="/register/post-harvest" class="btn btn-aquaculture"><i class="fas fa-water me-2"></i> Back to Registration</a>
+          </div>
+
       </div>
     </div>
   </div>
 
+          
+        
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const rowsPerPage = 10;
@@ -601,24 +585,23 @@ body {
   </script>
 
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
+    document.addEventListener("DOMContentLoaded", function() {
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const sidebar = document.querySelector(".sidebar");
 
-    sidebarToggle.addEventListener("click", function() {
-      sidebar.classList.toggle("active");
+      sidebarToggle.addEventListener("click", function() {
+        sidebar.classList.toggle("active");
+      });
+
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener("click", function(e) {
+        if (window.innerWidth <= 991 && 
+            !sidebar.contains(e.target) && 
+            !sidebarToggle.contains(e.target)) {
+          sidebar.classList.remove("active");
+        }
+      });
     });
-
-    // Optional: Close sidebar when clicking outside (on mobile/tablet)
-    document.addEventListener("click", function(e) {
-      if (window.innerWidth <= 991 && 
-          !sidebar.contains(e.target) && 
-          !sidebarToggle.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-  });
-</script>
-
+  </script>
 </body>
 </html>

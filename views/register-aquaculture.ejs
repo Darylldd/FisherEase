@@ -318,7 +318,9 @@ body {
       <div class="collapse" id="registerMenu">
         <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
         <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-water me-2"></i> Aquaculture Facility Table</a>
+        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
       </div>
     </li>
 
@@ -398,7 +400,7 @@ body {
                     <input type="text" class="form-control" name="contact_info" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Location</label>
+                    <label class="form-label">Farm Location</label>
                     <input type="text" class="form-control" name="location" required>
                 </div>
                 <div class="mb-3">
@@ -408,6 +410,10 @@ body {
                 <div class="mb-3">
                     <label class="form-label">Production Capacity</label>
                     <input type="text" class="form-control" name="capacity" required>
+                </div>
+                   <div class="mb-3">
+                    <label class="form-label">Size of Pond (in square meters)</label>
+                    <input type="number" class="form-control" name="pond_size" step="0.01" min="0" required>
                 </div>
                 <button type="submit" class="btn btn-success">Register</button>
             </form>

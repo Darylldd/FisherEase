@@ -118,9 +118,22 @@ body {
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
     }
-    .table {
-      margin-bottom: 0;
-    }
+    .table-responsive {
+            margin-top: 1.5rem;
+        }
+        .table {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+           
+        }
+        .table th {
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 5px;
+        }
     .table th, .table td {
       vertical-align: middle;
       font-size: 0.95rem;
@@ -325,6 +338,10 @@ body {
       <div class="collapse" id="registerMenu">
         <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
         <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+      
       </div>
     </li>
 
@@ -380,7 +397,10 @@ body {
   </div>
 </div>
 
-
+<div class="main-container">
+        <div class="section-header">
+            <i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis
+        </div>
   <div class="table-container">
   <table class="table table-striped table-bordered" id="lossReportsTable">
     <thead class="table-dark">
@@ -471,7 +491,7 @@ body {
     </li>
   </ul>
 </nav>
-
+</div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const tableBody = document.getElementById("lossReportsBody");

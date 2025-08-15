@@ -25,7 +25,7 @@ const enforcementComplianceRoutes = require('./routes/enforcementComplianceRoute
 const violationRoutes = require('./routes/violationRoutes');
 const analyticsRoutes = require('./routes/analytics'); 
 const auditRoutes = require('./routes/auditRoutes');
-
+const postHarvestRoutes = require('./routes/postHarvestRoutes');
 const climateLossRoutes = require("./routes/climateLoss");
 // Session middleware
 app.use(session({
@@ -91,7 +91,7 @@ app.use( violationRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', analyticsRoutes);
 app.use("/harvest", harvestRoutes);
-
+app.use('/', postHarvestRoutes);
 
 
 //const PORT = process.env.PORT || 3000;

@@ -357,6 +357,9 @@ body {
       <div class="collapse" id="registerMenu">
         <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
         <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
       </div>
     </li>
 
@@ -411,7 +414,7 @@ body {
     </div>
   </div>
 </div>
-    <!-- Aquaculture Facilities Table -->
+<!-- Aquaculture Facilities Table -->
     <div class="main-container">
         <div class="form-section">
             <h2><i class="fas fa-water"></i> Registered Aquaculture Facilities</h2>
@@ -428,6 +431,7 @@ body {
                             <th>Location</th>
                             <th>Fish Species</th>
                             <th>Production Capacity</th>
+                            <th>Pond Size (sqm)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -441,6 +445,7 @@ body {
                                     <td><%= facility.location %></td>
                                     <td><%= facility.species %></td>
                                     <td><%= facility.capacity %></td>
+                                    <td><%= facility.pond_size %></td>
                                     <td>
                                       <div class="dropdown">
                                           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -464,7 +469,7 @@ body {
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="7" class="text-center">No aquaculture facilities registered yet.</td>
+                                <td colspan="8" class="text-center">No aquaculture facilities registered yet.</td>
                             </tr>
                         <% } %>
                     </tbody>
