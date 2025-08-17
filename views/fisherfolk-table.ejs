@@ -38,70 +38,70 @@
         }
 
         /* Navbar */
-.navbar {
-  background-color: var(--primary);
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.navbar-brand {
-  font-weight: 600;
-  font-size: 1.5rem;
-  color: #fff !important;
-}
-.navbar .nav-link {
-  color: #fff !important;
-}
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff !important;
+        }
+        .navbar .nav-link {
+            color: #fff !important;
+        }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0px;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: var(--card-bg);
-  padding-top: 1rem;
-  overflow-y: auto;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: var(--card-bg);
+            padding-top: 1rem;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
 
-.sidebar-logo img {
-  max-width: 100%;
-  height: auto;
-}
-.sidebar-logo {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
+        .sidebar-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        .sidebar-logo {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
 
-.sidebar .nav-link {
-  color: var(--text);
-  padding: 0.75rem 1rem;
-}
-.sidebar .sub-item {
-  padding-left: 2.5rem;
-  font-size: 0.9rem;
-}
+        .sidebar .nav-link {
+            color: var(--text);
+            padding: 0.75rem 1rem;
+        }
+        .sidebar .sub-item {
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
 
-/* Default visible on desktop */
-body {
-  margin-left: 250px;
-}
+        /* Default visible on desktop */
+        body {
+            margin-left: 250px;
+        }
 
-/* Hide sidebar on mobile */
-@media (max-width: 991px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  body {
-    margin-left: 0;
-  }
-  .sidebar.active {
-    transform: translateX(0);
-    z-index: 1050;
-  }
-}
+        /* Hide sidebar on mobile */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            body {
+                margin-left: 0;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                z-index: 1050;
+            }
+        }
 
         /* Main Container */
         .main-container {
@@ -111,18 +111,18 @@ body {
         }
 
         /* Section Headers */
-    .section-header {
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--primary);
-      margin: 2rem 0 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .section-header i {
-      color: var(--accent);
-    }
+        .section-header {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-header i {
+            color: var(--accent);
+        }
 
         /* Table Section */
         .table-section {
@@ -158,7 +158,6 @@ body {
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-           
         }
         .table th {
             background-color: var(--primary);
@@ -365,114 +364,158 @@ body {
                 padding: 0.4rem;
             }
         }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .main-container, .main-container * {
+                visibility: visible;
+            }
+            .main-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .table-responsive {
+                width: 100%;
+                overflow: visible;
+            }
+            .table {
+                font-size: 10pt;
+                border-collapse: collapse;
+                table-layout: fixed;
+                width: 100%;
+            }
+            .table th, .table td {
+                border: 1px solid #000;
+                padding: 0.3rem;
+                background: none !important;
+                color: #000 !important;
+                word-wrap: break-word;
+                width: 10%; /* Even distribution (100% / 10 columns) */
+            }
+            .table tbody tr:hover {
+                background: none !important;
+            }
+            .pagination, .search-bar, .rows-per-page, .export-buttons, .navbar, .sidebar, .section-header, .table th:last-child, .table td:last-child {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
      <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid justify-content-between">
-    <!-- Sidebar Toggle (Hamburger) -->
-    <button class="btn btn-light d-lg-none" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+     <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid justify-content-between">
+            <!-- Sidebar Toggle (Hamburger) -->
+            <button class="btn btn-light d-lg-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
 
-    <!-- Brand -->
-    <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
+            <!-- Brand -->
+            <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
 
-    <!-- Right side (Welcome + Logout) -->
-    <ul class="navbar-nav flex-row align-items-center">
-      <li class="nav-item me-3">
-        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-          <i class="fas fa-sign-out-alt me-1"></i> Logout
-        </a>
-      </li>
-    </ul>
-  </div>
-</nav>
+            <!-- Right side (Welcome + Logout + Print) -->
+            <ul class="navbar-nav flex-row align-items-center">
+                <li class="nav-item me-3">
+                    <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print me-2"></i> Print Table</button>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
 
-  <!-- Sidebar Logo / Branding -->
-  <div class="sidebar-logo text-center py-3">
-    <a href="/dashboard/admin">
-      <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
-    </a>
-  </div>
+        <!-- Sidebar Logo / Branding -->
+        <div class="sidebar-logo text-center py-3">
+            <a href="/dashboard/admin">
+                <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
+            </a>
+        </div>
 
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    </li>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+            </li>
 
-    <!-- Register -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
-        <i class="fas fa-user-plus me-2"></i> Register
-      </a>
-      <div class="collapse" id="registerMenu">
-        <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
-        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
-        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+            <!-- Register -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
+                    <i class="fas fa-user-plus me-2"></i> Register
+                </a>
+                <div class="collapse" id="registerMenu">
+                    <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+                    <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
+                    <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+                </div>
+            </li>
+
+            <!-- Reports -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
+                    <i class="fas fa-file-alt me-2"></i> Reports & Tracking
+                </a>
+                <div class="collapse" id="reportsMenu">
+                    <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
+                    <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
+                    <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+                    <a class="nav-link sub-item" href="/violations-table"><i class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+                    <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
+                    <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
+                    <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
+                    <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
+                </div>
+            </li>
+
+            <!-- Tools -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
+                    <i class="fas fa-tools me-2"></i> Tools
+                </a>
+                <div class="collapse" id="toolsMenu">
+                    <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
+                    <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
+                    <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
+                    <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
+                </div>
+            </li>
+        </ul>
     </div>
-    </li>
 
-    <!-- Reports -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
-        <i class="fas fa-file-alt me-2"></i> Reports & Tracking
-      </a>
-      <div class="collapse" id="reportsMenu">
-        <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
-        <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
-        <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
-        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
-        
-        <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
-        <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
-        <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
-        <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
-      </div>
-    </li>
-
-    <!-- Tools -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
-        <i class="fas fa-tools me-2"></i> Tools
-      </a>
-      <div class="collapse" id="toolsMenu">
-        <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
-        <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
-        <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
-        <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<!-- Logout Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Logout</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Are you sure you want to log out?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/auth/logout" class="btn btn-danger">Logout</a>
-      </div>
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">Are you sure you want to log out?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
     <!-- Fisherfolk Table -->
     <div class="main-container">
@@ -481,7 +524,6 @@ body {
         </div>
         
         <div class="table-section">
-            
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="search-bar">
                     <input type="text" class="form-control" id="searchInput" placeholder="Search..." aria-label="Search">
@@ -503,7 +545,7 @@ body {
                 <table class="table table-striped table-hover" id="fisherfolkTable">
                     <thead>
                         <tr>
-           <th data-label="License Number">License Number</th>
+                            <th data-label="License Number">License Number</th>
                             <th data-label="Date Registered">Date Registered</th>
                             <th data-label="First Name">First Name</th>
                             <th data-label="Middle Name">Middle Name</th>
@@ -512,16 +554,14 @@ body {
                             <th data-label="Contact Info">Contact Info</th>
                             <th data-label="Fishing Methods">Fishing Methods</th>
                             <th data-label="Fishing Zone">Fishing Zone</th>
-                           
                             <th data-label="Civil Status">Civil Status</th>
-                
                             <th data-label="Actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="fisherfolkTableBody">
                         <% fisherfolk.forEach((fisher, index) => { %>
                             <tr data-page="<%= Math.floor(index / 5) + 1 %>">
-                            <td data-label="License Number"><%= fisher.license_number %></td>
+                                <td data-label="License Number"><%= fisher.license_number %></td>
                                 <td data-label="Date Registered">
                                     <%= new Date(fisher.date_registered).toLocaleDateString('en-US', {
                                         year: 'numeric',
@@ -536,9 +576,7 @@ body {
                                 <td data-label="Contact Info"><%= fisher.contact_info %></td>
                                 <td data-label="Fishing Methods"><%= fisher.fishing_methods %></td>
                                 <td data-label="Fishing Zone"><%= fisher.fishing_zone %></td>
-                              
                                 <td data-label="Civil Status"><%= fisher.civil_status %></td>
-                              
                                 <td data-label="Actions">
                                     <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -682,26 +720,26 @@ body {
                 doc.save('fisherfolk_table.pdf');
             });
 
-      document.getElementById('exportExcel').addEventListener('click', function () {
-    const table = document.getElementById('fisherfolkTable');
+            document.getElementById('exportExcel').addEventListener('click', function () {
+                const table = document.getElementById('fisherfolkTable');
 
-    // Clone the table so we don't modify the original
-    const clonedTable = table.cloneNode(true);
+                // Clone the table so we don't modify the original
+                const clonedTable = table.cloneNode(true);
 
-    // Remove "Actions" column from header
-    clonedTable.querySelectorAll('thead tr').forEach(tr => {
-        tr.deleteCell(tr.cells.length - 1);
-    });
+                // Remove "Actions" column from header
+                clonedTable.querySelectorAll('thead tr').forEach(tr => {
+                    tr.deleteCell(tr.cells.length - 1);
+                });
 
-    // Remove "Actions" column from body
-    clonedTable.querySelectorAll('tbody tr').forEach(tr => {
-        tr.deleteCell(tr.cells.length - 1);
-    });
+                // Remove "Actions" column from body
+                clonedTable.querySelectorAll('tbody tr').forEach(tr => {
+                    tr.deleteCell(tr.cells.length - 1);
+                });
 
-    // Convert the modified table to workbook
-    const wb = XLSX.utils.table_to_book(clonedTable, { sheet: 'Fisherfolk' });
-    XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
-});
+                // Convert the modified table to workbook
+                const wb = XLSX.utils.table_to_book(clonedTable, { sheet: 'Fisherfolk' });
+                XLSX.writeFile(wb, 'fisherfolk_table.xlsx');
+            });
 
             if (totalRows > 0) {
                 updateTable();
@@ -711,25 +749,23 @@ body {
     </script>
 
     <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebar = document.querySelector(".sidebar");
 
-    sidebarToggle.addEventListener("click", function() {
-      sidebar.classList.toggle("active");
-    });
+            sidebarToggle.addEventListener("click", function() {
+                sidebar.classList.toggle("active");
+            });
 
-    // Optional: Close sidebar when clicking outside (on mobile/tablet)
-    document.addEventListener("click", function(e) {
-      if (window.innerWidth <= 991 && 
-          !sidebar.contains(e.target) && 
-          !sidebarToggle.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-  });
-</script>
-
-
+            // Optional: Close sidebar when clicking outside (on mobile/tablet)
+            document.addEventListener("click", function(e) {
+                if (window.innerWidth <= 991 && 
+                    !sidebar.contains(e.target) && 
+                    !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove("active");
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -15,34 +15,55 @@ const Harvest = {
         const [rows] = await db.execute("SELECT * FROM harvest_production WHERE user_id = ? ORDER BY date_harvested DESC", [userId]);
         return rows;
     },
- getFilteredHarvests: async (month, year) => {
-    let sql = `
-        SELECT 
-            hp.*, 
-            u.name AS user_name
-        FROM harvest_production hp
-        JOIN users u ON hp.user_id = u.id
-        WHERE 1=1
-    `;
-    const params = [];
 
-    if (month) {
-        sql += " AND MONTH(hp.date_harvested) = ?";
-        params.push(month);
+    getFilteredHarvests: async (month, year) => {
+        let sql = `
+            SELECT 
+                hp.*, 
+                u.name AS user_name
+            FROM harvest_production hp
+            JOIN users u ON hp.user_id = u.id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (month) {
+            sql += " AND MONTH(hp.date_harvested) = ?";
+            params.push(month);
+        }
+
+        if (year) {
+            sql += " AND YEAR(hp.date_harvested) = ?";
+            params.push(year);
+        }
+
+        sql += " ORDER BY hp.date_harvested DESC";
+
+        const [rows] = await db.execute(sql, params);
+        return rows;
+    },
+
+    getHarvestAnalytics: async () => {
+        try {
+            const [rows] = await db.execute(
+                `SELECT fish_type, SUM(weight) as total_quantity 
+                 FROM harvest_production 
+                 GROUP BY fish_type`
+            );
+            return rows;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getTotalHarvests: async () => {
+        try {
+            const [rows] = await db.execute('SELECT COUNT(*) as count FROM harvest_production');
+            return rows[0].count;
+        } catch (error) {
+            throw error;
+        }
     }
-
-    if (year) {
-        sql += " AND YEAR(hp.date_harvested) = ?";
-        params.push(year);
-    }
-
-    sql += " ORDER BY hp.date_harvested DESC";
-
-    const [rows] = await db.execute(sql, params);
-    return rows;
-}
-
-
 };
 
 module.exports = Harvest;

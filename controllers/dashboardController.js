@@ -1,4 +1,9 @@
 const CatchReport = require("../models/catchReportModel");
+const Violation = require("../models/violationModel");
+const Harvest = require("../models/harvestModel");
+const Aquaculture = require("../models/aquacultureModel");
+const Fisherfolk = require("../models/fisherfolkModel");
+const PostHarvest = require("../models/postHarvest"); // Add this import
 
 const DashboardController = {
     async getAnalyticsData(req, res) {
@@ -9,18 +14,41 @@ const DashboardController = {
             const speciesData = await CatchReport.getSpeciesData();
             const statusData = await CatchReport.getStatusData();
             const dailyReports = await CatchReport.getDailyReports();
+            const violationData = await Violation.getViolationAnalytics();
+            const totalViolations = await Violation.getTotalViolations();
+            const harvestData = await Harvest.getHarvestAnalytics();
+            const totalHarvests = await Harvest.getTotalHarvests();
+            const aquacultureOwnerSpeciesData = await Aquaculture.getAquacultureOwnerSpeciesAnalytics();
+            const totalFacilities = await Aquaculture.getTotalFacilities();
+            const fisherfolkAnalytics = await Fisherfolk.getFisherfolkAnalytics();
+            const totalFisherfolk = await Fisherfolk.getTotalFisherfolk();
+            const postHarvestAnalytics = await PostHarvest.getPostHarvestAnalytics(); // Add this
+            const totalPostHarvest = await PostHarvest.getTotalPostHarvest(); // Add this
 
             res.json({
-                totalReports,
-                approvedReports,
-                flaggedReports,
-                speciesData,
-                statusData,
-                dailyReports
+                success: true,
+                data: {
+                    totalReports,
+                    approvedReports,
+                    flaggedReports,
+                    speciesData,
+                    statusData,
+                    dailyReports,
+                    violationData,
+                    totalViolations,
+                    harvestData,
+                    totalHarvests,
+                    aquacultureOwnerSpeciesData,
+                    totalFacilities,
+                    fisherfolkAnalytics,
+                    totalFisherfolk,
+                    postHarvestAnalytics, // Add this
+                    totalPostHarvest // Add this
+                }
             });
         } catch (error) {
-            console.error("Error fetching analytics data:", error);
-            res.status(500).json({ error: "Internal Server Error" });
+            console.error("❌ Error fetching analytics:", error);
+            res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     },
 
@@ -29,31 +57,45 @@ const DashboardController = {
             const totalReports = await CatchReport.getTotalReports();
             const approvedReports = await CatchReport.getApprovedReports();
             const flaggedReports = await CatchReport.getFlaggedReports();
+            const totalViolations = await Violation.getTotalViolations();
+            const totalHarvests = await Harvest.getTotalHarvests();
+            const totalFacilities = await Aquaculture.getTotalFacilities();
+            const totalFisherfolk = await Fisherfolk.getTotalFisherfolk();
+            const totalPostHarvest = await PostHarvest.getTotalPostHarvest(); // Add this
 
             res.render("dashboard-admin", {
                 totalReports,
                 approvedReports,
-                flaggedReports
+                flaggedReports,
+                totalViolations,
+                totalHarvests,
+                totalFacilities,
+                totalFisherfolk,
+                totalPostHarvest // Add this
             });
         } catch (error) {
             console.error("Error loading admin dashboard:", error);
             res.status(500).send("Internal Server Error");
         }
     },
+
     async getUserDashboard(req, res) {
         try {
-            const userId = req.session.userId; // Ensure session contains userId
+            const userId = req.session.userId;
 
             if (!userId) {
                 return res.status(401).send("Unauthorized: User not logged in");
             }
 
-            // Fetch total fish caught by the user (make sure `getUserTotalCatches` exists in your model)
-            const userCatches = await CatchReport.getUserTotalCatches(userId) || 0; 
+            const userCatches = await CatchReport.getUserTotalCatches(userId) || 0;
+            const userViolations = await Violation.getUserViolations(userId);
+            const userHarvests = await Harvest.getHarvestByUser(userId);
 
             res.render("dashboard-user", {
                 userId,
-                userCatches
+                userCatches,
+                userViolations,
+                userHarvests
             });
         } catch (error) {
             console.error("Error loading user dashboard:", error);
@@ -61,7 +103,6 @@ const DashboardController = {
         }
     }
 };
-
 
 
 exports.getDashboardData = async (req, res) => {
@@ -74,7 +115,7 @@ exports.getDashboardData = async (req, res) => {
         console.log("Approved Reports:", approvedReports);
         console.log("Flagged Reports:", flaggedReports); 
 
-        res.render('dashboard-admin', {
+        res.render('dashboard-admin', { 
             totalReports,
             approvedReports,
             flaggedReports 

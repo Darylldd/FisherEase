@@ -6,26 +6,35 @@ exports.getViolations = async (req, res) => {
         const month = req.query.month || '';
         const year = req.query.year || '';
         const violations = await Violation.getAllViolations(search, month, year);
-        const users = await Violation.getAllUsers();
+        const combinedNames = await Violation.getAllCombinedNames();
         const user = req.session.user || req.user || { name: 'Guest' };
 
-        // Check the route to determine which template to render
-        const template = req.originalUrl === '/violations-table' ? 'violations-table' : 'violations';
-        res.render(template, { violations, user, search, users, month, year });
+        // Use startsWith to handle query parameters in URL
+        const template = req.originalUrl.startsWith('/violations-table') ? 'violations-table' : 'violations';
+        res.render(template, { violations, user, search, combinedNames, month, year });
     } catch (error) {
-        console.error('Error fetching violations or users:', error);
-        res.status(500).send('Error fetching violations or users');
+        console.error('Error fetching violations or names:', error);
+        res.status(500).send('Error fetching violations or names');
     }
 };
 
 exports.addViolation = async (req, res) => {
-    const { user_id, violation_type, specific_violation, location, fines, details } = req.body;
+    const { entity_id, violation_type, specific_violation, location, fines, details } = req.body;
     try {
-        await Violation.addViolation(user_id, violation_type, specific_violation, location, fines, details);
+        let user_id = null;
+        if (entity_id && entity_id.startsWith('user-')) {
+            user_id = parseInt(entity_id.split('-')[1]);
+        } else if (entity_id && entity_id.startsWith('fisherfolk-')) {
+            user_id = parseInt(entity_id.split('-')[1]);
+        } else {
+            throw new Error('Invalid entity_id format');
+        }
+
+        await Violation.addViolation(user_id, null, violation_type, specific_violation, location, fines, details);
         res.redirect('/violation-notifications');
     } catch (error) {
         console.error('Error adding violation:', error);
-        res.status(500).send('Error adding violation');
+        res.status(500).send('Error adding violation: ' + error.message);
     }
 };
 
@@ -56,3 +65,5 @@ exports.getUserViolations = async (req, res) => {
         res.status(500).send('Error fetching violation history');
     }
 };
+
+module.exports = exports;

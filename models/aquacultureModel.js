@@ -68,3 +68,27 @@ module.exports.deleteFacility = async (id) => {
         throw err;
     }
 };
+
+module.exports.getAquacultureOwnerSpeciesAnalytics = async () => {
+    const query = `
+        SELECT owner, species, COUNT(*) as count 
+        FROM aquaculture_facilities 
+        GROUP BY owner, species
+    `;
+    try {
+        const [results] = await db.query(query);
+        return results; // Returns [{ owner: "John Doe", species: "Tilapia", count: 3 }, ...]
+    } catch (err) {
+        throw err;
+    }
+};
+
+module.exports.getTotalFacilities = async () => {
+    const query = `SELECT COUNT(*) as total FROM aquaculture_facilities`;
+    try {
+        const [result] = await db.query(query);
+        return result[0].total; // Returns the total number of facilities
+    } catch (err) {
+        throw err;
+    }
+};

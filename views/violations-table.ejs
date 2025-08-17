@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF and autoTable for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary: #1e3a8a; /* Deep navy */
@@ -23,7 +28,7 @@
         }
 
         body {
-            font-family:  Arial, Helvetica, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: var(--background);
             color: var(--text);
             margin: 0;
@@ -31,70 +36,70 @@
         }
 
         /* Navbar */
-.navbar {
-  background-color: var(--primary);
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.navbar-brand {
-  font-weight: 600;
-  font-size: 1.5rem;
-  color: #fff !important;
-}
-.navbar .nav-link {
-  color: #fff !important;
-}
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff !important;
+        }
+        .navbar .nav-link {
+            color: #fff !important;
+        }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0px;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: var(--card-bg);
-  padding-top: 1rem;
-  overflow-y: auto;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: var(--card-bg);
+            padding-top: 1rem;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
 
-.sidebar-logo img {
-  max-width: 100%;
-  height: auto;
-}
-.sidebar-logo {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
+        .sidebar-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        .sidebar-logo {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
 
-.sidebar .nav-link {
-  color: var(--text);
-  padding: 0.75rem 1rem;
-}
-.sidebar .sub-item {
-  padding-left: 2.5rem;
-  font-size: 0.9rem;
-}
+        .sidebar .nav-link {
+            color: var(--text);
+            padding: 0.75rem 1rem;
+        }
+        .sidebar .sub-item {
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
 
-/* Default visible on desktop */
-body {
-  margin-left: 250px;
-}
+        /* Default visible on desktop */
+        body {
+            margin-left: 250px;
+        }
 
-/* Hide sidebar on mobile */
-@media (max-width: 991px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  body {
-    margin-left: 0;
-  }
-  .sidebar.active {
-    transform: translateX(0);
-    z-index: 1050;
-  }
-}
+        /* Hide sidebar on mobile */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            body {
+                margin-left: 0;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                z-index: 1050;
+            }
+        }
 
         /* Main Container */
         .main-container {
@@ -158,7 +163,6 @@ body {
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-           
         }
         .table th {
             background-color: var(--primary);
@@ -260,7 +264,7 @@ body {
         }
         .modal-footer {
             border-top: none;
-            padding: 1rem 1.5rem;
+            padding: 1.5rem;
         }
         .btn-danger {
             background-color: var(--warning);
@@ -357,116 +361,173 @@ body {
                 font-size: 0.8rem;
             }
         }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .main-container, .main-container * {
+                visibility: visible;
+            }
+            .main-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .table-container {
+                max-height: none; /* Remove max-height to prevent scrolling */
+                overflow-y: visible; /* Ensure content is fully visible */
+            }
+            .table-responsive {
+                width: 100%;
+                overflow: visible;
+            }
+            .table {
+                font-size: 8pt; /* Reduced font size to fit more content */
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .table th, .table td {
+                border: 1px solid #000;
+                padding: 0.3rem;
+                background: none !important;
+                color: #000 !important;
+                white-space: normal; /* Allow text wrapping */
+                word-wrap: break-word; /* Ensure long words wrap */
+                overflow-wrap: break-word; /* Modern equivalent of word-wrap */
+                vertical-align: top; /* Align text to top for better readability */
+            }
+            /* Custom column widths to prevent overlap */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 5%; } /* ID */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* User */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 15%; } /* City Ordinance */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* Code */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 15%; } /* Location */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 10%; } /* Fines */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 20%; } /* Remarks */
+            .table th:nth-child(8), .table td:nth-child(8) { width: 10%; } /* Date */
+            .table th:nth-child(9), .table td:nth-child(9) { width: 10%; } /* Status */
+            .table th:nth-child(10), .table td:nth-child(10) { display: none; } /* Actions (hidden) */
+            .table tbody tr:hover {
+                background: none !important;
+            }
+            .navbar, .sidebar, .violation-section h2, .search-container, .export-buttons, .pagination, .no-violations {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-     <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid justify-content-between">
-    <!-- Sidebar Toggle (Hamburger) -->
-    <button class="btn btn-light d-lg-none" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid justify-content-between">
+            <!-- Sidebar Toggle (Hamburger) -->
+            <button class="btn btn-light d-lg-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
 
-    <!-- Brand -->
-    <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
+            <!-- Brand -->
+            <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
 
-    <!-- Right side (Welcome + Logout) -->
-    <ul class="navbar-nav flex-row align-items-center">
-      <li class="nav-item me-3">
-        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-          <i class="fas fa-sign-out-alt me-1"></i> Logout
-        </a>
-      </li>
-    </ul>
-  </div>
-</nav>
+            <!-- Right side (Welcome + Logout + Print) -->
+            <ul class="navbar-nav flex-row align-items-center">
+                <li class="nav-item me-3">
+                    <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print me-2"></i> Print Table</button>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Sidebar Logo / Branding -->
+        <div class="sidebar-logo text-center py-3">
+            <a href="/dashboard/admin">
+                <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
+            </a>
+        </div>
 
-  <!-- Sidebar Logo / Branding -->
-  <div class="sidebar-logo text-center py-3">
-    <a href="/dashboard/admin">
-      <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
-    </a>
-  </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+            </li>
 
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    </li>
+            <!-- Register -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
+                    <i class="fas fa-user-plus me-2"></i> Register
+                </a>
+                <div class="collapse" id="registerMenu">
+                    <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+                    <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish"></i> Register Post Harvest</a>
+                    <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+                </div>
+            </li>
 
-    <!-- Register -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
-        <i class="fas fa-user-plus me-2"></i> Register
-      </a>
-      <div class="collapse" id="registerMenu">
-        <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
-        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
-        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+            <!-- Reports -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
+                    <i class="fas fa-file-alt me-2"></i> Reports & Tracking
+                </a>
+                <div class="collapse" id="reportsMenu">
+                    <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
+                    <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
+                    <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+                    <a class="nav-link sub-item" href="/violations-table"><i class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+                    <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
+                    <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
+                    <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
+                    <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
+                </div>
+            </li>
+
+            <!-- Tools -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
+                    <i class="fas fa-tools me-2"></i> Tools
+                </a>
+                <div class="collapse" id="toolsMenu">
+                    <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
+                    <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
+                    <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
+                    <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
+                </div>
+            </li>
+        </ul>
     </div>
-    </li>
 
-    <!-- Reports -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
-        <i class="fas fa-file-alt me-2"></i> Reports & Tracking
-      </a>
-      <div class="collapse" id="reportsMenu">
-        <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
-        <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
-        <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
-        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
-        
-        <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
-        <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
-        <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
-        <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
-      </div>
-    </li>
-
-    <!-- Tools -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
-        <i class="fas fa-tools me-2"></i> Tools
-      </a>
-      <div class="collapse" id="toolsMenu">
-        <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
-        <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
-        <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
-        <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<!-- Logout Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Logout</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Are you sure you want to log out?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/auth/logout" class="btn btn-danger">Logout</a>
-      </div>
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">Are you sure you want to log out?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
-
 
     <div class="main-container">
         <div class="violation-section">
@@ -513,12 +574,12 @@ body {
                 <table class="table table-striped" id="violationsTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>User</th>
-                             <th>City Ordinance</th>
-  <th>Code</th>
-  <th>Location of Illegal Activities</th>
-  <th>Fines</th>
+                            <th>City Ordinance</th>
+                            <th>Code</th>
+                            <th>Location of Illegal Activities</th>
+                            <th>Fines</th>
                             <th>Remarks</th>
                             <th>Date</th>
                             <th>Status</th>
@@ -566,139 +627,153 @@ body {
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script>
-function getFilteredRows() {
-    const month = document.querySelector('select[name="month"]').value;
-    const year = document.querySelector('select[name="year"]').value;
-    const rows = document.querySelectorAll('#violationsTable tbody tr:not(.no-violations)');
-    const filteredRows = [];
+    <script>
+        function getFilteredRows() {
+            const month = document.querySelector('select[name="month"]').value;
+            const year = document.querySelector('select[name="year"]').value;
+            const rows = document.querySelectorAll('#violationsTable tbody tr:not(.no-violations)');
+            const filteredRows = [];
 
-    rows.forEach(row => {
-        const dateStr = row.getAttribute('data-date');
-        if (!dateStr) return;
+            rows.forEach(row => {
+                const dateStr = row.getAttribute('data-date');
+                if (!dateStr) return;
 
-        const date = new Date(dateStr);
-        const rowMonth = date.getMonth() + 1;
-        const rowYear = date.getFullYear();
+                const date = new Date(dateStr);
+                const rowMonth = date.getMonth() + 1;
+                const rowYear = date.getFullYear();
 
-        const matchesMonth = !month || rowMonth == parseInt(month);
-        const matchesYear = !year || rowYear == parseInt(year);
+                const matchesMonth = !month || rowMonth == parseInt(month);
+                const matchesYear = !year || rowYear == parseInt(year);
 
-        if (matchesMonth && matchesYear) {
-            filteredRows.push(row);
-        }
-    });
-
-    return filteredRows;
-}
-
-function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const month = document.querySelector('select[name="month"]').value;
-    const year = document.querySelector('select[name="year"]').value;
-    let title = 'Violation Notifications';
-    if (month && year) {
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        title += ` - ${monthNames[parseInt(month) - 1]} ${year}`;
-    } else if (month) {
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        title += ` - ${monthNames[parseInt(month) - 1]}`;
-    } else if (year) {
-        title += ` - ${year}`;
-    }
-    doc.text(title, 10, 10);
-
-    const filteredRows = getFilteredRows();
-    const tableData = [];
-    filteredRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 9) { // now with Fines column
-            tableData.push([
-                cells[0].innerText, // ID
-                cells[1].innerText, // User
-                cells[2].innerText, // City Ordinance
-                cells[3].innerText, // Code
-                cells[4].innerText, // Location of Illegal Activities
-                cells[5].innerText, // Fines
-                cells[6].innerText, // Remarks
-                cells[7].innerText, // Date
-                cells[8].innerText  // Status
-            ]);
-        }
-    });
-
-    doc.autoTable({
-        head: [['ID', 'User', 'City Ordinance', 'Code', 'Location of Illegal Activities', 'Fines', 'Remarks', 'Date', 'Status']],
-        body: tableData,
-        theme: 'striped',
-        headStyles: { fillColor: [30, 58, 138] },
-        margin: { top: 20 }
-    });
-
-    doc.save(`violations${month ? `_${month}` : ''}${year ? `_${year}` : ''}.pdf`);
-}
-
-function exportToExcel() {
-    const filteredRows = getFilteredRows();
-    const tableData = [];
-    filteredRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length >= 9) {
-            tableData.push({
-                ID: cells[0].innerText,
-                User: cells[1].innerText,
-                'City Ordinance': cells[2].innerText,
-                'Code': cells[3].innerText,
-                'Location of Illegal Activities': cells[4].innerText,
-                'Fines': cells[5].innerText,
-                'Remarks': cells[6].innerText,
-                Date: cells[7].innerText,
-                Status: cells[8].innerText
+                if (matchesMonth && matchesYear) {
+                    filteredRows.push(row);
+                }
             });
+
+            return filteredRows;
         }
-    });
 
-    const ws = XLSX.utils.json_to_sheet(tableData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Violations');
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const month = document.querySelector('select[name="month"]').value;
+            const year = document.querySelector('select[name="year"]').value;
+            let title = 'Violation Notifications';
+            if (month && year) {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                title += ` - ${monthNames[parseInt(month) - 1]} ${year}`;
+            } else if (month) {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                title += ` - ${monthNames[parseInt(month) - 1]}`;
+            } else if (year) {
+                title += ` - ${year}`;
+            }
+            doc.text(title, 10, 10);
 
-    const month = document.querySelector('select[name="month"]').value;
-    const year = document.querySelector('select[name="year"]').value;
-    let filename = 'violations';
-    if (month && year) {
-        filename += `_${month}_${year}`;
-    } else if (month) {
-        filename += `_${month}`;
-    } else if (year) {
-        filename += `_${year}`;
-    }
-    filename += '.xlsx';
+            const filteredRows = getFilteredRows();
+            const tableData = [];
+            filteredRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 9) { // now with Fines column
+                    tableData.push([
+                        cells[0].innerText, // ID
+                        cells[1].innerText, // User
+                        cells[2].innerText, // City Ordinance
+                        cells[3].innerText, // Code
+                        cells[4].innerText, // Location of Illegal Activities
+                        cells[5].innerText, // Fines
+                        cells[6].innerText, // Remarks
+                        cells[7].innerText, // Date
+                        cells[8].innerText  // Status
+                    ]);
+                }
+            });
 
-    XLSX.writeFile(wb, filename);
-}
-</script>
+            doc.autoTable({
+                head: [['ID', 'User', 'City Ordinance', 'Code', 'Location of Illegal Activities', 'Fines', 'Remarks', 'Date', 'Status']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [30, 58, 138] },
+                margin: { top: 20 },
+                styles: {
+                    overflow: 'linebreak', // Ensure text wraps in PDF
+                    fontSize: 8,
+                    cellPadding: 2
+                },
+                columnStyles: {
+                    0: { cellWidth: 10 }, // ID
+                    1: { cellWidth: 30 }, // User
+                    2: { cellWidth: 30 }, // City Ordinance
+                    3: { cellWidth: 20 }, // Code
+                    4: { cellWidth: 30 }, // Location
+                    5: { cellWidth: 20 }, // Fines
+                    6: { cellWidth: 40 }, // Remarks
+                    7: { cellWidth: 20 }, // Date
+                    8: { cellWidth: 20 }  // Status
+                }
+            });
 
+            doc.save(`violations${month ? `_${month}` : ''}${year ? `_${year}` : ''}.pdf`);
+        }
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
+        function exportToExcel() {
+            const filteredRows = getFilteredRows();
+            const tableData = [];
+            filteredRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 9) {
+                    tableData.push({
+                        ID: cells[0].innerText,
+                        User: cells[1].innerText,
+                        'City Ordinance': cells[2].innerText,
+                        'Code': cells[3].innerText,
+                        'Location of Illegal Activities': cells[4].innerText,
+                        'Fines': cells[5].innerText,
+                        'Remarks': cells[6].innerText,
+                        Date: cells[7].innerText,
+                        Status: cells[8].innerText
+                    });
+                }
+            });
 
-    sidebarToggle.addEventListener("click", function() {
-      sidebar.classList.toggle("active");
-    });
+            const ws = XLSX.utils.json_to_sheet(tableData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Violations');
 
-    // Optional: Close sidebar when clicking outside (on mobile/tablet)
-    document.addEventListener("click", function(e) {
-      if (window.innerWidth <= 991 && 
-          !sidebar.contains(e.target) && 
-          !sidebarToggle.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-  });
-</script>
+            const month = document.querySelector('select[name="month"]').value;
+            const year = document.querySelector('select[name="year"]').value;
+            let filename = 'violations';
+            if (month && year) {
+                filename += `_${month}_${year}`;
+            } else if (month) {
+                filename += `_${month}`;
+            } else if (year) {
+                filename += `_${year}`;
+            }
+            filename += '.xlsx';
 
+            XLSX.writeFile(wb, filename);
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebar = document.querySelector(".sidebar");
+
+            sidebarToggle.addEventListener("click", function() {
+                sidebar.classList.toggle("active");
+            });
+
+            // Optional: Close sidebar when clicking outside (on mobile/tablet)
+            document.addEventListener("click", function(e) {
+                if (window.innerWidth <= 991 && 
+                    !sidebar.contains(e.target) && 
+                    !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.remove("active");
+                }
+            });
+        });
+    </script>
 </body>
 </html>

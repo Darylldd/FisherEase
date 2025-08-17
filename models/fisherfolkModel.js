@@ -29,9 +29,7 @@ class Fisherfolk {
                     f.contact_info,
                     f.fishing_methods,
                     f.fishing_zone,
-                    
                     f.civil_status,
-                    
                     r.id AS vessel_id,
                     r.fishing_vessel_name
                 FROM fisherfolk f
@@ -59,7 +57,6 @@ class Fisherfolk {
                     fishing_methods,
                     fishing_zone,
                     civil_status
-                  
                 FROM fisherfolk 
                 WHERE id = ?
             `, [id]);
@@ -71,10 +68,10 @@ class Fisherfolk {
 
     static async update(id, data) {
         try {
-            const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status} = data;
+            const { license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status } = data;
             const [result] = await db.query(
                 "UPDATE fisherfolk SET license_number = ?, date_registered = ?, first_name = ?, middle_name = ?, last_name = ?, address = ?, contact_info = ?, fishing_methods = ?, fishing_zone = ?, civil_status = ? WHERE id = ?",
-                [license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status,  id]
+                [license_number, date_registered, first_name, middle_name, last_name, address, contact_info, fishing_methods, fishing_zone, civil_status, id]
             );
             return result;
         } catch (error) {
@@ -86,6 +83,29 @@ class Fisherfolk {
         try {
             const [result] = await db.query("DELETE FROM fisherfolk WHERE id = ?", [id]);
             return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getFisherfolkAnalytics() {
+        try {
+            const [rows] = await db.query(`
+                SELECT fishing_zone, COUNT(*) as count
+                FROM fisherfolk
+                GROUP BY fishing_zone
+                ORDER BY count DESC
+            `);
+            return rows; // Returns [{ fishing_zone: "Zone A", count: 10 }, ...]
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getTotalFisherfolk() {
+        try {
+            const [result] = await db.query("SELECT COUNT(*) as total FROM fisherfolk");
+            return result[0].total; // Returns the total number of fisherfolk
         } catch (error) {
             throw error;
         }

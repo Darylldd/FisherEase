@@ -7,6 +7,241 @@ const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
 
+exports.downloadReport = async (req, res) => {
+  try {
+    const filters = {
+      species: req.query.species || "",
+      location: req.query.location || "",
+      status: req.query.status || "",
+      month: req.query.month || "",
+      year: req.query.year || "",
+    };
+
+    if (filters.month && !filters.year) {
+      return res.status(400).send("Year is required when filtering by month.");
+    }
+    if (filters.year && !filters.month) {
+      return res.status(400).send("Month is required when filtering by year.");
+    }
+
+    const reports = await CatchReport.getAllReports(filters);
+    if (!reports || reports.length === 0) {
+      return res.status(404).send("No reports found for the specified filters.");
+    }
+
+    const pdfDoc = new PDFDocument({ size: [842, 595], margin: 40 }); // A4 Landscape
+    const filename = `catch_report${
+      filters.month && filters.year ? `_${filters.month}_${filters.year}` : ""
+    }.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+    res.setHeader("Content-Type", "application/pdf");
+    pdfDoc.pipe(res);
+
+    // ---------- HEADER ----------
+    const title = "SUMMARY OF FISHERIES PRODUCTION REPORT";
+    const municipality = "MUNICIPALITY: CALAPAN CITY";
+    const monthYear = `MONTH OF ${
+      filters.month || new Date().getMonth() + 1
+    }/${filters.year || 2025}`;
+    const province = "PROVINCE: ORIENTAL MINDORO";
+
+    pdfDoc.fontSize(18).text(title, { align: "center" });
+    pdfDoc.moveDown(0.5);
+    pdfDoc.fontSize(12).text(municipality, { align: "center" });
+    pdfDoc.text(monthYear, { align: "center" });
+    pdfDoc.text(province, { align: "center" });
+    pdfDoc.moveDown(1);
+
+    // ---------- TABLE SETTINGS ----------
+    const tableTop = 120;
+    const colX = [50, 150, 300, 420, 500, 600, 700];
+    const colWidths = [100, 150, 120, 80, 80, 100, 80];
+    const headers = [
+      "SECTOR",
+      "BARANGAY",
+      "SPECIES (with Habitat)",
+      "NO. OF OPERATOR",
+      "TOTAL AREA (Has)",
+      "PRODUCTION (MT)",
+      "REMARKS",
+    ];
+
+    function drawTableHeader(y) {
+      pdfDoc.font("Helvetica-Bold").fontSize(10);
+      headers.forEach((header, i) => {
+        pdfDoc.text(header, colX[i], y, {
+          width: colWidths[i],
+          align: i >= 3 && i <= 5 ? "right" : "left",
+        });
+      });
+    }
+
+    function drawRow(y, row, isBold = false) {
+      pdfDoc.font(isBold ? "Helvetica-Bold" : "Helvetica").fontSize(9);
+      row.forEach((text, i) => {
+        pdfDoc.text(text, colX[i], y, {
+          width: colWidths[i],
+          align: i >= 3 && i <= 5 ? "right" : "left",
+        });
+      });
+    }
+
+    // ---------- SPECIES + HABITAT ----------
+    const speciesHabitat = {
+      "Bangus (Milkfish)": "Brackishwater",
+      "Tilapia (Nile Tilapia, Red Tilapia, Blue Tilapia)": "Brackishwater",
+      "Pangasius (Cream Dory)": "Brackishwater",
+      "Hito (Catfish)": "Freshwater Fish Cage",
+      "Dalag (Mudfish)": "Freshwater Fish Cage",
+      "Ayungin (Silver Perch)": "Freshwater Fish Cage",
+      "Martiniko (Climbing Perch)": "Freshwater Fish Cage",
+      "Biya (Gobies)": "Freshwater Fish Cage",
+      "Karpa (Common Carp)": "Freshwater Fish Cage",
+      "Lapu-Lapu (Grouper)": "Marine",
+      "Talakitok (Giant Trevally)": "Marine",
+      "Sapsap (Slipmouth)": "Marine",
+      "Tamban (Sardine)": "Marine",
+      "Salay-salay/Kalapato (Yellowtail Scad)": "Marine",
+      "Dalagang Bukid (Yellowtail Fusilier)": "Marine",
+      "Danggit (Rabbitfish)": "Marine",
+      "Tulingan (Mackerel Tuna)": "Marine",
+      "Tambakol (Yellowfin Tuna)": "Marine",
+      "Lapu-Lapu Pula (Red Grouper)": "Marine",
+      "Bakoko (Black Pomfret)": "Marine",
+      "Maya-maya (Red Snapper)": "Marine",
+      "Alumahan (Indian Mackerel)": "Marine",
+      "Espada (Beltfish/Cutlassfish)": "Marine",
+      "Kanduli (Sea Catfish)": "Marine",
+      "Molmol (Parrotfish)": "Marine",
+      "Pugapo (Reef Cod)": "Marine",
+      "Manamsi": "Marine",
+      "Samaral(Danggit)": "Marine",
+    };
+
+    // ---------- DATA GROUPING ----------
+    const sectorData = {
+      "1. AQUACULTURE": [],
+      "2. MUNICIPAL FISHERIES": [],
+    };
+
+    let totalProduction = 0;
+
+    reports.forEach((report) => {
+      const barangay = report.location || report.user_name || "N/A";
+      const operators = report.operators || 0;
+      const area = report.quantity ? parseFloat(report.quantity) * 0.1 : 0;
+      const production = report.quantity || 0;
+      const species = report.species ? report.species.trim() : "Unknown";
+
+      totalProduction += production;
+
+      const habitat = speciesHabitat[species] || "Unknown";
+      const labeledSpecies = `${species} – ${habitat}`;
+
+      if (habitat === "Brackishwater" || habitat === "Freshwater Fish Cage") {
+        sectorData["1. AQUACULTURE"].push({
+          barangay,
+          species: labeledSpecies,
+          operators,
+          area,
+          production,
+        });
+      } else {
+        sectorData["2. MUNICIPAL FISHERIES"].push({
+          barangay,
+          species: labeledSpecies,
+          operators,
+          area,
+          production,
+        });
+      }
+    });
+
+    // ---------- RENDER TABLE ----------
+    let y = tableTop;
+    drawTableHeader(y);
+    y += 20;
+
+    for (const [sector, items] of Object.entries(sectorData)) {
+      drawRow(y, [sector, "", "", "", "", "", ""], true);
+      y += 20;
+
+      items.forEach((item) => {
+        if (y > 500) {
+          pdfDoc.addPage({ size: [842, 595] });
+          y = 50;
+          drawTableHeader(y);
+          y += 20;
+        }
+        drawRow(y, [
+          "",
+          item.barangay,
+          item.species || "",
+          (item.operators || 0).toFixed(0),
+          (item.area || 0).toFixed(1),
+          (item.production || 0).toFixed(1),
+          "",
+        ]);
+        y += 20;
+      });
+    }
+
+    // ---------- GRAND TOTAL ----------
+    drawRow(y, ["", "GRAND TOTAL", "", "", "", totalProduction.toFixed(1), ""], true);
+
+    pdfDoc.end();
+  } catch (error) {
+    console.error("Error in downloadReport:", error);
+    res.status(500).send(`Internal Server Error: ${error.message}`);
+  }
+};
+
+
+exports.downloadExcelReport = async (req, res) => {
+  try {
+    const filters = {
+      species: req.query.species || '',
+      location: req.query.location || '',
+      status: req.query.status || '',
+      month: req.query.month || '',
+      year: req.query.year || ''
+    };
+
+    const reports = await CatchReport.getAllReports(filters);
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const wsData = [
+      ["User", "Species", "Methods Of Fishing", "Quantity", "Location", "Status", "Date"],
+      ...reports.map(report => [
+        report.user_name,
+        report.species,
+        report.method_of_fishing,
+        report.quantity,
+        report.location,
+        report.status,
+        new Date(report.date).toISOString().split('T')[0]
+      ])
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Catch Report Review");
+
+    // Write to buffer
+    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const filename = `catch_report${filters.month && filters.year ? `_${filters.month}_${filters.year}` : ''}.xlsx`;
+
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buffer);
+  } catch (error) {
+    console.error("Error downloading Excel report:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
 exports.getStockClusters = async (req, res) => {
   try {
     const userId = req.session.userId;
@@ -289,116 +524,7 @@ exports.generateReport = async (req, res) => {
   }
 };
 
-exports.downloadReport = async (req, res) => {
-  try {
-    const filters = {
-      species: req.query.species || '',
-      location: req.query.location || '',
-      status: req.query.status || '',
-      month: req.query.month || '',
-      year: req.query.year || ''
-    };
 
-    console.log('Received filters for PDF export:', filters);
-
-    if (filters.month && !filters.year) {
-      return res.status(400).send("Year is required when filtering by month.");
-    }
-    if (filters.year && !filters.month) {
-      return res.status(400).send("Month is required when filtering by year.");
-    }
-
-    const reports = await CatchReport.getAllReports(filters);
-    console.log(`Fetched ${reports.length} reports for PDF:`, reports.map(r => ({
-      id: r.id,
-      date: r.date,
-      user_name: r.user_name,
-      species: r.species
-    })));
-
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found for the specified filters.");
-    }
-
-    const pdfDoc = new PDFDocument({ size: 'A4', margin: 40 });
-    const filename = `catch_report${filters.month && filters.year ? `_${filters.month}_${filters.year}` : ''}.pdf`;
-
-    // Send PDF directly to response
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-    res.setHeader('Content-Type', 'application/pdf');
-    pdfDoc.pipe(res);
-
-    let title = 'Catch Report';
-    if (filters.month && filters.year) {
-      title += ` - ${filters.month}/${filters.year}`;
-    }
-    pdfDoc.fontSize(18).text(title, { align: 'center' });
-    pdfDoc.moveDown();
-
-    reports.forEach((report, index) => {
-      const reportDate = report.date ? new Date(report.date).toISOString().split('T')[0] : 'N/A';
-      pdfDoc.fontSize(12).text(
-        `${index + 1}. User: ${report.user_name || 'N/A'}, ` +
-        `Species: ${report.species || 'N/A'}, ` +
-        `Quantity: ${report.quantity || 'N/A'}, ` +
-        `Location: ${report.location || 'N/A'}, ` +
-        `Method: ${report.method_of_fishing || 'N/A'}, ` +
-        `Status: ${report.status || 'N/A'}, ` +
-        `Date: ${reportDate}`
-      );
-      pdfDoc.moveDown();
-    });
-
-    pdfDoc.end();
-
-  } catch (error) {
-    console.error('Error in downloadReport:', error);
-    res.status(500).send(`Internal Server Error: ${error.message}`);
-  }
-};
-
-exports.downloadExcelReport = async (req, res) => {
-  try {
-    const filters = {
-      species: req.query.species || '',
-      location: req.query.location || '',
-      status: req.query.status || '',
-      month: req.query.month || '',
-      year: req.query.year || ''
-    };
-
-    const reports = await CatchReport.getAllReports(filters);
-
-    // Create workbook and worksheet
-    const wb = XLSX.utils.book_new();
-    const wsData = [
-      ["User", "Species", "Methods Of Fishing", "Quantity", "Location", "Status", "Date"],
-      ...reports.map(report => [
-        report.user_name,
-        report.species,
-        report.method_of_fishing,
-        report.quantity,
-        report.location,
-        report.status,
-        new Date(report.date).toISOString().split('T')[0]
-      ])
-    ];
-
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Catch Report Review");
-
-    // Write to buffer
-    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-    const filename = `catch_report${filters.month && filters.year ? `_${filters.month}_${filters.year}` : ''}.xlsx`;
-
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.send(buffer);
-  } catch (error) {
-    console.error("Error downloading Excel report:", error);
-    res.status(500).send("Internal Server Error");
-  }
-};
 
 exports.getReportFilters = async (req, res) => {
   try {

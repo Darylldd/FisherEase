@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Violation</title>
+    <title>Violation Notifications</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Google Fonts -->
@@ -11,15 +11,16 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        /* Same styles as violations-table.ejs (omitted for brevity) */
         :root {
-            --primary: #1e3a8a; /* Deep navy */
-            --accent: #3b82f6; /* Vibrant blue */
-            --background: #f0f4ff; /* Light blue-gray */
+            --primary: #1e3a8a;
+            --accent: #3b82f6;
+            --background: #f0f4ff;
             --card-bg: #ffffff;
             --text: #1f2937;
             --border: #d1d5db;
-            --highlight: #10b981; /* Green for success */
-            --warning: #ef4444; /* Red for alerts */
+            --highlight: #10b981;
+            --warning: #ef4444;
         }
 
         body {
@@ -30,80 +31,74 @@
             padding: 0;
         }
 
-        /* Navbar */
-.navbar {
-  background-color: var(--primary);
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.navbar-brand {
-  font-weight: 600;
-  font-size: 1.5rem;
-  color: #fff !important;
-}
-.navbar .nav-link {
-  color: #fff !important;
-}
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff !important;
+        }
+        .navbar .nav-link {
+            color: #fff !important;
+        }
 
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0px;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: var(--card-bg);
-  padding-top: 1rem;
-  overflow-y: auto;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
+        .sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: var(--card-bg);
+            padding-top: 1rem;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
 
-.sidebar-logo img {
-  max-width: 100%;
-  height: auto;
-}
-.sidebar-logo {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
+        .sidebar-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        .sidebar-logo {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
 
-.sidebar .nav-link {
-  color: var(--text);
-  padding: 0.75rem 1rem;
-}
-.sidebar .sub-item {
-  padding-left: 2.5rem;
-  font-size: 0.9rem;
-}
+        .sidebar .nav-link {
+            color: var(--text);
+            padding: 0.75rem 1rem;
+        }
+        .sidebar .sub-item {
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
 
-/* Default visible on desktop */
-body {
-  margin-left: 250px;
-}
+        body {
+            margin-left: 250px;
+        }
 
-/* Hide sidebar on mobile */
-@media (max-width: 991px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  body {
-    margin-left: 0;
-  }
-  .sidebar.active {
-    transform: translateX(0);
-    z-index: 1050;
-  }
-}
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            body {
+                margin-left: 0;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                z-index: 1050;
+            }
+        }
 
-        /* Main Container */
         .main-container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
 
-        /* Violation Section */
         .violation-section {
             background: var(--card-bg);
             border-radius: 12px;
@@ -115,8 +110,8 @@ body {
         .violation-section:hover {
             transform: translateY(-4px);
         }
-        .violation-section h3 {
-            font-size: 1.5rem;
+        .violation-section h2 {
+            font-size: 1.8rem;
             font-weight: 600;
             color: var(--primary);
             margin-bottom: 1.5rem;
@@ -126,11 +121,10 @@ body {
             justify-content: center;
             gap: 0.5rem;
         }
-        .violation-section h3 i {
+        .violation-section h2 i {
             color: var(--accent);
         }
 
-        /* Form Elements */
         .form-label {
             font-weight: 500;
             font-size: 0.95rem;
@@ -184,11 +178,7 @@ body {
             background-color: #059669;
             transform: translateY(-2px);
         }
-        textarea.form-control {
-            min-height: 100px;
-        }
 
-        /* Modal */
         .modal-content {
             border-radius: 12px;
             border: none;
@@ -205,7 +195,7 @@ body {
         }
         .modal-footer {
             border-top: none;
-            padding: 1rem 1.5rem;
+            padding: 1.5rem;
         }
         .btn-danger {
             background-color: var(--warning);
@@ -227,7 +217,6 @@ body {
             background-color: #4b5563;
         }
 
-        /* Responsive Design */
         @media (max-width: 1200px) {
             .main-container {
                 padding: 0 1rem;
@@ -241,8 +230,8 @@ body {
                 font-size: 0.9rem;
                 padding: 0.5rem 0.75rem;
             }
-            .violation-section h3 {
-                font-size: 1.3rem;
+            .violation-section h2 {
+                font-size: 1.5rem;
             }
             .violation-section {
                 padding: 1.5rem;
@@ -251,7 +240,8 @@ body {
                 width: 100%;
                 margin-bottom: 0.5rem;
             }
-            .btn-primary {
+            .btn-primary,
+            .btn-success {
                 width: 100%;
             }
         }
@@ -262,8 +252,8 @@ body {
             .violation-section {
                 padding: 1rem;
             }
-            .violation-section h3 {
-                font-size: 1.2rem;
+            .violation-section h2 {
+                font-size: 1.3rem;
             }
             .form-control,
             .form-select {
@@ -278,193 +268,173 @@ body {
 </head>
 <body>
     <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid justify-content-between">
-    <!-- Sidebar Toggle (Hamburger) -->
-    <button class="btn btn-light d-lg-none" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid justify-content-between">
+            <button class="btn btn-light d-lg-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
+            <ul class="navbar-nav flex-row align-items-center">
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="/violations-table"><i class="fas fa-table me-2"></i> View Violations Table</a>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-    <!-- Brand -->
-    <a class="navbar-brand ms-2" href="#">Fisheries Management Office</a>
-
-    <!-- Right side (Welcome + Logout) -->
-    <ul class="navbar-nav flex-row align-items-center">
-      <li class="nav-item me-3">
-        <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-          <i class="fas fa-sign-out-alt me-1"></i> Logout
-        </a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-
-  <!-- Sidebar Logo / Branding -->
-  <div class="sidebar-logo text-center py-3">
-    <a href="/dashboard/admin">
-      <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
-    </a>
-  </div>
-
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    </li>
-
-    <!-- Register -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
-        <i class="fas fa-user-plus me-2"></i> Register
-      </a>
-      <div class="collapse" id="registerMenu">
-        <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
-        <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
-        <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish "></i> Register Post Harvest</a>
-        <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
-      </div>
-    </li>
-
-    <!-- Reports -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
-        <i class="fas fa-file-alt me-2"></i> Reports & Tracking
-      </a>
-      <div class="collapse" id="reportsMenu">
-        <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
-        <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
-        <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
-        <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
-        <a class="nav-link sub-item" href="/violations-table"><i  class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
-        
-        <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
-        <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
-        <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
-        <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
-      </div>
-    </li>
-
-    <!-- Tools -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
-        <i class="fas fa-tools me-2"></i> Tools
-      </a>
-      <div class="collapse" id="toolsMenu">
-        <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
-        <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
-        <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
-        <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<!-- Logout Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Logout</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">Are you sure you want to log out?</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="/auth/logout" class="btn btn-danger">Logout</a>
-      </div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo text-center py-3">
+            <a href="/dashboard/admin">
+                <img src="/image/lugu.jpg" alt="Fisheries Management Office Logo" class="img-fluid" style="max-height: 100px;">
+            </a>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#registerMenu">
+                    <i class="fas fa-user-plus me-2"></i> Register
+                </a>
+                <div class="collapse" id="registerMenu">
+                    <a class="nav-link sub-item" href="/register/fisherfolk"><i class="fas fa-fish me-2"></i> Fisherfolk Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/register"><i class="fas fa-water me-2"></i> Aquaculture Facility Registration</a>
+                    <a class="nav-link sub-item" href="/aquaculture/list"><i class="fas fa-table"></i> Aquaculture Facility Table</a>
+                    <a class="nav-link sub-item" href="/register/post-harvest"><i class="fas fa-fish"></i> Register Post Harvest</a>
+                    <a class="nav-link sub-item" href="/admin/post-harvest"><i class="fas fa-table"></i> Post Harvest Table</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#reportsMenu">
+                    <i class="fas fa-file-alt me-2"></i> Reports & Tracking
+                </a>
+                <div class="collapse" id="reportsMenu">
+                    <a class="nav-link sub-item" href="/catch-report/review"><i class="fas fa-clipboard-check me-2"></i> Catch Report Review</a>
+                    <a class="nav-link sub-item" href="/fishing-activity"><i class="fas fa-anchor me-2"></i> Fishing Activity Tracking</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registration"><i class="fas fa-gavel me-2"></i> Enforcement and Compliance</a>
+                    <a class="nav-link sub-item" href="/fishing-vessel-registrations"><i class="fas fa-gavel me-2"></i> Vessel Table</a>
+                    <a class="nav-link sub-item" href="/violation-notifications"><i class="fas fa-exclamation-triangle me-2"></i> Violation Notifications</a>
+                    <a class="nav-link sub-item" href="/violations-table"><i class="fas fa-exclamation-triangle me-2"></i> View Violations</a>
+                    <a class="nav-link sub-item" href="/harvest/admin-view"><i class="fas fa-chart-line me-2"></i> Harvest & Production Data</a>
+                    <a class="nav-link sub-item" href="/fisherfolk/table"><i class="fas fa-table me-2"></i> Fisherfolk Table</a>
+                    <a class="nav-link sub-item" href="/admeasurement-form"><i class="fas fa-table me-2"></i> Admeasurement</a>
+                    <a class="nav-link sub-item" href="/admeasurement-forms"><i class="fas fa-table me-2"></i> Admeasurement List</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#toolsMenu">
+                    <i class="fas fa-tools me-2"></i> Tools
+                </a>
+                <div class="collapse" id="toolsMenu">
+                    <a class="nav-link sub-item" href="/fish-species"><i class="fas fa-fish me-2"></i> Fish Species Guide</a>
+                    <a class="nav-link sub-item" href="/admin/fish-species/add"><i class="fas fa-plus me-2"></i> Add Fish Species</a>
+                    <a class="nav-link sub-item" href="/audit/logs"><i class="fas fa-history me-2"></i> Audit Logs & Activity</a>
+                    <a class="nav-link sub-item" href="/climateLoss/admin/analysis"><i class="fas fa-cloud-sun me-2"></i> Climate Event Analysis</a>
+                </div>
+            </li>
+        </ul>
     </div>
-  </div>
-</div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">Are you sure you want to log out?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Violation Form -->
     <div class="main-container">
         <div class="violation-section">
-            <h3><i class="fas fa-plus"></i> Add Violation</h3>
+            <h2><i class="fas fa-plus"></i> Add Violation</h2>
             <form action="/violation-notifications/add" method="POST">
                 <div class="mb-3">
-                    <label for="user_id" class="form-label">User Name</label>
-                    <select name="user_id" id="user_id" class="form-select" required>
-                        <option value="" disabled selected>Select a user</option>
-                        <% users.forEach(user => { %>
-                            <option value="<%= user.id %>"><%= user.name %></option>
+                    <label for="entity_id" class="form-label">Name</label>
+                    <select name="entity_id" id="entity_id" class="form-select" required>
+                        <option value="" disabled selected>Select a name</option>
+                        <% combinedNames.forEach(entity => { %>
+                            <option value="<%= entity.type.toLowerCase() %>-<%= entity.id %>">
+                                <%= entity.name %> (<%= entity.type %>)
+                            </option>
                         <% }) %>
                     </select>
                 </div>
-<div class="mb-3">
-    <label for="violation_type" class="form-label">City Ordinance</label>
-    <select name="violation_type" id="violation_type" class="form-control" required>
-        <option value="">-- Select City Ordinance --</option>
-        <option value="City Ordinance No. 51-2019">City Ordinance No. 51-2019</option>
-        <option value="City Ordinance No. 88-2021">City Ordinance No. 88-2021</option>
-    </select>
-</div>
-
-<div class="mb-3">
-    <label for="specific_violation" class="form-label">Code</label>
-    <select name="specific_violation" id="specific_violation" class="form-control" required>
-        <option value="">-- Select Code --</option>
-      
-        <option value="Seksyon 6: Letter A">Seksyon 6: Letter A</option>
-        <option value="Seksyon 6: Letter B">Seksyon 6: Letter B</option>
-        <option value="Seksyon 6: Letter C">Seksyon 6: Letter C</option>
-        <option value="Seksyon 6: Letter D">Seksyon 6: Letter D</option>
-        <option value="Seksyon 6: Letter E">Seksyon 6: Letter E</option>
-        <option value="Seksyon 6: Letter F">Seksyon 6: Letter F</option>
-        <option value="Seksyon 6: Letter G">Seksyon 6: Letter G</option>
-        <option value="Seksyon 6: Letter H">Seksyon 6: Letter H</option>
-        <option value="Seksyon 6: Letter I">Seksyon 6: Letter I</option>
-        <option value="Seksyon 6: Letter J">Seksyon 6: Letter J</option>
-        <option value="Seksyon 6: Letter K">Seksyon 6: Letter K</option>
-        <option value="Seksyon 6: Letter L">Seksyon 6: Letter L</option>
-        <option value="Seksyon 6: Letter M">Seksyon 6: Letter M</option>
-        <option value="Seksyon 6: Letter N">Seksyon 6: Letter N</option>
-        <option value="Seksyon 6: Letter O">Seksyon 6: Letter O</option>
-        <option value="Seksyon 6: Letter P">Seksyon 6: Letter P</option>
-
-  
-        <option value="Seksyon 17">Seksyon 17</option>
-        <option value="Seksyon 18">Seksyon 18</option>
-
-      
-        <option value="Seksyon 52">Seksyon 52</option>
-        <option value="Seksyon 53">Seksyon 53</option>
-        <option value="Seksyon 54">Seksyon 54</option>
-        <option value="Seksyon 55">Seksyon 55</option>
-        <option value="Seksyon 56">Seksyon 56</option>
-        <option value="Seksyon 57">Seksyon 57</option>
-        <option value="Seksyon 58">Seksyon 58</option>
-        <option value="Seksyon 59">Seksyon 59</option>
-        <option value="Seksyon 60">Seksyon 60</option>
-        <option value="Seksyon 61">Seksyon 61</option>
-        <option value="Seksyon 62">Seksyon 62</option>
-        <option value="Seksyon 63">Seksyon 63</option>
-        <option value="Seksyon 64">Seksyon 64</option>
-        <option value="Seksyon 65">Seksyon 65</option>
-        <option value="Seksyon 66">Seksyon 66</option>
-        <option value="Seksyon 67">Seksyon 67</option>
-        <option value="Seksyon 68">Seksyon 68</option>
-        <option value="Seksyon 69">Seksyon 69</option>
-        <option value="Seksyon 70">Seksyon 70</option>
-    </select>
-</div>
-
-<div class="mb-3">
-    <label for="location" class="form-label">Location of Illegal Activities</label>
-    <input type="text" name="location" id="location" class="form-control" required>
-</div>
-
-<div class="mb-3">
-    <label for="fines" class="form-label">Fines</label>
-    <input type="number" name="fines" id="fines" class="form-control" placeholder="Enter fine amount" required>
-</div>
-
+                <div class="mb-3">
+                    <label for="violation_type" class="form-label">City Ordinance</label>
+                    <select name="violation_type" id="violation_type" class="form-control" required>
+                        <option value="">-- Select City Ordinance --</option>
+                        <option value="City Ordinance No. 51-2019">City Ordinance No. 51-2019</option>
+                        <option value="City Ordinance No. 88-2021">City Ordinance No. 88-2021</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="specific_violation" class="form-label">Code</label>
+                    <select name="specific_violation" id="specific_violation" class="form-control" required>
+                        <option value="">-- Select Code --</option>
+                        <option value="Seksyon 6: Letter A">Seksyon 6: Letter A</option>
+                        <option value="Seksyon 6: Letter B">Seksyon 6: Letter B</option>
+                        <option value="Seksyon 6: Letter C">Seksyon 6: Letter C</option>
+                        <option value="Seksyon 6: Letter D">Seksyon 6: Letter D</option>
+                        <option value="Seksyon 6: Letter E">Seksyon 6: Letter E</option>
+                        <option value="Seksyon 6: Letter F">Seksyon 6: Letter F</option>
+                        <option value="Seksyon 6: Letter G">Seksyon 6: Letter G</option>
+                        <option value="Seksyon 6: Letter H">Seksyon 6: Letter H</option>
+                        <option value="Seksyon 6: Letter I">Seksyon 6: Letter I</option>
+                        <option value="Seksyon 6: Letter J">Seksyon 6: Letter J</option>
+                        <option value="Seksyon 6: Letter K">Seksyon 6: Letter K</option>
+                        <option value="Seksyon 6: Letter L">Seksyon 6: Letter L</option>
+                        <option value="Seksyon 6: Letter M">Seksyon 6: Letter M</option>
+                        <option value="Seksyon 6: Letter N">Seksyon 6: Letter N</option>
+                        <option value="Seksyon 6: Letter P">Seksyon 6: Letter P</option>
+                        <option value="Seksyon 17">Seksyon 17</option>
+                        <option value="Seksyon 18">Seksyon 18</option>
+                        <option value="Seksyon 52">Seksyon 52</option>
+                        <option value="Seksyon 53">Seksyon 53</option>
+                        <option value="Seksyon 54">Seksyon 54</option>
+                        <option value="Seksyon 55">Seksyon 55</option>
+                        <option value="Seksyon 56">Seksyon 56</option>
+                        <option value="Seksyon 57">Seksyon 57</option>
+                        <option value="Seksyon 58">Seksyon 58</option>
+                        <option value="Seksyon 59">Seksyon 59</option>
+                        <option value="Seksyon 60">Seksyon 60</option>
+                        <option value="Seksyon 61">Seksyon 61</option>
+                        <option value="Seksyon 62">Seksyon 62</option>
+                        <option value="Seksyon 63">Seksyon 63</option>
+                        <option value="Seksyon 64">Seksyon 64</option>
+                        <option value="Seksyon 65">Seksyon 65</option>
+                        <option value="Seksyon 66">Seksyon 66</option>
+                        <option value="Seksyon 67">Seksyon 67</option>
+                        <option value="Seksyon 68">Seksyon 68</option>
+                        <option value="Seksyon 69">Seksyon 69</option>
+                        <option value="Seksyon 70">Seksyon 70</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location of Illegal Activities</label>
+                    <input type="text" name="location" id="location" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="fines" class="form-label">Fines</label>
+                    <input type="number" name="fines" id="fines" class="form-control" placeholder="Enter fine amount" required>
+                </div>
                 <div class="mb-3">
                     <label for="details" class="form-label">Remarks</label>
                     <textarea name="details" id="details" class="form-control" required></textarea>
@@ -475,26 +445,25 @@ body {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
     <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebar = document.querySelector(".sidebar");
 
-    sidebarToggle.addEventListener("click", function() {
-      sidebar.classList.toggle("active");
-    });
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener("click", function() {
+                    sidebar.classList.toggle("active");
+                });
 
-    // Optional: Close sidebar when clicking outside (on mobile/tablet)
-    document.addEventListener("click", function(e) {
-      if (window.innerWidth <= 991 && 
-          !sidebar.contains(e.target) && 
-          !sidebarToggle.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-  });
-</script>
-
+                document.addEventListener("click", function(e) {
+                    if (window.innerWidth <= 991 && 
+                        !sidebar.contains(e.target) && 
+                        !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove("active");
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

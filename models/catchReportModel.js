@@ -2,31 +2,6 @@ const db = require('./db');
 const localStorage = require('local-storage');
 
 const CatchReport = {
-  createReport: async (userId, species, quantity, location, method_of_fishing, status = "Under Review", date) => {
-    console.log("Creating Catch Report with values:", { userId, species, quantity, location, method_of_fishing, status, date });
-
-    if (!userId || !species || !quantity || !location || !method_of_fishing || !date) {
-      throw new Error("Missing required fields. Ensure all fields are provided.");
-    }
-
-    const query = `INSERT INTO catch_reports (user_id, species, quantity, location, method_of_fishing, status, date) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    return db.execute(query, [userId, species, quantity, location, method_of_fishing, status, date]);
-  },
-
-  saveLocally: (report) => {
-    const reports = localStorage.get('offlineReports') || [];
-    reports.push(report);
-    localStorage.set('offlineReports', reports);
-  },
-
-  syncLocalReports: async () => {
-    const reports = localStorage.get('offlineReports') || [];
-    for (const report of reports) {
-      await CatchReport.createReport(report.userId, report.species, report.quantity, report.location, report.method_of_fishing, report.status, report.date);
-    }
-    localStorage.remove('offlineReports');
-  },
 
 getAllReports: async (filters = {}) => {
   let query = `SELECT catch_reports.*, users.name AS user_name 
@@ -70,68 +45,13 @@ getAllReports: async (filters = {}) => {
   return rows;
 },
 
-  getReportsByUser: async (userId) => {
-    const query = `SELECT * FROM catch_reports WHERE user_id = ?`;
-    const [rows] = await db.execute(query, [userId]);
-    return rows;
-  },
-
-  insertPrediction: async (userId, species, predicted_best_time, predicted_quantity, confidence) => {
-  const query = `
-    INSERT INTO catch_predictions (user_id, species, predicted_best_time, predicted_quantity, confidence)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-  return db.execute(query, [userId, species, predicted_best_time, predicted_quantity, confidence]);
-},
-
-getPredictionsByUser: async (userId) => {
-  const query = `SELECT * FROM catch_predictions WHERE user_id = ? ORDER BY predicted_best_time ASC`;
-  const [rows] = await db.execute(query, [userId]);
-  return rows;
-},
-  getPredictions: async () => {
-    const query = "SELECT * FROM catch_predictions ORDER BY predicted_best_time ASC";
-    const [rows] = await db.execute(query);
-    return rows;
-  },
-
-  updateReportStatus: async (reportId, status) => {
-    const query = `UPDATE catch_reports SET status = ? WHERE id = ?`;
-    const [result] = await db.execute(query, [status, reportId]);
-    return result;
-  },
-
-  getTotalReports: async () => {
-    const query = `SELECT COUNT(*) AS total FROM catch_reports`;
-    const [rows] = await db.execute(query);
-    return rows.length > 0 ? rows[0].total : 0;
-  },
-
   getApprovedReports: async () => {
     const query = `SELECT COUNT(*) AS total FROM catch_reports WHERE status = 'Approved'`;
     const [rows] = await db.execute(query);
     return rows.length > 0 ? rows[0].total : 0;
   },
 
-  getFlaggedReports: async () => {
-    const query = `SELECT COUNT(*) AS total FROM catch_reports WHERE status = 'Flagged'`;
-    const [rows] = await db.execute(query);
-    return rows.length > 0 ? rows[0].total : 0;
-  },
-
-  getSpeciesData: async () => {
-    const query = "SELECT species, COUNT(*) AS count FROM catch_reports GROUP BY species";
-    const [rows] = await db.execute(query);
-    return rows;
-  },
-
-  getStatusData: async () => {
-    const query = "SELECT status, COUNT(*) AS count FROM catch_reports GROUP BY status";
-    const [rows] = await db.execute(query);
-    return rows;
-  },
-
-  getDailyReports: async () => {
+    getDailyReports: async () => {
     const query = "SELECT DATE(date) AS report_date, COUNT(*) AS count FROM catch_reports GROUP BY DATE(date)";
     const [rows] = await db.execute(query);
     return rows;
@@ -169,6 +89,93 @@ getPredictionsByUser: async (userId) => {
     const [rows] = await db.execute(query, params);
     return rows;
   },
+
+  createReport: async (userId, species, quantity, location, method_of_fishing, status = "Under Review", date) => {
+    console.log("Creating Catch Report with values:", { userId, species, quantity, location, method_of_fishing, status, date });
+
+    if (!userId || !species || !quantity || !location || !method_of_fishing || !date) {
+      throw new Error("Missing required fields. Ensure all fields are provided.");
+    }
+
+    const query = `INSERT INTO catch_reports (user_id, species, quantity, location, method_of_fishing, status, date) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    return db.execute(query, [userId, species, quantity, location, method_of_fishing, status, date]);
+  },
+
+  saveLocally: (report) => {
+    const reports = localStorage.get('offlineReports') || [];
+    reports.push(report);
+    localStorage.set('offlineReports', reports);
+  },
+
+  syncLocalReports: async () => {
+    const reports = localStorage.get('offlineReports') || [];
+    for (const report of reports) {
+      await CatchReport.createReport(report.userId, report.species, report.quantity, report.location, report.method_of_fishing, report.status, report.date);
+    }
+    localStorage.remove('offlineReports');
+  },
+
+
+
+  getReportsByUser: async (userId) => {
+    const query = `SELECT * FROM catch_reports WHERE user_id = ?`;
+    const [rows] = await db.execute(query, [userId]);
+    return rows;
+  },
+
+  insertPrediction: async (userId, species, predicted_best_time, predicted_quantity, confidence) => {
+  const query = `
+    INSERT INTO catch_predictions (user_id, species, predicted_best_time, predicted_quantity, confidence)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  return db.execute(query, [userId, species, predicted_best_time, predicted_quantity, confidence]);
+},
+
+getPredictionsByUser: async (userId) => {
+  const query = `SELECT * FROM catch_predictions WHERE user_id = ? ORDER BY predicted_best_time ASC`;
+  const [rows] = await db.execute(query, [userId]);
+  return rows;
+},
+  getPredictions: async () => {
+    const query = "SELECT * FROM catch_predictions ORDER BY predicted_best_time ASC";
+    const [rows] = await db.execute(query);
+    return rows;
+  },
+
+  updateReportStatus: async (reportId, status) => {
+    const query = `UPDATE catch_reports SET status = ? WHERE id = ?`;
+    const [result] = await db.execute(query, [status, reportId]);
+    return result;
+  },
+
+  getTotalReports: async () => {
+    const query = `SELECT COUNT(*) AS total FROM catch_reports`;
+    const [rows] = await db.execute(query);
+    return rows.length > 0 ? rows[0].total : 0;
+  },
+
+
+
+  getFlaggedReports: async () => {
+    const query = `SELECT COUNT(*) AS total FROM catch_reports WHERE status = 'Flagged'`;
+    const [rows] = await db.execute(query);
+    return rows.length > 0 ? rows[0].total : 0;
+  },
+
+  getSpeciesData: async () => {
+    const query = "SELECT species, COUNT(*) AS count FROM catch_reports GROUP BY species";
+    const [rows] = await db.execute(query);
+    return rows;
+  },
+
+  getStatusData: async () => {
+    const query = "SELECT status, COUNT(*) AS count FROM catch_reports GROUP BY status";
+    const [rows] = await db.execute(query);
+    return rows;
+  },
+
+
 
   getDistinctSpecies: async () => {
     const [rows] = await db.execute("SELECT DISTINCT species FROM catch_reports");
