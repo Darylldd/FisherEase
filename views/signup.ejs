@@ -1,19 +1,214 @@
-<%- include('partials/header', { title: 'Sign Up' }) %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
+        :root {
+      --primary: #1e3a8a; /* Deep navy */
+      --accent: #3b82f6; /* Vibrant blue */
+      --background: #f0f4ff; /* Light blue-gray */
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --border: #d1d5db;
+      --highlight: #10b981; /* Green for success */
+      --warning: #ef4444; /* Red for alerts */
+      --gradient: linear-gradient(135deg, #3b82f6, #60a5fa);
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+      display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* full screen height */
+        background-color: var(--background);
+        margin: 0;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--gradient);
+      padding: 1rem 1.5rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: navbarGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes navbarGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+      50% { box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); }
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 2rem;
+      color: #ffffff !important;
+      letter-spacing: 1px;
+      
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      transform: scale(1.05);
+      color: var(--card-bg) !important;
+    }
+
+    .navbar-brand::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--highlight);
+      transition: width 0.3s ease;
+    }
+
+    .navbar-brand:hover::after {
+      width: 100%;
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      text-align: center;
+    }
+
+    .nav-item {
+      margin: 0 0.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #ffffff !important;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .navbar .navB{
+      padding-left: 20%;
+    }
+
+    .navB .nav-item {
+      margin: 0 20px; 
+    }
+
+    .signin, .signup {
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 50px;
+    }
+
+    .signin:hover, .signup:hover {
+      background: var(--highlight);
+      /*border-color: var(--highlight);*/
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .signup {
+      background: var(--accent);
+    }
+
+    .signup:hover {
+      background: #2563eb;
+    }
+
+    .navbar-toggler {
+      border: none;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .navbar-brand {
+        font-size: 1.6rem;
+      }
+      .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .navbar {
+        padding: 0.8rem 1rem;
+      }
+      .navbar-brand {
+        font-size: 1.4rem;
+      }
+      .navbar-nav {
+        flex-direction: column;
+        padding: 1rem 0;
+      }
+      .nav-item {
+        margin: 0.5rem 0;
+        width: 100%;
+      }
+      .nav-link {
+        justify-content: center;
+        padding: 0.7rem 1rem;
+      }
+    }
+
         /* Centered Sign-up Container */
         .signup-container {
             position: relative;
-            margin: 2% auto;
+            margin: 6.5% auto;
             background: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
             width: 100%;
@@ -63,9 +258,54 @@
         .close-btn:hover {
             color: #ff0000;
         }
+
+        /* shrink checkbox slightly */
+        .form-check#termsCheck,
+        .form-check #terms {
+        transform: scale(0.9); 
+        margin-right: 5px;
+        }
+
+        .form-check-label {
+        font-size: 0.85rem; /* smaller label text */
+        }
+
+        .terms-check .form-check-input {
+        transform: scale(0.9);
+        }
+
+        .terms-check .form-check-label {
+        font-size: 0.85rem;
+        }
+
+
+
     </style>
 </head>
 <body>
+<!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <a class="navbar-brand animate__animated animate__pulse" href="/landing">FisherEase</a>
+
+  <!-- ✅ Correct Bootstrap Hamburger -->
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- ✅ Collapsible Menu -->
+  <div class="collapse navbar-collapse" id="navbarNav">
+    
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item signin">
+        <a class="nav-link animate__animated animate__fadeIn" href="/auth/login"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>
+      </li>
+      <li class="nav-item signup">
+        <a class="nav-link animate__animated animate__fadeIn" href="/auth/signup"><i class="fas fa-user-plus me-1"></i> Sign Up</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
 <div class="signup-container">
 
@@ -101,12 +341,79 @@
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" name="password" placeholder="Password" required>
         </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="terms" required>
+            <label class="form-check-label" for="terms">
+                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms & Conditions</a>
+            </label>
+        </div>
+
         <button type="submit" class="btn btn-primary mt-3">Sign Up</button>
 
         <p>Already have an account? <a href="/auth/login" class="login">Sign In</a></p>
     </form>
+
+    <!-- 🌟 Aesthetic Bootstrap Modal for Terms -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-4 border-0">
+      
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white rounded-top-4">
+        <h5 class="modal-title fw-bold" id="termsModalLabel" >
+          <i class="bi bi-file-text me-2"></i> Terms & Conditions
+        </h5>
+        <button type="button" class="btn-close btn-close-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-4" style="max-height: 400px; overflow-y: auto;">
+        <p class="lead"><strong>Welcome to Our Service!</strong></p>
+        <p class="text-muted">By signing up, you agree to the following terms:</p>
+        
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i> You must provide accurate information.</li>
+          <li class="list-group-item"><i class="bi bi-shield-lock text-primary me-2"></i> Your account is your responsibility—do not share your password.</li>
+          <li class="list-group-item"><i class="bi bi-slash-circle text-danger me-2"></i> We reserve the right to suspend accounts violating policies.</li>
+          <li class="list-group-item"><i class="bi bi-database text-warning me-2"></i> Data may be collected and processed in accordance with our Privacy Policy.</li>
+          <li class="list-group-item"><i class="bi bi-exclamation-triangle text-secondary me-2"></i> Use of this service is at your own risk.</li>
+        </ul>
+
+        <p class="small text-muted">Please read these terms carefully before proceeding.</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebarToggle.addEventListener("click", function() {
+      sidebar.classList.toggle("active");
+    });
+
+    document.addEventListener("click", function(e) {
+      if (window.innerWidth <= 991 && 
+          !sidebar.contains(e.target) && 
+          !sidebarToggle.contains(e.target)) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
+</script>
 </body>
 </html>
 

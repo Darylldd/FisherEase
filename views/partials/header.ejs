@@ -25,27 +25,68 @@
     }
 
     body {
-      background-color: #fff8dc;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
       scroll-behavior: smooth;
-      font-family:  Arial, Helvetica, sans-serif;
     }
 
-    nav{
+    /* Navbar */
+    .navbar {
       background: var(--gradient);
+      padding: 1rem 1.5rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: navbarGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes navbarGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+      50% { box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); }
     }
 
     .navbar-brand {
-      margin-left: 50px;
-      font-size: 30px;
+      font-weight: 700;
+      font-size: 2rem;
       color: #ffffff !important;
-    }
-    
-    .navbar-nav{
-      margin-right: 3%;
+      letter-spacing: 1px;
+      
+      transition: transform 0.3s ease;
     }
 
-    .navbar-nav .nav-iten{
-      margin-right: 3%;
+    .navbar-brand:hover {
+      transform: scale(1.05);
+      color: var(--card-bg) !important;
+    }
+
+    .navbar-brand::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--highlight);
+      transition: width 0.3s ease;
+    }
+
+    .navbar-brand:hover::after {
+      width: 100%;
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      text-align: center;
+    }
+
+    .nav-item {
+      margin: 0 0.5rem;
     }
 
     .nav-link {
@@ -61,8 +102,7 @@
 
     .nav-link:hover {
       background: rgba(255, 255, 255, 0.1);
-      transform: translateY(1px);
-      padding: 6px;
+      transform: translateY(-2px);
     }
 
     .nav-link::before {
@@ -80,31 +120,41 @@
       left: 100%;
     }
 
-    .signin {
-        transition: 0.3s;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50px;
+    .navbar .navB{
+      padding-left: 20%;
     }
-      .signin:hover {
-        color: #000;
-        background: var(--highlight);
+
+    .navB .nav-item {
+      margin: 0 20px; 
+    }
+
+    .signin, .signup {
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 50px;
+    }
+
+    .signin:hover, .signup:hover {
+      background: var(--highlight);
+      /*border-color: var(--highlight);*/
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
     .signup {
-        transition: 0.3s;
-        background: var(--accent);
-        border-radius: 50px;
-    }
-      .signup:hover {
-        background: #2563eb;
+      background: var(--accent);
     }
 
-    .menu{
-        font-size: 15px;
-        padding-left: 18%;
+    .signup:hover {
+      background: #2563eb;
     }
-    .menu li{
-        padding-left: 20px;
+
+    .navbar-toggler {
+      border: none;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     }
 
    /* .signin {
@@ -134,13 +184,24 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class=" navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="/landing">FMO</a>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <a class="navbar-brand animate__animated animate__pulse" href="/landing">FisherEase</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto text-center navB">
+        <li class="nav-item">
+          <a class="nav-link animate__animated animate__fadeIn" href="#elearning"><i class="fas fa-book me-1"></i> E-Learning</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link animate__animated animate__fadeIn" href="#about"><i class="fas fa-info-circle me-1"></i> About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link animate__animated animate__fadeIn" href="#contact"><i class="fas fa-envelope me-1"></i> Contact Us</a>
+        </li>
+      </ul>
       <ul class="navbar-nav ml-auto">
         <li class="nav-item signin">
           <a class="nav-link animate__animated animate__fadeIn" href="/auth/login"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>
@@ -151,7 +212,6 @@
       </ul>
     </div>
   </nav>
-  
   <!-- Bootstrap JS & Dependencies -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

@@ -264,6 +264,8 @@ body {
         height: 240px;
       }
     }
+
+    
     .card6 {
     background-color: #e6f7fa; /* Light teal background for aquaculture card */
     border: none;
@@ -410,10 +412,10 @@ body {
 </div>
 
 <div class="main-container">
-    <!-- Summary Cards -->
+    <!-- Summary Cards
     <div class="section-header">
       <i class="fas fa-tachometer-alt"></i> Dashboard Overview
-    </div>
+    </div>   -->
     <div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
       <div class="col">
         <div class="card card1">
@@ -459,72 +461,90 @@ body {
           </div>
         </div>
       </div>
+
+
+
       <div class="col">
-        <div class="card card5">
-          <div class="card-body d-flex flex-column justify-content-between h-100">
-            <div>
-              <i class="fas fa-seedling card-icon"></i>
-              <div class="card-content">
-                <h5>Harvests</h5>
-              </div>
-            </div>
-            <button type="button" class="btn btn-primary mt-3 align-self-end" data-bs-toggle="modal" data-bs-target="#harvestModal">
-              View Harvest Details
-            </button>
+        <button type="button" 
+                class="card card5 text-center border-0 shadow-sm w-100 h-100 p-0"
+                data-bs-toggle="modal" 
+                data-bs-target="#harvestModal"
+                style="cursor: pointer;">
+
+          <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 position-relative">
+        
+            <!-- Icon (left side, absolute) -->
+            <i class="fas fa-seedling card-icon fs-3 text-success position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%);"></i>
+            
+            <!-- Title (centered) -->
+            <h5 class="mb-0 text-center">Harvests</h5>
+
           </div>
-        </div>
+        </button>
       </div>
+
       <div class="col">
-        <div class="card card6">
-          <div class="card-body d-flex flex-column justify-content-between h-100">
-            <div>
-              <i class="fas fa-fish card-icon"></i>
-              <div class="card-content">
-                <h5>Aquaculture Facilities</h5>
-              </div>
-            </div>
-            <button type="button" class="btn btn-primary mt-3 align-self-end" data-bs-toggle="modal" data-bs-target="#aquacultureModal">
-              View Aquaculture Details
-            </button>
+        <button type="button" 
+                class="card card6 text-center border-0 shadow-sm w-100 h-100 p-0"
+                data-bs-toggle="modal" 
+                data-bs-target="#aquacultureModal"
+                style="cursor: pointer;">
+
+          <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 position-relative">
+            
+            <!-- Icon (left side, absolute) -->
+            <i class="fas fa-fish card-icon fs-3 text-primary position-absolute" 
+              style="left: 20px; top: 50%; transform: translateY(-50%);"></i>
+            
+            <!-- Title (centered) -->
+            <h5 class="mb-0 text-center">Facilities</h5>
+
           </div>
-        </div>
+        </button>
       </div>
+
       <div class="col">
-        <div class="card card7">
-          <div class="card-body d-flex flex-column justify-content-between h-100">
-            <div>
-              <i class="fas fa-user-friends card-icon"></i>
-              <div class="card-content">
-                <h5>Fisherfolk</h5>
-              </div>
-            </div>
-            <button type="button" class="btn btn-primary mt-3 align-self-end" data-bs-toggle="modal" data-bs-target="#fisherfolkModal">
-              View Fisherfolk Details
-            </button>
+        <button type="button" 
+                class="card card7 text-center border-0 shadow-sm w-100 h-100 p-0"
+                data-bs-toggle="modal" 
+                data-bs-target="#fisherfolkModal"
+                style="cursor: pointer;">
+
+          <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 position-relative">
+            
+            <!-- Icon (left side, absolute) -->
+            <i class="fas fa-user-friends card-icon fs-3 text-warning position-absolute" 
+              style="left: 20px; top: 50%; transform: translateY(-50%);"></i>
+            
+            <!-- Title (centered) -->
+            <h5 class="mb-0 text-center">Fisherfolk</h5>
+
           </div>
-        </div>
+        </button>
       </div>
+
       <div class="col">
-        <div class="card card8">
-          <div class="card-body d-flex flex-column justify-content-between h-100">
-            <div>
-              <i class="fas fa-box-open card-icon"></i>
-              <div class="card-content">
-                <h5>Post-Harvest</h5>
-              </div>
-            </div>
-            <button type="button" class="btn btn-primary mt-3 align-self-end" data-bs-toggle="modal" data-bs-target="#postHarvestModal">
-              View Post-Harvest Details
-            </button>
-          </div>
-        </div>
+    <button type="button" 
+            class="card card8 text-center border-0 shadow-sm w-100 h-1000 p-0"
+            data-bs-toggle="modal" 
+            data-bs-target="#postHarvestModal"
+            style="cursor: pointer;">
+
+      <div class="card-body d-flex flex-column justify-content-center align-items-center p-4 position-relative">
+        <i class="fas fa-box-open card-icon fs-3 text-danger position-absolute" 
+           style="left: 20px; top: 50%; transform: translateY(-50%);"></i>
+        <h5 class="mb-0 text-center">Post-Harvest</h5>
       </div>
+
+    </button>
+  </div>
+      
     </div>
 
-    <!-- Analytics Section -->
+    <!-- Analytics Section 
     <div class="section-header">
       <i class="fas fa-chart-bar"></i> Analytics
-    </div>
+    </div> -->
     <div class="row row-cols-1 row-cols-md-4 g-4">
       <div class="col">
         <div class="chart-container">
@@ -555,7 +575,7 @@ body {
 
   <!-- Harvest Modal -->
   <div class="modal fade" id="harvestModal" tabindex="-1" aria-labelledby="harvestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="harvestModalLabel">Harvest Details</h5>
@@ -597,7 +617,7 @@ body {
 
   <!-- Fisherfolk Modal -->
   <div class="modal fade" id="fisherfolkModal" tabindex="-1" aria-labelledby="fisherfolkModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="fisherfolkModalLabel">Fisherfolk by Fishing Zone</h5>
@@ -618,7 +638,7 @@ body {
 
   <!-- Post-Harvest Modal -->
   <div class="modal fade" id="postHarvestModal" tabindex="-1" aria-labelledby="postHarvestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="postHarvestModalLabel">Post-Harvest by Processing Method</h5>
@@ -888,8 +908,13 @@ body {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'bottom', labels: { font: { family: 'Poppins', size: 12 } } }
-          }
+            legend: { position: 'bottom',  radius: "90%", labels: { font: { family: 'Poppins', size: 12 } } }
+                },
+          // 👇 Control pie size
+          layout: {
+            padding: 0 // optional: adds spacing around
+          },
+          radius: "90%" // default is about "70%", increase to make pie larger
         }
       });
 

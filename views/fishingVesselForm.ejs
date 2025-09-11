@@ -565,15 +565,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .no-border td { border: none; }
         .checkbox { font-family: monospace; }
 
-        .annex{text-align: left; font-size: 12px;}
+        .annex{text-align: left; font-size: 12px; color: ${blue};}
       </style>
       <div class="annex">ANNEX A: City Fishing Vessel Registration Application Form</div>
       <div class="official-form">
         <div class="center bold">Republic of the Philippines</div>
-        <div class="center">Province of Oriental Mindoro</div>
+        <div class="center bold">Province of Oriental Mindoro</div>
         <div class="center bold">City of Calapan</div>
         <div class="center bold">Office of the City Mayor</div>
-        <div class="center bold" style="font-size:14px;">FISHERIES MANAGEMENT OFFICE</div>
+        <div class="center bold" style="font-size:16px; font-family: Times New Roman, 'Times',serif;">FISHERIES MANAGEMENT OFFICE</div>
 
         <table>
           <tr>
@@ -697,9 +697,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <table>
         <tr> 
-          <td colspan="3" class="bold center">REMARKS FINDINGS AND RECOMENDATION</td> </tr>
+          <td colspan="4" class="bold center">REMARKS FINDINGS AND RECOMENDATION</td> </tr>
 
           <td colspan="3">${document.getElementById('remarks')?.value || ''}</td>
+
+          
 
           <td colspan="3" class="bold center"> <br>
               ATTY. DOY C. LEACHON <br> City Mayor

@@ -39,53 +39,91 @@ exports.downloadReport = async (req, res) => {
     pdfDoc.pipe(res);
 
     // ---------- HEADER ----------
-    const title = "SUMMARY OF FISHERIES PRODUCTION REPORT";
-    const municipality = "MUNICIPALITY: CALAPAN CITY";
-    const monthYear = `MONTH OF ${
-      filters.month || new Date().getMonth() + 1
-    }/${filters.year || 2025}`;
-    const province = "PROVINCE: ORIENTAL MINDORO";
+const title = "SUMMARY OF FISHERIES PRODUCTION REPORT";
+const municipality = "MUNICIPALITY: CALAPAN CITY";
+const monthYear = `MONTH OF ${filters.month || new Date().getMonth() + 1}/${filters.year || 2025}`;
+const province = "PROVINCE: ORIENTAL MINDORO";
 
-    pdfDoc.fontSize(18).text(title, { align: "center" });
-    pdfDoc.moveDown(0.5);
-    pdfDoc.fontSize(12).text(municipality, { align: "center" });
-    pdfDoc.text(monthYear, { align: "center" });
-    pdfDoc.text(province, { align: "center" });
-    pdfDoc.moveDown(1);
+pdfDoc.fontSize(18).text(title, { align: "center" });
+pdfDoc.moveDown(0.5);
+pdfDoc.fontSize(12).text(municipality, { align: "center" });
+pdfDoc.text(monthYear, { align: "center" });
+pdfDoc.text(province, { align: "center" });
+pdfDoc.moveDown(1);
 
-    // ---------- TABLE SETTINGS ----------
-    const tableTop = 120;
-    const colX = [50, 150, 300, 420, 500, 600, 700];
-    const colWidths = [100, 150, 120, 80, 80, 100, 80];
-    const headers = [
-      "SECTOR",
-      "BARANGAY",
-      "SPECIES (with Habitat)",
-      "NO. OF OPERATOR",
-      "TOTAL AREA (Has)",
-      "PRODUCTION (MT)",
-      "REMARKS",
-    ];
+// ---------- TABLE SETTINGS ----------
+const tableTop = 120;
+const headerHeight = 30; // separate height for header
+const rowHeight = 20;    // height for rows
+const colX = [50, 150, 300, 420, 500, 580, 680];
+const colWidths = [100, 150, 120, 80, 80, 100, 80];
+const headers = [
+  "SECTOR",
+  "BARANGAY",
+  "SPECIES (with Habitat)",
+  "NO. OF OPERATOR",
+  "TOTAL AREA (Has)",
+  "PRODUCTION (MT)",
+  "REMARKS",
+];
 
-    function drawTableHeader(y) {
-      pdfDoc.font("Helvetica-Bold").fontSize(10);
-      headers.forEach((header, i) => {
-        pdfDoc.text(header, colX[i], y, {
-          width: colWidths[i],
-          align: i >= 3 && i <= 5 ? "right" : "left",
-        });
+// ---------- TABLE HEADER DESIGN ----------
+function drawTableHeader(y) {
+  headers.forEach((header, i) => {
+    // header background
+    pdfDoc
+      .rect(colX[i], y, colWidths[i], headerHeight)
+      .fillAndStroke("#2F5597", "#2F5597");
+
+    // calculate vertical center
+    const textY = y + headerHeight / 2 - 5; // adjust -5 for approx half font height
+
+    // header text
+    pdfDoc
+      .fillColor("white")
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text(header, colX[i], textY, {
+        width: colWidths[i],
+        align: "center",   // horizontal center
       });
-    }
+  });
 
-    function drawRow(y, row, isBold = false) {
-      pdfDoc.font(isBold ? "Helvetica-Bold" : "Helvetica").fontSize(9);
-      row.forEach((text, i) => {
-        pdfDoc.text(text, colX[i], y, {
-          width: colWidths[i],
-          align: i >= 3 && i <= 5 ? "right" : "left",
-        });
-      });
-    }
+  pdfDoc.fillColor("black");
+}
+
+
+// ---------- TABLE ROW DESIGN ----------
+function drawRow(y, row, options = {}) {
+  const { bold = false, striped = false, shaded = false, yOffset = 12 } = options;
+
+  const newY = y + yOffset; // move row down
+
+  // background shading
+  if (striped || shaded) {
+    const bgColor = shaded ? "#d9d9d9" : "#f2f2f2";
+    pdfDoc
+      .rect(colX[0], newY, colWidths.reduce((a, b) => a + b, 0), rowHeight)
+      .fill(bgColor);
+  }
+
+  pdfDoc.font(bold ? "Helvetica-Bold" : "Helvetica").fontSize(7.5);
+
+  row.forEach((text, i) => {
+    pdfDoc.fillColor("black").text(text, colX[i] + 3, newY + 6, {
+      width: colWidths[i] - 6,
+      align: "center", // center all text
+    });
+
+    // cell borders
+    pdfDoc
+      .rect(colX[i], newY, colWidths[i], rowHeight)
+      .stroke();
+  });
+}
+
+
+
 
     // ---------- SPECIES + HABITAT ----------
     const speciesHabitat = {
@@ -121,8 +159,8 @@ exports.downloadReport = async (req, res) => {
 
     // ---------- DATA GROUPING ----------
     const sectorData = {
-      "1. AQUACULTURE": [],
-      "2. MUNICIPAL FISHERIES": [],
+      "AQUACULTURE": [],
+      "MUNICIPAL FISHERIES": [],
     };
 
     let totalProduction = 0;
@@ -140,7 +178,7 @@ exports.downloadReport = async (req, res) => {
       const labeledSpecies = `${species} – ${habitat}`;
 
       if (habitat === "Brackishwater" || habitat === "Freshwater Fish Cage") {
-        sectorData["1. AQUACULTURE"].push({
+        sectorData["AQUACULTURE"].push({
           barangay,
           species: labeledSpecies,
           operators,
@@ -148,7 +186,7 @@ exports.downloadReport = async (req, res) => {
           production,
         });
       } else {
-        sectorData["2. MUNICIPAL FISHERIES"].push({
+        sectorData["MUNICIPAL FISHERIES"].push({
           barangay,
           species: labeledSpecies,
           operators,
@@ -188,7 +226,11 @@ exports.downloadReport = async (req, res) => {
     }
 
     // ---------- GRAND TOTAL ----------
-    drawRow(y, ["", "GRAND TOTAL", "", "", "", totalProduction.toFixed(1), ""], true);
+    // ---------- GRAND TOTAL ----------
+    drawRow(y, ["GRAND TOTAL", "", "", "", "", totalProduction.toFixed(1), ""], {
+      bold: true,
+      
+    });
 
     pdfDoc.end();
   } catch (error) {

@@ -435,9 +435,7 @@
 
             <!-- Right side (Welcome + Logout + Print) -->
             <ul class="navbar-nav flex-row align-items-center">
-                <li class="nav-item me-3">
-                    <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print me-2"></i> Print Table</button>
-                </li>
+               
                 <li class="nav-item me-3">
                     <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
                 </li>
@@ -567,7 +565,9 @@
             <div class="export-buttons mb-3">
                 <button onclick="exportToPDF()" class="btn btn-success me-2"><i class="fas fa-file-pdf"></i> Export to PDF</button>
                 <button onclick="exportToExcel()" class="btn btn-success"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                <button class="btn btn-secondary" id="printBtn"> <i class="fas fa-print me-2"></i> Print Table </button>
             </div>
+
 
             <!-- Violations Table -->
             <div class="table-container">
@@ -755,6 +755,61 @@
             XLSX.writeFile(wb, filename);
         }
     </script>
+
+
+<script>
+document.getElementById('printBtn').addEventListener('click', function() {
+    const container = document.querySelector('.main-container');
+    const printContainer = container.cloneNode(true);
+
+     // Remove interactive elements, pagination, and search/filter bar
+    printContainer.querySelectorAll('.btn, .dropdown, .pagination, h2, .search-container').forEach(el => el.remove());
+
+    // Remove the Actions column (last column)
+    printContainer.querySelectorAll('table thead tr th:last-child, table tbody tr td:last-child').forEach(el => el.remove());
+
+    const printWindow = window.open('', '_blank', 'width=1200,height=800');
+
+    // Include Bootstrap CSS in print window
+    const bootstrapLink = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">';
+    
+    // Custom print styles
+    const styles = `
+        <style>
+            body { font-family: Arial, sans-serif; color: #000; margin: 20px; }
+            h1 { text-align: center; margin-bottom: 5px; font-size: 20pt; }
+            p { text-align: center; margin: 2px 0; font-size: 10pt; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11pt; }
+            th, td { border: 1px solid #444; padding: 6px 8px; }
+            th { background-color: #2563eb; color: #fff; font-weight: bold; text-align: center; }
+            td { text-align: left; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            @media print { @page { size: landscape; margin: 15mm; } }
+        </style>
+    `;
+
+    // Report header
+    const reportHeader = `
+        <h1>List of Violations</h1>
+        <p><strong>Municipality:</strong> Calapan City | <strong>Province:</strong> Oriental Mindoro</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+    `;
+
+    // Write content to print window
+    printWindow.document.write('<html><head><title>Aquaculture Report</title>');
+    printWindow.document.write(bootstrapLink);
+    printWindow.document.write(styles);
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(reportHeader);
+    printWindow.document.write(printContainer.innerHTML);
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+});
+</script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

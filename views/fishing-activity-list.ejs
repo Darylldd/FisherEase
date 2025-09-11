@@ -134,10 +134,69 @@ body {
       margin: 0 auto;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
+    
     .table-section:hover {
       transform: translateY(-6px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
+
+    /* Pagination Styling */
+    .pagination {
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+    .page-item.active .page-link {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .page-link {
+      color: var(--primary);
+      border-radius: 6px;
+      margin: 0 3px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .page-link:hover {
+      background-color: var(--background);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .page-item.disabled .page-link {
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+   /* ✅ Responsive tweaks */
+@media (max-width: 768px) {
+  .pagination {
+    display: flex;
+    justify-content: center; /* ✅ center horizontally */
+    flex-wrap: wrap;         /* ✅ allow multiple lines */
+  }
+
+  .page-link {
+    padding: 0.4rem 0.8rem; /* smaller buttons */
+    font-size: 0.9rem;
+    margin: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    display: flex;
+    justify-content: center; /* ✅ keep centered on phones */
+    flex-wrap: wrap;
+  }
+
+  .page-link {
+    padding: 0.3rem 0.6rem; /* even smaller for phones */
+    font-size: 0.8rem;
+    margin: 2px;
+  }
+}
 
     /* Export Buttons */
     .export-buttons {
@@ -167,17 +226,27 @@ body {
       border-collapse: collapse;
       font-size: 0.95rem;
     }
+
+        .activity-table {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .activity-table th {
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px;
+        }
+
     .activity-table th,
     .activity-table td {
       border: 1px solid var(--border);
       padding: 0.75rem 1rem;
       text-align: left;
     }
-    .activity-table th {
-      background-color: #f9fafb;
-      font-weight: 500;
-      color: var(--primary);
-    }
+    
     .activity-table tr:nth-child(even) {
       background-color: #f9fafb;
     }
@@ -379,7 +448,97 @@ body {
       <% } %>
       <a href="/fishing-activity-tracking" class="add-activity-link">Add New Fishing Activity</a>
     </section>
+
+    <nav aria-label="FishAct table pagination">
+            <ul class="pagination">
+              <li class="page-item" id="prevPage">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo; Previous</span>
+                </a>
+              </li>
+              <!-- Page numbers will be dynamically inserted here -->
+              <li class="page-item" id="nextPage">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">Next &raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
   </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const rowsPerPage = 5;
+      const rows = document.querySelectorAll('.table-container tbody tr');
+      const totalRows = rows.length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      let currentPage = 1;
+
+      function updatePagination() {
+        const pagination = document.querySelector('.pagination');
+        const prevPage = document.querySelector('#prevPage');
+        const nextPage = document.querySelector('#nextPage');
+
+        document.querySelectorAll('.page-number').forEach(item => item.remove());
+
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.classList.add('page-item', 'page-number');
+          if (i === currentPage) li.classList.add('active');
+          
+          const a = document.createElement('a');
+          a.classList.add('page-link');
+          a.href = '#';
+          a.textContent = i;
+          a.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = i;
+            updateTable();
+            updatePagination();
+          });
+
+          li.appendChild(a);
+          pagination.insertBefore(li, nextPage);
+        }
+
+        prevPage.classList.toggle('disabled', currentPage === 1);
+        nextPage.classList.toggle('disabled', currentPage === totalPages);
+      }
+
+      function updateTable() {
+        rows.forEach((row, index) => {
+          const page = Math.floor(index / rowsPerPage) + 1;
+          row.style.display = page === currentPage ? '' : 'none';
+        });
+      }
+
+      document.querySelector('#prevPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 1) {
+          currentPage--;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      document.querySelector('#nextPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateTable();
+          updatePagination();
+        }
+      });
+
+      if (totalRows > 0 && !rows[0].querySelector('.text-muted')) {
+        updateTable();
+        updatePagination();
+      }
+    });
+  </script>
 
   <script>
     // PDF Export using jsPDF and autoTable

@@ -216,7 +216,7 @@ body {
         display: none;
       }
       .form-container {
-        border: 2px solid #0000FF;
+        border: none;
         width: 210mm;
         height: 297mm;
         margin: 0 auto;
@@ -626,56 +626,192 @@ body {
     // Disable form inputs during print to show values only
     window.addEventListener('beforeprint', () => {
       const inputs = document.querySelectorAll('#admeasurementForm input, #admeasurementForm select, #admeasurementForm textarea');
-      inputs.forEach(input => {
-        input.setAttribute('disabled', 'true');
-      });
-      // Generate print content dynamically
+      inputs.forEach(input => input.setAttribute('disabled', 'true'));
+
+      const blue = '#004fa3';
+      function check(val, expected) {
+        return val === expected ? "☑" : "☐";
+      }
+
       const printContent = document.createElement('div');
       printContent.className = 'form-container';
       printContent.innerHTML = `
-        <div class="header">CERTIFIED STANDARD ADMEASUREMENT FORM</div>
-        <table class="main-table">
-          <tr><th rowspan="2">ANNEX B. Certified Standard Admeasurement Form</th><td></td></tr>
-          <tr><td></td></tr>
-          <tr><th>Republic of the Philippines</th><td>Province of Oriental Mindoro</td></tr>
-          <tr><th>Office of the City Mayor</th><td>City of Calapan</td></tr>
-          <tr><th>FISHERIES MANAGEMENT OFFICE</th><td></td></tr>
-          <tr><th>FVR No.</th><td>${document.getElementById('fvr_no').value || 'N/A'}</td></tr>
-          <tr><th>DATE</th><td>${new Date(document.getElementById('date').value).toLocaleDateString('en-PH') || 'N/A'}</td></tr>
-          <tr><th>NAME OF OWNER (Surname, First Name, M.I.)</th><td>${document.querySelector('#fisherfolk_id option:checked')?.text || 'N/A'}</td></tr>
-          <tr><th>ADDRESS (No. of Street, Barangay, Municipality/City, Province)</th><td>${document.getElementById('address').value || 'N/A'}</td></tr>
-          <tr><th>NAME OF FISHING VESSEL</th><td>${document.querySelector('#vesselId option:checked')?.text || 'N/A'}</td></tr>
-          <tr><th>VESSEL TYPE</th><td>( ) Motorized   ( ) Non-motorized ${document.getElementById('vessel_type').value === 'Motorized' ? '(X) Motorized' : document.getElementById('vessel_type').value === 'Non-motorized' ? '(X) Non-motorized' : '' || 'N/A'}</td></tr>
-        </table>
-        <div class="section-header">FISHING VESSEL DIMENSIONS AND TONNAGES</div>
-        <table class="main-table">
-          <tr><th>LENGTH (METERS)</th><th>BREADTH (METERS)</th><th>DEPTH (METERS)</th></tr>
-          <tr><td>${document.getElementById('length_meters').value || 'N/A'}</td><td>${document.getElementById('breadth_meters').value || 'N/A'}</td><td>${document.getElementById('depth_meters').value || 'N/A'}</td></tr>
-          <tr><th>GROSS TONNAGE</th><th>NET TONNAGE</th><td></td></tr>
-          <tr><td>${document.getElementById('gross_tonnage').value || 'N/A'}</td><td>${document.getElementById('net_tonnage').value || 'N/A'}</td><td></td></tr>
-        </table>
-        <div class="section-header">PARTICULARS OF PROPULSION SYSTEM</div>
-        <table class="main-table">
-          <tr><th>ENGINE MAKE</th><th>SERIAL NUMBER</th><th>HORSE POWER</th></tr>
-          <tr><td>${document.getElementById('engine_make').value || 'N/A'}</td><td>${document.getElementById('serial_number').value || 'N/A'}</td><td>${document.getElementById('horse_power').value || 'N/A'}</td></tr>
-          <tr><th>NO. OF CYLINDERS</th><td></td><td></td></tr>
-          <tr><td>${document.getElementById('number_of_cylinders').value || 'N/A'}</td><td></td><td></td></tr>
-        </table>
-        <table class="main-table">
-          <tr><th>PLACE OF INSPECTION</th><th>DATE OF INSPECTION</th><td></td></tr>
-          <tr><td>${document.getElementById('place_of_inspection').value || 'N/A'}</td><td>${new Date(document.getElementById('date_of_inspection').value).toLocaleDateString('en-PH') || 'N/A'}</td><td></td></tr>
-        </table>
-        <div class="section-header">I HEREBY CERTIFY THAT ALL INFORMATION CONTAINED HEREIN IS TRUE AND CORRECT AND THAT ACTUAL INSPECTION OF THE FISHING VESSEL WAS CONDUCTED.</div>
-        <table class="main-table">
-          <tr><th>PRINTED NAME & SIGNATURE OF ADMEASURING OFFICER</th><th>MOBILE NO.</th><td></td></tr>
-          <tr><td>______________________________</td><td></td><td></td></tr>
-        </table>
-        <div class="signature">
-          <div>______________________________</div>
-          <div>Marlou P. Morillo</div>
-          <div>City Mayor</div>
+        <style>
+          .official-form {
+            font-family: Arial, sans-serif;
+            color: ${blue};
+            font-size: 12px;
+            border: 2px solid ${blue};
+            padding: 10px;
+          }
+          .center { text-align: center; }
+          .bold { font-weight: bold; }
+          table { width: 100%; border-collapse: collapse;}
+          td, th {
+            border: 1px solid ${blue};
+            padding: 3px;
+            vertical-align: top;
+          }
+          .annex { text-align: left; font-size: 12px; margin-bottom: 5px; color: ${blue}; }
+        </style>
+
+        <div class="annex">ANNEX B: Certified Standard Admeasurement Form</div>
+        <div class="official-form">
+
+          <div class="center bold">Republic of the Philippines</div>
+          <div class="center bold">Province of Oriental Mindoro</div>
+          <div class="center bold">City of Calapan</div>
+          <div class="center bold">OFFICE OF THE CITY MAYOR</div>
+          <div class="center bold" style="font-size:16px;  font-family: Times New Roman, 'Times',serif;">FISHERIES MANAGEMENT OFFICE</div>
+
+          <table>
+            <tr>
+              <td class="center bold">CERTIFIED STANDARD <br> ADMEASUREMENT FORM</td>
+              <td>FVR NO.<br>${document.getElementById('fvr_no')?.value || ''}</td>
+              <td>DATE<br>${new Date(document.getElementById('date')?.value).toLocaleDateString('en-PH') || ''}</td>
+            </tr>
+            <tr>
+              <td>NAME OF OWNER (Surname, First Name, M.I.)<br>
+              ${document.querySelector('#fisherfolk_id option:checked')?.text || ''}</td>
+              <td colspan="2">ADDRESS (No. of Street, Barangay, Municipality/City, Province)<br>
+              ${document.getElementById('address')?.value || ''}, Calapan City, Oriental Mindoro</td>
+            </tr>
+            <tr>
+              <td>NAME OF FISHING VESSEL<br>${document.querySelector('#vesselId option:checked')?.text || ''}</td>
+              <td colspan="2">VESSEL TYPE<br>
+                ${check(document.getElementById('vessel_type')?.value, 'Non-motorized')} Non-motorized &nbsp;
+                ${check(document.getElementById('vessel_type')?.value, 'Motorized')} Motorized
+              </td>
+            </tr>
+          </table>
+
+          <table>
+             <tr><td colspan="3" class="bold center">FISHING VESSEL DIMENSIONS AND TONNAGES</td></tr>
+            <tr>
+              <td>LENGTH (METERS)
+                <br>
+                <br>
+                  ${document.getElementById('length_meters')?.value || ''}
+              </td>
+
+              <td>BREADTH (METERS)
+                <br>
+                <br>
+                  ${document.getElementById('breadth_meters')?.value || ''}
+              </td>
+
+              <td>DEPTH (METERS)
+                <br>
+                <br>
+                  ${document.getElementById('depth_meters')?.value || ''}
+              </td>
+
+            </tr>
+
+            <tr>
+              <td >GROSS TONNAGE
+                <br>
+                <br>
+                  ${document.getElementById('gross_tonnage')?.value || ''}
+              </td>
+
+              <td colspan="2">NET TONNAGE
+                <br>
+                <br>
+                  ${document.getElementById('net_tonnage')?.value || ''}
+              </td>
+              
+            </tr>
+          </table>
+
+          <table>
+            <tr><td colspan="3" class="bold center">PARTICULARS OF PROPULSION SYSTEM</td></tr>
+            <tr>
+              <td>ENGINE MAKE
+                <br>
+                <br>
+                  ${document.getElementById('engine_make')?.value || ''}
+              </td>
+
+              <td>SERIAL NUMBER
+                <br>
+                <br>
+                  ${document.getElementById('serial_number')?.value || ''}
+              </td>
+
+              <td>HORSE POWER
+                <br>
+                <br>
+                  ${document.getElementById('horse_power')?.value || ''}
+              </td>
+
+            </tr>
+
+            <tr>
+              <td>NO. OF CYLINDERS
+                <br>
+                <br>
+                  ${document.getElementById('number_of_cylinders')?.value || ''}
+              </td>
+
+              <td>PLACE OF INSPECTION
+                <br>
+                <br>
+                  ${document.getElementById('place_of_inspection')?.value || ''}
+              </td>
+
+              <td>DATE OF INSPECTION
+                <br>
+                <br>
+                  ${new Date(document.getElementById('date_of_inspection')?.value).toLocaleDateString('en-PH') || ''}
+              </td>
+
+            </tr>
+          </table>
+
+          <table>
+            <tr>
+              <td colspan="2" class="bold center">I HEREBY CERTIFY THAT ALL <br> INFORMATION CONTAINED <br> HEREIN IS TRUE AND CORRECT <br> AND THAT ACTUAL INSPECTION <br> OF THE FISHING VESSEL WAS <br> CONDUCTED.</td>
+              <td>
+                <div class="center">
+                  <br><br>________________________________________________<br>
+                  PRINTED NAME & SIGNATURE OF ADMEASURING OFFICER
+                  <br><br>
+                </div>
+
+                <div class="left">
+                  MOBILE NO.: ${document.getElementById('mobile_no')?.value || ''}
+                </div>
+              </td>
+              
+            </tr>
+          </table>
+
+          <table>
+            <tr><td colspan="5" class="bold center">REMARKS, FINDINGS AND RECOMMENDATIONS<br></td></tr>
+
+            <tr>
+              <td colspan="5">
+                <br> ${document.getElementById('remarks')?.value || ''}</td>
+            </tr> 
+          
+          <tr>
+              <td colspan="4">
+                  <div style="margin:50px;">
+                    
+                  </div>
+              </td>
+          
+              <td  class="bold center"> <br> <br>
+                  ATTY. DOY C. LEACHON <br> City Mayor
+              </td>
+
+          </tr>
+          </table>
+
+
         </div>
-      `;
+          `;
       document.body.appendChild(printContent);
     });
 
