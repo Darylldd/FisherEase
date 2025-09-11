@@ -27,6 +27,7 @@ const analyticsRoutes = require('./routes/analytics');
 const auditRoutes = require('./routes/auditRoutes');
 const postHarvestRoutes = require('./routes/postHarvestRoutes');
 const climateLossRoutes = require("./routes/climateLoss");
+
 // Session middleware
 app.use(session({
     secret: "2025",
@@ -63,6 +64,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🔒 Security headers (equivalent to vercel.json)
+app.use((req, res, next) => {
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' https:; " +
+      "style-src 'self' 'unsafe-inline' https:; " +
+      "img-src 'self' data: https:; " +
+      "font-src 'self' https:; " +
+      "connect-src 'self' https:;"
+  );
+  next();
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -71,33 +89,28 @@ app.get("/", (req, res) => {
     }
     res.redirect("/auth/login");
 });
-  app.use('/', admeasurementRoutes);
+app.use('/', admeasurementRoutes);
 app.use('/', fishingVesselRoutes);
-  app.use('/', fishSpeciesRoutes);
+app.use('/', fishSpeciesRoutes);
 app.use("/climateLoss", climateLossRoutes);
 app.use('/audit', auditRoutes);  
 app.use('/landing', landingRoutes);
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
-app.use('/register', registerRoutes);  // For handling registration routes (including fisherfolk, aquaculture)
-app.use('/aquaculture', aquacultureRoutes);  // Only the aquaculture-specific routes
+app.use('/register', registerRoutes);  
+app.use('/aquaculture', aquacultureRoutes);  
 app.use('/', fisherfolkRoutes);
 app.use('/catch-report', catchReportRoutes);
 app.use('/fishing-activity-tracking', fishingActivityRoutes);
-app.use('/', userFishingRoutes); // User Routes
-app.use('/', fishingActivityRoutes); // Admin Routes
+app.use('/', userFishingRoutes); 
+app.use('/', fishingActivityRoutes); 
 app.use('/enforcement-compliance-logging', enforcementComplianceRoutes);
-app.use( violationRoutes);
+app.use(violationRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', analyticsRoutes);
 app.use("/harvest", harvestRoutes);
 app.use('/', postHarvestRoutes);
 
-
-//const PORT = process.env.PORT || 3000;
-//app.listen(PORT, '0.0.0.0', () => {
-  //console.log(`Server started on http://0.0.0.0:${PORT}`);
-//});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
