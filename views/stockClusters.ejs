@@ -468,12 +468,20 @@ body {
                     </div>
                     <div class="row">
                       <div class="col-md-6">
-                        <p class="mb-1">
-                          <i class="fas fa-map-marker-alt text-danger"></i> 
-                          <strong>Center Location:</strong> 
-                          <%= (typeof cluster.center_latitude === 'number' ? cluster.center_latitude.toFixed(4) : '0.0000') %>°N, 
-                          <%= (typeof cluster.center_longitude === 'number' ? cluster.center_longitude.toFixed(4) : '0.0000') %>°E
-                        </p>
+                     <% if (cluster && cluster.center_latitude != null && cluster.center_longitude != null) { %>
+  <p class="mb-1">
+    <i class="fas fa-map-marker-alt text-danger"></i> 
+    <strong>Center Location:</strong> 
+    <%= parseFloat(cluster.center_latitude).toFixed(4) %>°N, 
+    <%= parseFloat(cluster.center_longitude).toFixed(4) %>°E
+  </p>
+<% } else { %>
+  <p class="mb-1">
+    <i class="fas fa-map-marker-alt text-danger"></i> 
+    <strong>Center Location:</strong> 
+    No location data available
+  </p>
+<% } %>
                         <p class="mb-1">
                           <i class="fas fa-fish text-primary"></i> 
                           <strong>Common Species:</strong> 

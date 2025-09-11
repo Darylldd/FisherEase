@@ -374,9 +374,7 @@
 
       <!-- Right side (Welcome + Logout + Print) -->
       <ul class="navbar-nav flex-row align-items-center">
-        <li class="nav-item me-3">
-          <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print me-2"></i> Print Table</button>
-        </li>
+  
         <li class="nav-item me-3">
           <a class="nav-link" href="#"><i class="fas fa-user me-1"></i> Welcome, <%= user.name %></a>
         </li>
@@ -472,7 +470,11 @@
     </div>
 
     <div class="card">
+      
       <div class="card-body">
+        
+          <button onclick="window.print()" class="btn btn-secondary"><i class="fas fa-print me-2"></i> Print Table</button>
+
         <div class="form-section">
           <% if (error) { %>
             <div class="alert alert-danger" role="alert"><%= error %></div>

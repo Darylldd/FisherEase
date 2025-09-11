@@ -247,7 +247,6 @@ getReportsWithLocation: async (userId) => {
   console.log('Fetched reports from DB:', JSON.stringify(rows, null, 2));
   return rows;
 },
-
   insertCluster: async (userId, clusterNumber, centerLat, centerLng, avgQuantity) => {
     const query = `
       INSERT INTO catch_clusters 
@@ -287,30 +286,32 @@ getReportsWithLocation: async (userId) => {
     console.log(`Cleared clusters for user ${userId}`);
   },
 
-  getClustersByUser: async (userId) => {
-    const query = `
-      SELECT 
-        cc.cluster_id,
-        cc.cluster_number,
-        cc.center_latitude,
-        cc.center_longitude,
-        COALESCE(cc.average_quantity, 0) as average_quantity,
-        COUNT(crc.report_id) as report_count,
-        GROUP_CONCAT(DISTINCT cr.species) as species_list
-      FROM catch_clusters cc
-      LEFT JOIN catch_report_clusters crc ON cc.cluster_id = crc.cluster_id
-      LEFT JOIN catch_reports cr ON crc.report_id = cr.id
-      WHERE cc.user_id = ?
-      GROUP BY cc.cluster_id
-      ORDER BY cc.cluster_number
-    `;
-    const [rows] = await db.execute(query, [userId]);
-    console.log('Fetched clusters from DB:', JSON.stringify(rows, null, 2));
-    return rows.map(row => ({
-      ...row,
-      average_quantity: parseFloat(row.average_quantity) || 0 // Ensure number
-    }));
-  },
+getClustersByUser: async (userId) => {
+  const query = `
+    SELECT 
+      cc.cluster_id,
+      cc.cluster_number,
+      cc.center_latitude,
+      cc.center_longitude,
+      COALESCE(cc.average_quantity, 0) as average_quantity,
+      COUNT(crc.report_id) as report_count,
+      GROUP_CONCAT(DISTINCT cr.species) as species_list
+    FROM catch_clusters cc
+    LEFT JOIN catch_report_clusters crc ON cc.cluster_id = crc.cluster_id
+    LEFT JOIN catch_reports cr ON crc.report_id = cr.id
+    WHERE cc.user_id = ?
+    GROUP BY cc.cluster_id
+    ORDER BY cc.cluster_number
+  `;
+  const [rows] = await db.execute(query, [userId]);
+  console.log('Fetched clusters from DB:', JSON.stringify(rows, null, 2));
+  return rows.map(row => ({
+    ...row,
+    center_latitude: parseFloat(row.center_latitude) || 0,
+    center_longitude: parseFloat(row.center_longitude) || 0,
+    average_quantity: parseFloat(row.average_quantity) || 0
+  }));
+},
 
   getReportsForCluster: async (clusterId) => {
     const query = `
