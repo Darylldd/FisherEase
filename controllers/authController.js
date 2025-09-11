@@ -1,7 +1,7 @@
 const pool = require('../models/db');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
 
 // Configure email transporter
