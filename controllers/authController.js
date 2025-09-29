@@ -13,12 +13,20 @@ const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const sendEmail = async (toEmail, subject, htmlContent) => {
   if (!toEmail) return;
+
   const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-    to: [{ email: toEmail }],
-    sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' },
+    sender: { 
+      name: 'FMO/FisherEase Support', 
+      email: 'calapancityfmo@gmail.com' 
+    },
+    to: [{ 
+      email: toEmail, 
+      name: toEmail.split('@')[0] || 'User' // fallback for name
+    }],
     subject,
     htmlContent
   });
+
   return emailApi.sendTransacEmail(sendSmtpEmail);
 };
 
