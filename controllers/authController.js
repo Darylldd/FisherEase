@@ -2,35 +2,42 @@ const pool = require('../models/db');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const Mailjet = require('node-mailjet');
 
-// Configure Sendinblue APII
-
-const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
-
-const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+// Configure Mailjet client
+const mailjet = Mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
 const sendEmail = async (toEmail, subject, htmlContent) => {
   if (!toEmail || !subject || !htmlContent) return;
 
-  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-    to: [{ email: toEmail }],
-    sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' }, // must be set
-    subject,
-    htmlContent
-  });
-
   try {
-    const result = await emailApi.sendTransacEmail(sendSmtpEmail);
-    return result;
+    const request = await mailjet
+      .post("send", { version: 'v3.1' })
+      .request({
+        Messages: [
+          {
+            From: {
+              Email: "calapancityfmo@gmail.com", // verified sender in Mailjet
+              Name: "FMO/FisherEase Support"
+            },
+            To: [
+              {
+                Email: toEmail,
+                Name: "" // optional, can leave blank
+              }
+            ],
+            Subject: subject,
+            HTMLPart: htmlContent
+          }
+        ]
+      });
+
+    return request.body;
   } catch (err) {
-    console.error('Email sending failed:', err.response ? err.response.body : err);
-    throw err; // this ensures the error is visible in signup
+    console.error('Email sending failed:', err.message || err);
+    throw err;
   }
 };
-
-
 
 
 // GET /auth/login
