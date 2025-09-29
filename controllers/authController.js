@@ -6,7 +6,7 @@ const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 // Configure Sendinblue API
 const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications['api-key'].apiKey = 'kj5Z4nW1h8X3r6wP';
+client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
