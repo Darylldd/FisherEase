@@ -8,6 +8,7 @@
     "dev": "nodemon app.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.8.3",
     "bcryptjs": "^3.0.2",
