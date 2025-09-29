@@ -5,7 +5,7 @@ const auditController = require('./auditController');
 const Mailjet = require('node-mailjet');
 
 // Configure Mailjet client
-const mailjet = Mailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
 const sendEmail = async (toEmail, subject, htmlContent) => {
   if (!toEmail || !subject || !htmlContent) return;
