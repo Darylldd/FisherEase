@@ -73,7 +73,8 @@ exports.postSignup = async (req, res) => {
             [name, email, hashedPassword, role, false, verificationToken]
         );
 
-        const verificationLink = `https://fisherease.onrender.com/auth/verify-email?token=${verificationToken}&email=${email}`;
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+const verificationLink = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${email}`;
        await transporter.sendMail({
     from: '"FMO Support" <calapancityfmo@gmail.com>',
     to: email,
@@ -157,7 +158,8 @@ exports.postForgotPassword = async (req, res) => {
             [resetToken, expiry, email]
         );
 
-        const resetLink = `https://fisherease.onrender.com/auth/reset-password?token=${resetToken}&email=${email}`;
+const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${email}`;
        await transporter.sendMail({
     from: '"FMO Support" <calapancityfmo@gmail.com>',
     to: email,
