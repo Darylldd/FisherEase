@@ -12,23 +12,24 @@ client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const sendEmail = async (toEmail, subject, htmlContent) => {
-  if (!toEmail) return;
+  if (!toEmail || !subject || !htmlContent) return;
+
+  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
+    to: [{ email: toEmail }],
+    sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' }, // must be set
+    subject,
+    htmlContent
+  });
 
   try {
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-      sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' },
-      to: [{ email: toEmail, name: toEmail.split('@')[0] || 'User' }],
-      subject: subject,
-      htmlContent: htmlContent
-    });
-
-    const response = await emailApi.sendTransacEmail(sendSmtpEmail);
-    return response;
+    const result = await emailApi.sendTransacEmail(sendSmtpEmail);
+    return result;
   } catch (err) {
-    console.error('Sendinblue Error:', err.body || err);
-    throw err;
+    console.error('Email sending failed:', err.response ? err.response.body : err);
+    throw err; // this ensures the error is visible in signup
   }
 };
+
 
 
 
