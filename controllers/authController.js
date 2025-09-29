@@ -1,20 +1,10 @@
 const pool = require('../models/db');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
+const { Resend } = require('resend');
 
-// Configure email transporter
-let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: 'calapancityfmo@gmail.com',
-        pass: 'cvmv irvp jpdk gget'
-    }
-});
-
+const resend = new Resend(process.env.RESEND_API_KEY); // put your API key in Render env
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
@@ -74,29 +64,30 @@ exports.postSignup = async (req, res) => {
             [name, email, hashedPassword, role, false, verificationToken]
         );
 
-const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-const verificationLink = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${email}`;
-       await transporter.sendMail({
-    from: '"FMO Support" <calapancityfmo@gmail.com>',
-    to: email,
-    subject: 'Verify Your Email - FMO',
-    text: `Click the following link to verify your email: ${verificationLink}`, // plain fallback
-    html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2>Welcome to FMO, ${name}!</h2>
-            <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
-            <p>
-                <a href="${verificationLink}"
-                   style="background: #28a745; color: #fff; padding: 10px 20px;
-                          text-decoration: none; border-radius: 5px; display: inline-block;">
-                   Verify Email
-                </a>
-            </p>
-            <p>This link will expire in 24 hours. If you did not create this account, please ignore this email.</p>
-            <p>— The FMO Team</p>
-        </div>
-    `
-});
+        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+        const verificationLink = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${email}`;
+
+        // Send verification email with Resend
+        await resend.emails.send({
+            from: "FMO Support <onboarding@resend.dev>",
+            to: email,
+            subject: "Verify Your Email - FMO",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2>Welcome to FMO, ${name}!</h2>
+                    <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
+                    <p>
+                        <a href="${verificationLink}"
+                           style="background: #28a745; color: #fff; padding: 10px 20px;
+                                  text-decoration: none; border-radius: 5px; display: inline-block;">
+                           Verify Email
+                        </a>
+                    </p>
+                    <p>This link will expire in 24 hours. If you did not create this account, please ignore this email.</p>
+                    <p>— The FMO Team</p>
+                </div>
+            `
+        });
 
         await auditController.logUserActivity(req, "Signed up");
         req.flash('success_msg', 'Signup successful. Please check your email to verify your account.');
@@ -141,7 +132,6 @@ exports.getForgotPassword = (req, res) => {
 };
 
 // POST /auth/forgot-password
-
 exports.postForgotPassword = async (req, res) => {
     const { email } = req.body;
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -159,31 +149,32 @@ exports.postForgotPassword = async (req, res) => {
             [resetToken, expiry, email]
         );
 
-const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${email}`;
-       await transporter.sendMail({
-    from: '"FMO Support" <calapancityfmo@gmail.com>',
-    to: email,
-    subject: 'Password Reset Request',
-    text: `Click the following link to reset your password: ${resetLink}`, // fallback
-    html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2>Password Reset Request</h2>
-            <p>Hello,</p>
-            <p>We received a request to reset your password for your <strong>FMO</strong> account.</p>
-            <p>Click the button below to reset your password:</p>
-            <p>
-                <a href="${resetLink}" 
-                   style="background: #007BFF; color: #fff; padding: 10px 20px; 
-                          text-decoration: none; border-radius: 5px; display: inline-block;">
-                   Reset Password
-                </a>
-            </p>
-            <p>This link will expire in 1 hour. If you did not request this, you can safely ignore this email.</p>
-            <p>— The FMO Team</p>
-        </div>
-    `
-});
+        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+        const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${email}`;
+
+        // Send reset email with Resend
+        await resend.emails.send({
+            from: "FMO Support <onboarding@resend.dev>",
+            to: email,
+            subject: "Password Reset Request",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2>Password Reset Request</h2>
+                    <p>Hello,</p>
+                    <p>We received a request to reset your password for your <strong>FMO</strong> account.</p>
+                    <p>Click the button below to reset your password:</p>
+                    <p>
+                        <a href="${resetLink}" 
+                           style="background: #007BFF; color: #fff; padding: 10px 20px; 
+                                  text-decoration: none; border-radius: 5px; display: inline-block;">
+                           Reset Password
+                        </a>
+                    </p>
+                    <p>This link will expire in 1 hour. If you did not request this, you can safely ignore this email.</p>
+                    <p>— The FMO Team</p>
+                </div>
+            `
+        });
 
         await auditController.logUserActivity(req, "Requested password reset");
         req.flash('success_msg', 'Password reset link sent. Please check your email.');
@@ -194,55 +185,3 @@ const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${em
         res.redirect('/auth/forgot-password');
     }
 };
-
-// GET /auth/reset-password
-exports.getResetPassword = (req, res) => {
-    const { token, email } = req.query;
-    res.render('reset-password', { title: 'Reset Password', token, email });
-};
-
-// POST /auth/reset-password
-exports.postResetPassword = async (req, res) => {
-    const { token, email, password } = req.body;
-    
-    try {
-        const [rows] = await pool.execute(
-            'SELECT * FROM users WHERE email = ? AND reset_token = ? AND reset_token_expiry > ?',
-            [email, token, Date.now()]
-        );
-
-        if (rows.length === 0) {
-            req.flash('error_msg', 'Invalid or expired token.');
-            return res.redirect('/auth/forgot-password');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.execute(
-            'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?',
-            [hashedPassword, email]
-        );
-
-        req.flash('success_msg', 'Password reset successfully. You can now log in.');
-        res.redirect('/auth/login');
-    } catch (err) {
-        console.error(err);
-        req.flash('error_msg', 'Error resetting password.');
-        res.redirect('/auth/forgot-password');
-    }
-};
-
-// GET /auth/logout
-exports.logout = async (req, res) => {
-    const userId = req.session.userId;
-    if (userId) {
-        await auditController.logUserActivity(req, "Logged out");
-    }
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Error destroying session:", err);
-            return res.status(500).send("Server Error");
-        }
-        res.redirect('/');
-    });
-};
-
