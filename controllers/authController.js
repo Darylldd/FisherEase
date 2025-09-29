@@ -6,12 +6,12 @@ const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 // Configure Sendinblue API
 const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications['api-key'].apiKey = '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';
+client.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-// Helper function to send emails
 const sendEmail = async (toEmail, subject, htmlContent) => {
+  if (!toEmail) return;
   const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
     to: [{ email: toEmail }],
     sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' },
@@ -20,6 +20,7 @@ const sendEmail = async (toEmail, subject, htmlContent) => {
   });
   return emailApi.sendTransacEmail(sendSmtpEmail);
 };
+
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
