@@ -140,13 +140,31 @@ exports.postForgotPassword = async (req, res) => {
             [resetToken, expiry, email]
         );
 
-        const resetLink = `http://localhost:3000/auth/reset-password?token=${resetToken}&email=${email}`;
-        await transporter.sendMail({
-            from: '"FMO" <no-reply@fmo.com>',
-            to: email,
-            subject: 'Password Reset',
-            text: `Click the following link to reset your password: ${resetLink}`
-        });
+        const resetLink = `https:fisherease.onrender.com/auth/reset-password?token=${resetToken}&email=${email}`;
+       await transporter.sendMail({
+    from: '"FMO Support" <calapancityfmo@gmail.com>',
+    to: email,
+    subject: 'Password Reset Request',
+    text: `Click the following link to reset your password: ${resetLink}`, // fallback
+    html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2>Password Reset Request</h2>
+            <p>Hello,</p>
+            <p>We received a request to reset your password for your <strong>FMO</strong> account.</p>
+            <p>Click the button below to reset your password:</p>
+            <p>
+                <a href="${resetLink}" 
+                   style="background: #007BFF; color: #fff; padding: 10px 20px; 
+                          text-decoration: none; border-radius: 5px; display: inline-block;">
+                   Reset Password
+                </a>
+            </p>
+            <p>This link will expire in 1 hour. If you did not request this, you can safely ignore this email.</p>
+            <p>— The FMO Team</p>
+        </div>
+    `
+});
+
         await auditController.logUserActivity(req, "Requested password reset");
         req.flash('success_msg', 'Password reset link sent. Please check your email.');
         res.redirect('/auth/login');
