@@ -4,19 +4,25 @@ const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
 const nodemailer = require('nodemailer');
 
-// Brevo (Sendinblue) SMTP transporter
+
+
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
   port: 587,
-  secure: false, // STARTTLS
+  secure: false, // TLS
   auth: {
-    user: '9819e8001@smtp-brevo.com',       // your Brevo login
-    pass: 'kj5Z4nW1h8X3r6wP'               // your Brevo SMTP key
+    user: '9819e8001@smtp-brevo.com',
+    pass: 'kj5Z4nW1h8X3r6wP'
   },
+  pool: true,              // keep a pool of connections
+  maxConnections: 5,       // max simultaneous connections
+  maxMessages: 100,        // max emails per connection
+  rateLimit: 10,           // optional: emails/sec limit
   tls: {
     rejectUnauthorized: false
   }
 });
+
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
