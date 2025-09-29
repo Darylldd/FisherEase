@@ -70,7 +70,7 @@ exports.postSignup = async (req, res) => {
 
         // Send verification email with Resend
         await resend.emails.send({
-            from: "FMO Support <onboarding@resend.dev>",
+from: '"FMO Support" <calapancityfmo@gmail.com>',
             to: email,
             subject: "Verify Your Email - FMO",
             html: `
@@ -155,7 +155,7 @@ exports.postForgotPassword = async (req, res) => {
 
         // Send reset email with Resend
         await resend.emails.send({
-            from: "FMO Support <onboarding@resend.dev>",
+from: '"FMO Support" <calapancityfmo@gmail.com>',
             to: email,
             subject: "Password Reset Request",
             html: `
