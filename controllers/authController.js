@@ -140,7 +140,7 @@ exports.postForgotPassword = async (req, res) => {
             [resetToken, expiry, email]
         );
 
-        const resetLink = `https:fisherease.onrender.com/auth/reset-password?token=${resetToken}&email=${email}`;
+        const resetLink = `https://fisherease.onrender.com/auth/reset-password?token=${resetToken}&email=${email}`;
        await transporter.sendMail({
     from: '"FMO Support" <calapancityfmo@gmail.com>',
     to: email,
