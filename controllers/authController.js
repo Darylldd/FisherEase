@@ -14,21 +14,22 @@ const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 const sendEmail = async (toEmail, subject, htmlContent) => {
   if (!toEmail) return;
 
-  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-    sender: { 
-      name: 'FMO/FisherEase Support', 
-      email: 'calapancityfmo@gmail.com' 
-    },
-    to: [{ 
-      email: toEmail, 
-      name: toEmail.split('@')[0] || 'User' // fallback for name
-    }],
-    subject,
-    htmlContent
-  });
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
+      sender: { email: 'calapancityfmo@gmail.com', name: 'FMO/FisherEase Support' },
+      to: [{ email: toEmail, name: toEmail.split('@')[0] || 'User' }],
+      subject: subject,
+      htmlContent: htmlContent
+    });
 
-  return emailApi.sendTransacEmail(sendSmtpEmail);
+    const response = await emailApi.sendTransacEmail(sendSmtpEmail);
+    return response;
+  } catch (err) {
+    console.error('Sendinblue Error:', err.body || err);
+    throw err;
+  }
 };
+
 
 
 // GET /auth/login
