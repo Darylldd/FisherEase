@@ -2,10 +2,21 @@ const pool = require('../models/db');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+// Brevo (Sendinblue) SMTP transporter
+const transporter = nodemailer.createTransport({
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false, // STARTTLS
+  auth: {
+    user: '9819e8001@smtp-brevo.com',       // your Brevo login
+    pass: 'kj5Z4nW1h8X3r6wP'               // your Brevo SMTP key
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
@@ -55,50 +66,51 @@ exports.getSignup = (req, res) => {
 
 // POST /auth/signup
 exports.postSignup = async (req, res) => {
-    const { name, email, password, role } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    
-    try {
-        await pool.execute(
-            'INSERT INTO users (name, email, password, role, is_verified, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, email, hashedPassword, role, false, verificationToken]
-        );
+  const { name, email, password, role } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const verificationToken = crypto.randomBytes(32).toString('hex');
 
-        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-        const verificationLink = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${email}`;
+  try {
+    await pool.execute(
+      'INSERT INTO users (name, email, password, role, is_verified, verification_token) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, email, hashedPassword, role, false, verificationToken]
+    );
 
-        // Send verification email with Resend
-        await resend.emails.send({
-from: '"FMO Support" <calapancityfmo@gmail.com>',
-            to: email,
-            subject: "Verify Your Email - FMO",
-            html: `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                    <h2>Welcome to FMO, ${name}!</h2>
-                    <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
-                    <p>
-                        <a href="${verificationLink}"
-                           style="background: #28a745; color: #fff; padding: 10px 20px;
-                                  text-decoration: none; border-radius: 5px; display: inline-block;">
-                           Verify Email
-                        </a>
-                    </p>
-                    <p>This link will expire in 24 hours. If you did not create this account, please ignore this email.</p>
-                    <p>— The FMO Team</p>
-                </div>
-            `
-        });
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const verificationLink = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${email}`;
 
-        await auditController.logUserActivity(req, "Signed up");
-        req.flash('success_msg', 'Signup successful. Please check your email to verify your account.');
-        res.redirect('/auth/login');
-    } catch (err) {
-        console.error(err);
-        req.flash('error_msg', 'Error during signup.');
-        res.redirect('/auth/signup');
-    }
+    // Send verification email via Brevo SMTP
+    await transporter.sendMail({
+      from: "FMO Support <calapancityfmo@gmail.com>",
+      to: email,
+      subject: "Verify Your Email - FMO",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2>Welcome to FMO, ${name}!</h2>
+          <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
+          <p>
+            <a href="${verificationLink}"
+               style="background: #28a745; color: #fff; padding: 10px 20px;
+                      text-decoration: none; border-radius: 5px; display: inline-block;">
+               Verify Email
+            </a>
+          </p>
+          <p>This link will expire in 24 hours. If you did not create this account, please ignore this email.</p>
+          <p>— The FMO Team</p>
+        </div>
+      `
+    });
+
+    await auditController.logUserActivity(req, "Signed up");
+    req.flash('success_msg', 'Signup successful. Please check your email to verify your account.');
+    res.redirect('/auth/login');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error during signup.');
+    res.redirect('/auth/signup');
+  }
 };
+
 // GET /auth/verify-email
 exports.verifyEmail = async (req, res) => {
     const { token, email } = req.query;
@@ -132,59 +144,58 @@ exports.getForgotPassword = (req, res) => {
 };
 
 // POST /auth/forgot-password
-
 exports.postForgotPassword = async (req, res) => {
-    const { email } = req.body;
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    
-    try {
-        const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
-        if (rows.length === 0) {
-            req.flash('error_msg', 'No user with that email.');
-            return res.redirect('/auth/forgot-password');
-        }
+  const { email } = req.body;
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
-        const expiry = Date.now() + 3600000; // Token valid for 1 hour
-        await pool.execute(
-            'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
-            [resetToken, expiry, email]
-        );
-
-        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-        const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${email}`;
-
-        // Send reset email with Resend
-        await resend.emails.send({
-from: '"FMO Support" <calapancityfmo@gmail.com>',
-            to: email,
-            subject: "Password Reset Request",
-            html: `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                    <h2>Password Reset Request</h2>
-                    <p>Hello,</p>
-                    <p>We received a request to reset your password for your <strong>FMO</strong> account.</p>
-                    <p>Click the button below to reset your password:</p>
-                    <p>
-                        <a href="${resetLink}" 
-                           style="background: #007BFF; color: #fff; padding: 10px 20px; 
-                                  text-decoration: none; border-radius: 5px; display: inline-block;">
-                           Reset Password
-                        </a>
-                    </p>
-                    <p>This link will expire in 1 hour. If you did not request this, you can safely ignore this email.</p>
-                    <p>— The FMO Team</p>
-                </div>
-            `
-        });
-
-        await auditController.logUserActivity(req, "Requested password reset");
-        req.flash('success_msg', 'Password reset link sent. Please check your email.');
-        res.redirect('/auth/login');
-    } catch (err) {
-        console.error(err);
-        req.flash('error_msg', 'Error during password reset.');
-        res.redirect('/auth/forgot-password');
+  try {
+    const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
+    if (rows.length === 0) {
+      req.flash('error_msg', 'No user with that email.');
+      return res.redirect('/auth/forgot-password');
     }
+
+    const expiry = Date.now() + 3600000; // 1 hour
+    await pool.execute(
+      'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
+      [resetToken, expiry, email]
+    );
+
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}&email=${email}`;
+
+    // Send reset email via Brevo SMTP
+    await transporter.sendMail({
+      from: "FMO Support <calapancityfmo@gmail.com>",
+      to: email,
+      subject: "Password Reset Request",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2>Password Reset Request</h2>
+          <p>Hello,</p>
+          <p>We received a request to reset your password for your <strong>FMO</strong> account.</p>
+          <p>Click the button below to reset your password:</p>
+          <p>
+            <a href="${resetLink}" 
+               style="background: #007BFF; color: #fff; padding: 10px 20px; 
+                      text-decoration: none; border-radius: 5px; display: inline-block;">
+               Reset Password
+            </a>
+          </p>
+          <p>This link will expire in 1 hour. If you did not request this, you can safely ignore this email.</p>
+          <p>— The FMO Team</p>
+        </div>
+      `
+    });
+
+    await auditController.logUserActivity(req, "Requested password reset");
+    req.flash('success_msg', 'Password reset link sent. Please check your email.');
+    res.redirect('/auth/login');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error during password reset.');
+    res.redirect('/auth/forgot-password');
+  }
 };
 
 // GET /auth/reset-password
@@ -237,4 +248,3 @@ exports.logout = async (req, res) => {
         res.redirect('/');
     });
 };
-
