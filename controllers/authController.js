@@ -73,13 +73,29 @@ exports.postSignup = async (req, res) => {
             [name, email, hashedPassword, role, false, verificationToken]
         );
 
-        const verificationLink = `http://localhost:3000/auth/verify-email?token=${verificationToken}&email=${email}`;
-        await transporter.sendMail({
-            from: '"FMO" <no-reply@fmo.com>',
-            to: email,
-            subject: 'Email Verification',
-            text: `Click the following link to verify your email: ${verificationLink}`
-        });
+        const verificationLink = `https://fisherease.onrender.com/auth/verify-email?token=${verificationToken}&email=${email}`;
+       await transporter.sendMail({
+    from: '"FMO Support" <calapancityfmo@gmail.com>',
+    to: email,
+    subject: 'Verify Your Email - FMO',
+    text: `Click the following link to verify your email: ${verificationLink}`, // plain fallback
+    html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2>Welcome to FMO, ${name}!</h2>
+            <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
+            <p>
+                <a href="${verificationLink}"
+                   style="background: #28a745; color: #fff; padding: 10px 20px;
+                          text-decoration: none; border-radius: 5px; display: inline-block;">
+                   Verify Email
+                </a>
+            </p>
+            <p>This link will expire in 24 hours. If you did not create this account, please ignore this email.</p>
+            <p>— The FMO Team</p>
+        </div>
+    `
+});
+
         await auditController.logUserActivity(req, "Signed up");
         req.flash('success_msg', 'Signup successful. Please check your email to verify your account.');
         res.redirect('/auth/login');
@@ -123,6 +139,7 @@ exports.getForgotPassword = (req, res) => {
 };
 
 // POST /auth/forgot-password
+
 exports.postForgotPassword = async (req, res) => {
     const { email } = req.body;
     const resetToken = crypto.randomBytes(32).toString('hex');
