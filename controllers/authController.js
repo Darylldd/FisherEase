@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const auditController = require('./auditController');
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY); // put your API key in Render env
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
@@ -98,7 +99,6 @@ exports.postSignup = async (req, res) => {
         res.redirect('/auth/signup');
     }
 };
-
 // GET /auth/verify-email
 exports.verifyEmail = async (req, res) => {
     const { token, email } = req.query;
@@ -132,6 +132,7 @@ exports.getForgotPassword = (req, res) => {
 };
 
 // POST /auth/forgot-password
+
 exports.postForgotPassword = async (req, res) => {
     const { email } = req.body;
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -185,3 +186,55 @@ exports.postForgotPassword = async (req, res) => {
         res.redirect('/auth/forgot-password');
     }
 };
+
+// GET /auth/reset-password
+exports.getResetPassword = (req, res) => {
+    const { token, email } = req.query;
+    res.render('reset-password', { title: 'Reset Password', token, email });
+};
+
+// POST /auth/reset-password
+exports.postResetPassword = async (req, res) => {
+    const { token, email, password } = req.body;
+    
+    try {
+        const [rows] = await pool.execute(
+            'SELECT * FROM users WHERE email = ? AND reset_token = ? AND reset_token_expiry > ?',
+            [email, token, Date.now()]
+        );
+
+        if (rows.length === 0) {
+            req.flash('error_msg', 'Invalid or expired token.');
+            return res.redirect('/auth/forgot-password');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await pool.execute(
+            'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?',
+            [hashedPassword, email]
+        );
+
+        req.flash('success_msg', 'Password reset successfully. You can now log in.');
+        res.redirect('/auth/login');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error resetting password.');
+        res.redirect('/auth/forgot-password');
+    }
+};
+
+// GET /auth/logout
+exports.logout = async (req, res) => {
+    const userId = req.session.userId;
+    if (userId) {
+        await auditController.logUserActivity(req, "Logged out");
+    }
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error destroying session:", err);
+            return res.status(500).send("Server Error");
+        }
+        res.redirect('/');
+    });
+};
+
