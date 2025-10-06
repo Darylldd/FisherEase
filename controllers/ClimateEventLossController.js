@@ -1,18 +1,27 @@
 const ClimateEventLossModel = require("../models/ClimateEventLossModel");
-const path = require("path");
-const fs = require("fs");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 
-// Configure Cloudinary
+
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Multer for temporary uploads
-const upload = multer({ dest: "tempUploads/" });
+
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: "climate_loss_uploads",
+        allowed_formats: ["jpg", "jpeg", "png"],
+        transformation: [{ width: 800, crop: "limit" }],
+    },
+});
+
+const upload = multer({ storage });
+
 
 const ClimateEventLossController = {
     async submitLossReport(req, res) {
@@ -26,22 +35,15 @@ const ClimateEventLossController = {
                 description,
                 location
             } = req.body;
+
             const userId = req.session.userId;
             if (!userId) return res.status(401).send("Unauthorized");
 
-            // Check file
             if (!req.file) return res.status(400).send("Proof image is required");
 
-            // Upload to Cloudinary
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: "climateLossProofs"
-            });
+            // Cloudinary URL automatically available after upload
+            const imageUrl = req.file.path;
 
-            // Remove temporary file
-            const fs = require("fs");
-            fs.unlinkSync(req.file.path);
-
-            // Save Cloudinary URL to DB
             await ClimateEventLossModel.reportLoss(
                 userId,
                 eventType,
@@ -51,7 +53,7 @@ const ClimateEventLossController = {
                 lossValue,
                 description,
                 location,
-                result.secure_url // <-- Cloudinary image URL
+                imageUrl
             );
 
             res.redirect("/climateLoss/view?success=true");
@@ -88,15 +90,13 @@ const ClimateEventLossController = {
 
     async viewAllLossReports(req, res) {
         try {
-            console.log("Session:", req.session);
             const userRole = req.session.role;
             if (!userRole || userRole !== "admin") {
                 return res.status(403).send("Access denied. Admin only.");
             }
 
             const lossReports = await ClimateEventLossModel.getAllLossReports();
-            const success = req.query.success; // Pass success query parameter
-            console.log("Loss Reports:", lossReports);
+            const success = req.query.success;
             res.render("climateAnalysis", { lossReports, user: req.session.user, success });
         } catch (error) {
             console.error("Error fetching all loss reports:", error);
@@ -137,4 +137,8 @@ const ClimateEventLossController = {
     }
 };
 
-module.exports = ClimateEventLossController;
+
+module.exports = {
+    upload,
+    ...ClimateEventLossController
+};
