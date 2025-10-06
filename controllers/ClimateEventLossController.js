@@ -1,23 +1,59 @@
 const ClimateEventLossModel = require("../models/ClimateEventLossModel");
 const path = require("path");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer for temporary uploads
+const upload = multer({ dest: "tempUploads/" });
 
 const ClimateEventLossController = {
     async submitLossReport(req, res) {
         try {
-            const { eventType, date, speciesLost, lossKg, lossValue, description, location } = req.body;
+            const {
+                eventType,
+                date,
+                speciesLost,
+                lossKg,
+                lossValue,
+                description,
+                location
+            } = req.body;
             const userId = req.session.userId;
-            let imagePath = null;
-
             if (!userId) return res.status(401).send("Unauthorized");
 
-            if (req.file) {
-                imagePath = `/Uploads/${req.file.filename}`;
-            } else {
-                return res.status(400).send("Proof image is required");
-            }
+            // Check file
+            if (!req.file) return res.status(400).send("Proof image is required");
 
-            await ClimateEventLossModel.reportLoss(userId, eventType, date, speciesLost, lossKg, lossValue, description, location, imagePath);
+            // Upload to Cloudinary
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "climateLossProofs"
+            });
+
+            // Remove temporary file
+            const fs = require("fs");
+            fs.unlinkSync(req.file.path);
+
+            // Save Cloudinary URL to DB
+            await ClimateEventLossModel.reportLoss(
+                userId,
+                eventType,
+                date,
+                speciesLost,
+                lossKg,
+                lossValue,
+                description,
+                location,
+                result.secure_url // <-- Cloudinary image URL
+            );
+
             res.redirect("/climateLoss/view?success=true");
         } catch (error) {
             console.error("Error submitting loss report:", error);
