@@ -514,28 +514,43 @@ body {
                 <th>Location</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <% reports.forEach((report, index) => { %>
-                <tr>
-                  <td class="text-center"><%= index + 1 %></td>
-                  <td><%= report.species || 'N/A' %></td>
-                  <td><%= report.method_of_fishing || 'N/A' %></td>
-                  <td class="text-center"><%= report.quantity || 'N/A' %></td>
-                  <td><%= report.location || 'N/A' %></td>
-                  <td class="text-center">
-                    <% if (report.status === 'Approved') { %>
-                      <span class="badge bg-success">Approved</span>
-                    <% } else if (report.status === 'Flagged') { %>
-                      <span class="badge bg-danger">Flagged</span>
-                    <% } else { %>
-                      <span class="badge bg-secondary"><%= report.status || 'Under Review' %></span>
-                    <% } %>
-                  </td>
-                  <td class="text-center"><%= report.date ? new Date(report.date).toLocaleDateString() : 'N/A' %></td>
-                </tr>
-              <% }) %>
+   <% reports.forEach((report, index) => { %>
+  <tr>
+    <td class="text-center"><%= index + 1 %></td>
+    <td><%= report.species || 'N/A' %></td>
+    <td><%= report.method_of_fishing || 'N/A' %></td>
+    <td class="text-center"><%= report.quantity || 'N/A' %></td>
+    <td><%= report.location || 'N/A' %></td>
+    <td class="text-center">
+      <% if (report.status === 'Approved') { %>
+        <span class="badge bg-success">Approved</span>
+      <% } else if (report.status === 'Flagged') { %>
+        <span class="badge bg-danger">Flagged</span>
+      <% } else { %>
+        <span class="badge bg-secondary"><%= report.status || 'Under Review' %></span>
+      <% } %>
+    </td>
+    <td class="text-center"><%= report.date ? new Date(report.date).toLocaleDateString() : 'N/A' %></td>
+    <td class="text-center">
+
+
+<form action="/catch-report/edit" method="POST" style="display:inline;">
+  <input type="hidden" name="reportId" value="<%= report.id %>">
+  <button type="submit" class="btn btn-sm btn-primary">
+    <i class="fas fa-edit"></i> Edit
+  </button>
+</form>
+
+
+    </td>
+  </tr>
+<% }) %>
+
+
             </tbody>
           </table>
         </div>

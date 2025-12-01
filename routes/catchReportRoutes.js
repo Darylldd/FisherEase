@@ -18,5 +18,6 @@ router.get('/export/excel', catchReportController.exportUserReportExcel);
 router.get('/history', catchReportController.viewUserCatchHistory);
 router.get('/filter', catchReportController.filterReports);
 router.get('/predict-catch', catchReportController.predictCatch);
-
+router.post('/edit', catchReportController.editCatchReportPage);
+router.post('/edit/update', catchReportController.updateCatchReport);
 module.exports = router;

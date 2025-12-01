@@ -779,4 +779,51 @@ exports.getPredictionsPage = async (req, res) => {
   }
 };
 
+// Show edit page
+exports.editCatchReportPage = async (req, res) => {
+  try {
+    const reportId = req.body.reportId;
+    const report = await CatchReport.getReportById(reportId);
+
+    if (!report) return res.status(404).send('Report not found');
+
+    res.render('editCatchReport', { report });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+
+// Handle update
+exports.updateCatchReport = async (req, res) => {
+  try {
+    const { reportId, species, quantity, location, method_of_fishing, date } = req.body;
+
+    const report = await CatchReport.getReportById(reportId);
+    if (!report) return res.status(404).send('Report not found');
+
+    if (report.status !== 'approved') {
+      await CatchReport.updateReport(
+        reportId,
+        req.session.userId,
+        species,
+        quantity,
+        location,
+        method_of_fishing,
+        date
+      );
+    }
+
+    res.redirect('/catch-report/history');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+
+
+
+
 module.exports = exports;

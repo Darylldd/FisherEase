@@ -323,7 +323,22 @@ getClustersByUser: async (userId) => {
     const [rows] = await db.execute(query, [clusterId]);
     console.log(`Fetched reports for cluster ${clusterId}:`, JSON.stringify(rows, null, 2));
     return rows;
-  }
+  },
+  
+  getReportById(id) {
+  return db.query("SELECT * FROM catch_reports WHERE id = ?", [id])
+           .then(([rows]) => rows[0]);
+},
+
+updateReport(id, userId, species, quantity, location, method, date) {
+  return db.query(
+    `UPDATE catch_reports 
+     SET species=?, quantity=?, location=?, method_of_fishing=?, date=?
+     WHERE id=? AND user_id=?`,
+    [species, quantity, location, method, date, id, userId]
+  );
+}
+
 };
 
 module.exports = CatchReport;

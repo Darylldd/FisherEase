@@ -4,6 +4,7 @@ const session = require('express-session');
 const path = require("path");
 const flash = require('connect-flash');
 const multer = require("multer");
+require('dotenv').config();
 
 const upload = multer({ dest: "uploads/" }); // Store files in "uploads/" directory
 const app = express();
