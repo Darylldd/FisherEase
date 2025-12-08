@@ -3,20 +3,29 @@ const db = require('./db');
 class Violation {
     static async getAllViolations(search = '', month = '', year = '') {
         let query = `
-            SELECT v.id, 
-                   COALESCE(CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name), u.name) AS name,
-                   CASE 
-                       WHEN f.id IS NOT NULL THEN 'Fisherfolk'
-                       ELSE 'User'
-                   END AS type,
-                   v.violation_type, v.specific_violation, v.location, v.fines, v.details, 
-                   v.status, v.created_at
-            FROM violations v
-            LEFT JOIN users u ON v.user_id = u.id
-            LEFT JOIN fisherfolk f ON v.user_id = f.id
-            WHERE (COALESCE(CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name), u.name) LIKE ?
-                   OR v.violation_type LIKE ? OR v.status LIKE ?)
-        `;
+    SELECT v.id, 
+           COALESCE(
+             CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
+             u.name
+           ) AS name,
+           CASE 
+               WHEN f.id IS NOT NULL THEN 'Fisherfolk'
+               ELSE 'User'
+           END AS type,
+           v.violation_type, v.specific_violation, v.location, 
+           v.fines, v.details, v.status, v.created_at
+    FROM violations v
+    LEFT JOIN users u ON v.user_id = u.id
+    LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id   -- ✅ Correct join
+    WHERE (
+        COALESCE(
+            CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
+            u.name
+        ) LIKE ?
+        OR v.violation_type LIKE ?
+        OR v.status LIKE ?
+    )
+`;
         const queryParams = [`%${search}%`, `%${search}%`, `%${search}%`];
 
         if (month) {
