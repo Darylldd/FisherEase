@@ -63,24 +63,15 @@ LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
         }
     }
 
-   static async addViolation(id, type, violation_type, specific_violation, location, fines, details) {
+static async addViolation(user_id, fisherfolk_id, violation_type, specific_violation, location, fines, details) {
     try {
-        let user_id = null;
-        let fisherfolk_id = null;
-
-        if (type === "User") {
-            user_id = id;
-        } else if (type === "Fisherfolk") {
-            fisherfolk_id = id;
-        }
-
         await db.query(
             `INSERT INTO violations 
             (user_id, fisherfolk_id, violation_type, specific_violation, location, fines, details, status, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())`,
             [
-                user_id,
-                fisherfolk_id,
+                user_id || null,
+                fisherfolk_id || null,
                 violation_type,
                 specific_violation,
                 location,
@@ -88,7 +79,6 @@ LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
                 details
             ]
         );
-
     } catch (error) {
         throw error;
     }
