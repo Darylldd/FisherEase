@@ -7,90 +7,90 @@ const FishingActivity = require("../models/fishingActivityModel");
 
 const fishingActivityController = {
 
+
+  // ✅ Export Excel - directly streams file, no local storage
   exportExcel: async (req, res) => {
-  try {
-    const { month, year } = req.query;
-    let filters = {};
+    try {
+      const { month, year } = req.query;
+      let filters = {};
+      if (month) filters.month = month;
+      if (year) filters.year = year;
 
-    if (month) {
-      filters.month = month;
+      const data = await FishingActivity.getAllWithUserNamesByMonthYear(filters);
+
+      const worksheetData = data.map((activity) => ({
+        Date: new Date(activity.date).toDateString(),
+        "Start Time": activity.start_time,
+        "End Time": activity.end_time,
+        Location: activity.location,
+        Method: activity.method,
+        Weather: activity.weather,
+        "Submitted By": activity.submitted_by
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "FishingActivities");
+
+      // Generate buffer
+      const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="fishing_activities.xlsx"'
+      );
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      res.send(buffer);
+
+    } catch (error) {
+      console.error("Excel Export Error:", error);
+      res.status(500).send("Error exporting Excel");
     }
-    if (year) {
-      filters.year = year;
-    }
+  },
 
-    const data = await FishingActivity.getAllWithUserNamesByMonthYear(filters);
+  // ✅ Export PDF - directly streams file, no local storage
+  exportPDF: async (req, res) => {
+    try {
+      const { month, year } = req.query;
+      let filters = {};
+      if (month) filters.month = month;
+      if (year) filters.year = year;
 
-    // Convert to worksheet
-    const worksheetData = data.map((activity) => ({
-      Date:new Date(activity.date).toDateString(),
-      'Start Time': activity.start_time,
-      'End Time': activity.end_time,
-      Location: activity.location,
-      Method: activity.method,
-      Weather: activity.weather,
-      'Submitted By': activity.submitted_by
-    }));
+      const data = await FishingActivity.getAllWithUserNamesByMonthYear(filters);
 
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Fishing Activities');
+      const doc = new PDFDocument({ size: "A4", margin: 50 });
 
-    const filePath = path.join(__dirname, '../exports/fishing_activities.xlsx');
-    XLSX.writeFile(workbook, filePath);
+      res.setHeader("Content-Disposition", 'attachment; filename="fishing_activities.pdf"');
+      res.setHeader("Content-Type", "application/pdf");
 
-    res.download(filePath, 'fishing_activities.xlsx', () => {
-      fs.unlinkSync(filePath); // Clean up
-    });
-  } catch (error) {
-    console.error('Excel Export Error:', error);
-    res.status(500).send('Error exporting Excel');
-  }
-},
-exportPDF: async (req, res) => {
-  try {
-    const { month, year } = req.query;
-    let filters = {};
+      doc.pipe(res);
 
-    if (month) {
-      filters.month = month;
-    }
-    if (year) {
-      filters.year = year;
-    }
-
-    const data = await FishingActivity.getAllWithUserNamesByMonthYear(filters);
-
-    const doc = new PDFDocument();
-    const filePath = path.join(__dirname, '../exports/fishing_activities.pdf');
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
-
-    doc.fontSize(18).text('Fishing Activities Report', { align: 'center' });
-    doc.moveDown();
-
-    data.forEach((activity, idx) => {
-      doc.fontSize(12).text(`${idx + 1}. Date: ${new Date(activity.date).toDateString()}`);
-      doc.text(`   Time: ${activity.start_time} - ${activity.end_time}`);
-      doc.text(`   Location: ${activity.location}`);
-      doc.text(`   Method: ${activity.method}`);
-      doc.text(`   Weather: ${activity.weather}`);
-      doc.text(`   Submitted By: ${activity.submitted_by}`);
+      doc.fontSize(18).text("Fishing Activities Report", { align: "center" });
       doc.moveDown();
-    });
 
-    doc.end();
-
-    stream.on('finish', () => {
-      res.download(filePath, 'fishing_activities.pdf', () => {
-        fs.unlinkSync(filePath); // Clean up
+      data.forEach((activity, idx) => {
+        doc.fontSize(12).text(
+          `${idx + 1}. Date: ${new Date(activity.date).toDateString()}`
+        );
+        doc.text(`   Time: ${activity.start_time} - ${activity.end_time}`);
+        doc.text(`   Location: ${activity.location}`);
+        doc.text(`   Method: ${activity.method}`);
+        doc.text(`   Weather: ${activity.weather}`);
+        doc.text(`   Submitted By: ${activity.submitted_by}`);
+        doc.moveDown();
       });
-    });
-  } catch (error) {
-    console.error('PDF Export Error:', error);
-    res.status(500).send('Error exporting PDF');
-  }
-},
+
+      doc.end();
+
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      res.status(500).send("Error exporting PDF");
+    }
+  },
 
   // 👤 For Regular Users
   getFishingActivities: async (req, res) => {

@@ -42,3 +42,33 @@ exports.getAdminTable = async (req, res) => {
         });
     }
 };
+
+exports.getEditForm = async (req, res) => {
+    try {
+        const record = await PostHarvest.getById(req.body.id);
+        if (!record) return res.status(404).send('Record not found');
+        res.render('post_harvest_edit', { record, error: null });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+
+// Handle update
+exports.updatePostHarvest = async (req, res) => {
+    try {
+        await PostHarvest.update(req.body.id, req.body);
+        res.redirect('/admin/post-harvest');
+    } catch (error) {
+        res.render('post_harvest_edit', { record: req.body, error: error.message });
+    }
+};
+
+// Handle delete
+exports.deletePostHarvest = async (req, res) => {
+    try {
+        await PostHarvest.delete(req.body.id);
+        res.redirect('/admin/post-harvest');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}; 

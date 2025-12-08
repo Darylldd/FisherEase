@@ -494,27 +494,48 @@
                   <th scope="col">Civil Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <% records.forEach(record => { %>
-                  <tr>
-                    <td><%= record.id %></td>
-                    <td><%= record.license_number %></td>
-                    <td>
-                      <%= new Date(record.date_registered).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                      }) %>
-                    </td>
-                    <td><%= record.first_name %> <%= record.middle_name || '' %> <%= record.last_name %></td>
-                    <td><%= record.address %></td>
-                    <td><%= record.contact_info %></td>
-                    <td><%= record.processing_method %></td>
-                    <td><%= record.processing_location %></td>
-                    <td><%= record.civil_status %></td>
-                  </tr>
-                <% }) %>
-              </tbody>
+            <tbody>
+  <% records.forEach(record => { %>
+    <tr>
+      <td><%= record.license_number %></td>
+      <td>
+        <%= new Date(record.date_registered).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        }) %>
+      </td>
+      <td><%= record.first_name %> <%= record.middle_name || '' %> <%= record.last_name %></td>
+      <td><%= record.address %></td>
+      <td><%= record.contact_info %></td>
+      <td><%= record.processing_method %></td>
+      <td><%= record.processing_location %></td>
+      <td><%= record.civil_status %></td>
+     <td>
+  <button type="button" class="btn btn-outline-success btn-sm edit-btn"
+          data-id="<%= record.id %>"
+          data-license="<%= record.license_number %>"
+          data-date="<%= new Date(record.date_registered).toISOString().split('T')[0] %>"
+          data-first="<%= record.first_name %>"
+          data-middle="<%= record.middle_name || '' %>"
+          data-last="<%= record.last_name %>"
+          data-address="<%= record.address %>"
+          data-contact="<%= record.contact_info %>"
+          data-method="<%= record.processing_method %>"
+          data-location="<%= record.processing_location %>"
+          data-civil="<%= record.civil_status %>">
+    <i class="fas fa-edit"></i> Edit
+      <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
+          data-id="<%= record.id %>"
+          data-name="<%= record.first_name %> <%= record.last_name %>">
+    <i class="fas fa-trash"></i> Delete
+  </button>
+  </button>
+</td>
+
+
+    </tr>
+  <% }) %>
+</tbody>
+
             </table>
           </div>
           <nav aria-label="Post-Harvest table pagination">
@@ -540,6 +561,107 @@
       </div>
     </div>
   </div>
+
+<!-- Edit Post-Harvest Modal -->
+<div class="modal fade" id="editPostHarvestModal" tabindex="-1" aria-labelledby="editPostHarvestLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editPostHarvestLabel"><i class="fas fa-edit me-1"></i> Edit Post-Harvest Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editPostHarvestForm" method="POST" action="/admin/post-harvest/update">
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit-id">
+
+          <div class="mb-3">
+            <label class="form-label">License Number</label>
+            <input type="text" name="license_number" id="edit-license" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Date Registered</label>
+            <input type="date" name="date_registered" id="edit-date" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" id="edit-first" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Middle Name</label>
+            <input type="text" name="middle_name" id="edit-middle" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" id="edit-last" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <input type="text" name="address" id="edit-address" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Contact Info</label>
+            <input type="text" name="contact_info" id="edit-contact" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Processing Method</label>
+            <input type="text" name="processing_method" id="edit-method" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Processing Location</label>
+            <input type="text" name="processing_location" id="edit-location" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Civil Status</label>
+            <select name="civil_status" id="edit-civil" class="form-select" required>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Divorced">Divorced</option>
+            </select>
+          </div>
+
+          <div id="edit-error" class="alert alert-danger d-none"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Update</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i> Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deletePostHarvestModal" tabindex="-1" aria-labelledby="deletePostHarvestLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deletePostHarvestLabel"><i class="fas fa-exclamation-triangle me-1"></i> Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="deletePostHarvestForm" method="POST" action="/admin/post-harvest/delete">
+        <div class="modal-body">
+          <p>Are you sure you want to delete <strong id="delete-record-name"></strong>?</p>
+          <input type="hidden" name="id" id="delete-id">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger"><i class="fas fa-trash me-1"></i> Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i> Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -633,5 +755,44 @@
       });
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const modal = new bootstrap.Modal(document.getElementById('editPostHarvestModal'));
+
+    editButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('edit-id').value = btn.dataset.id;
+        document.getElementById('edit-license').value = btn.dataset.license;
+        document.getElementById('edit-date').value = btn.dataset.date;
+        document.getElementById('edit-first').value = btn.dataset.first;
+        document.getElementById('edit-middle').value = btn.dataset.middle;
+        document.getElementById('edit-last').value = btn.dataset.last;
+        document.getElementById('edit-address').value = btn.dataset.address;
+        document.getElementById('edit-contact').value = btn.dataset.contact;
+        document.getElementById('edit-method').value = btn.dataset.method;
+        document.getElementById('edit-location').value = btn.dataset.location;
+        document.getElementById('edit-civil').value = btn.dataset.civil;
+
+        modal.show();
+      });
+    });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const deleteModal = new bootstrap.Modal(document.getElementById('deletePostHarvestModal'));
+
+    deleteButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('delete-id').value = btn.dataset.id;
+        document.getElementById('delete-record-name').textContent = btn.dataset.name;
+        deleteModal.show();
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
