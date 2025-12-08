@@ -24,15 +24,15 @@ exports.addViolation = async (req, res) => {
         let user_id = null;
         let fisherfolk_id = null;
 
-        if (entity_id && entity_id.startsWith('user-')) {
-            user_id = parseInt(entity_id.split('-')[1]);
-        } 
-        else if (entity_id && entity_id.startsWith('fisherfolk-')) {
-            fisherfolk_id = parseInt(entity_id.split('-')[1]);
-        } 
-        else {
-            throw new Error('Invalid entity_id format');
-        }
+        if (!entity_id) throw new Error('Please select a name.');
+
+        const [type, id] = entity_id.split('-');
+        const numericId = parseInt(id);
+        if (!numericId) throw new Error('Invalid ID selected.');
+
+        if (type === 'user') user_id = numericId;
+        else if (type === 'fisherfolk') fisherfolk_id = numericId;
+        else throw new Error('Invalid entity type.');
 
         await Violation.addViolation(
             user_id,
@@ -50,6 +50,7 @@ exports.addViolation = async (req, res) => {
         res.status(500).send('Error adding violation: ' + error.message);
     }
 };
+
 
 
 exports.updateViolation = async (req, res) => {
