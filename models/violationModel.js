@@ -50,18 +50,37 @@ class Violation {
         }
     }
 
-    static async addViolation(user_id, fisherfolk_id, violation_type, specific_violation, location, fines, details) {
-        try {
-            await db.query(
-                `INSERT INTO violations 
-                 (user_id, fisherfolk_id, violation_type, specific_violation, location, fines, details, status, created_at) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())`,
-                [user_id, fisherfolk_id || null, violation_type, specific_violation, location, parseFloat(fines), details]
-            );
-        } catch (error) {
-            throw error;
+   static async addViolation(id, type, violation_type, specific_violation, location, fines, details) {
+    try {
+        let user_id = null;
+        let fisherfolk_id = null;
+
+        if (type === "User") {
+            user_id = id;
+        } else if (type === "Fisherfolk") {
+            fisherfolk_id = id;
         }
+
+        await db.query(
+            `INSERT INTO violations 
+            (user_id, fisherfolk_id, violation_type, specific_violation, location, fines, details, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())`,
+            [
+                user_id,
+                fisherfolk_id,
+                violation_type,
+                specific_violation,
+                location,
+                parseFloat(fines),
+                details
+            ]
+        );
+
+    } catch (error) {
+        throw error;
     }
+}
+
 
     static async updateViolationStatus(id, status) {
         try {

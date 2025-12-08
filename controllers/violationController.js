@@ -22,21 +22,35 @@ exports.addViolation = async (req, res) => {
     const { entity_id, violation_type, specific_violation, location, fines, details } = req.body;
     try {
         let user_id = null;
+        let fisherfolk_id = null;
+
         if (entity_id && entity_id.startsWith('user-')) {
             user_id = parseInt(entity_id.split('-')[1]);
-        } else if (entity_id && entity_id.startsWith('fisherfolk-')) {
-            user_id = parseInt(entity_id.split('-')[1]);
-        } else {
+        } 
+        else if (entity_id && entity_id.startsWith('fisherfolk-')) {
+            fisherfolk_id = parseInt(entity_id.split('-')[1]);
+        } 
+        else {
             throw new Error('Invalid entity_id format');
         }
 
-        await Violation.addViolation(user_id, null, violation_type, specific_violation, location, fines, details);
+        await Violation.addViolation(
+            user_id,
+            fisherfolk_id,
+            violation_type,
+            specific_violation,
+            location,
+            fines,
+            details
+        );
+
         res.redirect('/violation-notifications');
     } catch (error) {
         console.error('Error adding violation:', error);
         res.status(500).send('Error adding violation: ' + error.message);
     }
 };
+
 
 exports.updateViolation = async (req, res) => {
     const { id, status } = req.body;
