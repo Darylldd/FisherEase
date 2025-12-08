@@ -3,20 +3,26 @@ const db = require('./db');
 class Violation {
   static async getAllViolations(search = '', month = '', year = '') {
    let query = `
-    SELECT v.id,
-           CASE
-               WHEN f.id IS NOT NULL THEN CONCAT_WS(' ', f.first_name, f.middle_name, f.last_name)
-               ELSE u.name
-           END AS name,
-           CASE
-               WHEN f.id IS NOT NULL THEN 'Fisherfolk'
-               ELSE 'User'
-           END AS type,
-           v.violation_type, v.specific_violation, v.location, v.fines, v.details,
-           v.status, v.created_at
-    FROM violations v
-    LEFT JOIN users u ON v.user_id = u.id
-    LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
+SELECT 
+    v.id,
+    CASE
+        WHEN f.id IS NOT NULL THEN CONCAT_WS(' ', f.first_name, f.middle_name, f.last_name)
+        ELSE u.name
+    END AS name,
+    CASE
+        WHEN f.id IS NOT NULL THEN 'Fisherfolk'
+        ELSE 'User'
+    END AS type,
+    v.violation_type,
+    v.specific_violation,
+    v.location,
+    v.fines,
+    v.details,
+    v.status,
+    v.created_at
+FROM violations v
+LEFT JOIN users u ON v.user_id = u.id
+LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
     WHERE (
         CASE
             WHEN f.id IS NOT NULL THEN CONCAT_WS(' ', f.first_name, f.middle_name, f.last_name)
