@@ -1,49 +1,46 @@
 const db = require('./db');
 
 class Violation {
-    static async getAllViolations(search = '', month = '', year = '') {
-        let query = `
-    SELECT v.id, 
-           COALESCE(
-             CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
-             u.name
-           ) AS name,
-           CASE 
-               WHEN f.id IS NOT NULL THEN 'Fisherfolk'
-               ELSE 'User'
-           END AS type,
-           v.violation_type, v.specific_violation, v.location, 
-           v.fines, v.details, v.status, v.created_at
-    FROM violations v
-    LEFT JOIN users u ON v.user_id = u.id
-    LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id   -- ✅ Correct join
-    WHERE (
-        COALESCE(
-            CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
-            u.name
-        ) LIKE ?
-        OR v.violation_type LIKE ?
-        OR v.status LIKE ?
-    )
-`;
-        const queryParams = [`%${search}%`, `%${search}%`, `%${search}%`];
+  static async getAllViolations(search = '', month = '', year = '') {
+    let query = `
+        SELECT v.id,
+               COALESCE(
+                   CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
+                   u.name
+               ) AS name,
+               CASE 
+                   WHEN f.id IS NOT NULL THEN 'Fisherfolk'
+                   ELSE 'User'
+               END AS type,
+               v.violation_type, v.specific_violation, v.location,
+               v.fines, v.details, v.status, v.created_at
+        FROM violations v
+        LEFT JOIN users u ON v.user_id = u.id
+        LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
+        WHERE (
+            COALESCE(
+                CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
+                u.name
+            ) LIKE ?
+            OR v.violation_type LIKE ?
+            OR v.status LIKE ?
+        )
+    `;
+    const queryParams = [`%${search}%`, `%${search}%`, `%${search}%`];
 
-        if (month) {
-            query += ' AND MONTH(v.created_at) = ?';
-            queryParams.push(parseInt(month));
-        }
-        if (year) {
-            query += ' AND YEAR(v.created_at) = ?';
-            queryParams.push(parseInt(year));
-        }
-
-        try {
-            const [rows] = await db.query(query, queryParams);
-            return rows;
-        } catch (error) {
-            throw error;
-        }
+    if (month) {
+        query += ' AND MONTH(v.created_at) = ?';
+        queryParams.push(parseInt(month));
     }
+    if (year) {
+        query += ' AND YEAR(v.created_at) = ?';
+        queryParams.push(parseInt(year));
+    }
+
+    const [rows] = await db.query(query, queryParams);
+    return rows;
+}
+
 
     static async getAllCombinedNames() {
         try {
@@ -99,28 +96,28 @@ class Violation {
         }
     }
 
-    static async getUserViolations(userId) {
-        try {
-            const [rows] = await db.query(
-                `SELECT v.id, 
-                        COALESCE(CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name), u.name) AS name,
-                        CASE 
-                            WHEN f.id IS NOT NULL THEN 'Fisherfolk'
-                            ELSE 'User'
-                        END AS type,
-                        v.violation_type, v.specific_violation, v.location, v.fines, v.details, 
-                        v.status, v.created_at 
-                 FROM violations v 
-                 LEFT JOIN users u ON v.user_id = u.id 
-                 LEFT JOIN fisherfolk f ON v.user_id = f.id 
-                 WHERE v.user_id = ?`,
-                [userId]
-            );
-            return rows;
-        } catch (error) {
-            throw error;
-        }
-    }
+ static async getUserViolations(userId) {
+    const [rows] = await db.query(
+        `SELECT v.id,
+                COALESCE(
+                    CONCAT(f.first_name, ' ', f.middle_name, ' ', f.last_name),
+                    u.name
+                ) AS name,
+                CASE
+                    WHEN f.id IS NOT NULL THEN 'Fisherfolk'
+                    ELSE 'User'
+                END AS type,
+                v.violation_type, v.specific_violation, v.location,
+                v.fines, v.details, v.status, v.created_at
+         FROM violations v
+         LEFT JOIN users u ON v.user_id = u.id
+         LEFT JOIN fisherfolk f ON v.fisherfolk_id = f.id
+         WHERE v.user_id = ? OR v.fisherfolk_id = ?`,
+        [userId, userId]
+    );
+    return rows;
+}
+
 
     static async getViolationAnalytics() {
         try {
