@@ -297,6 +297,12 @@ body {
         margin: 1rem auto;
       }
     }
+    #print-signature-preview {
+  width: 250px !important;
+  height: 80px !important;
+  object-fit: contain;
+}
+
   </style>
 </head>
 <body>
@@ -410,8 +416,9 @@ body {
  <div class="main-container">
   <div class="card">
     <div class="card-body">
-      <form method="POST" action="/admeasurement-form" id="admeasurementForm">
-        <div class="row g-3">
+<form method="POST" action="/admeasurement-form" id="admeasurementForm" enctype="multipart/form-data">
+
+  <div class="row g-3">
           <div class="col-md-6">
             <label for="fvr_no" class="form-label">FVR No:</label>
 <select id="fvr_no" name="fvr_no" class="form-select" required>
@@ -514,9 +521,34 @@ body {
               <% }) %>
             </select>
           </div>
+        <div class="col-12">
+          <h5 class="form-label">Mayor Information</h5>
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="mayor_name" class="form-control" placeholder="Mayor Name" required>
+        </div>
+
+       <div class="col-md-6">
+  <label for="mayor_signature" class="form-label">Mayor Signature:</label>
+  <input type="file" name="mayor_signature" class="form-control" accept="image/*">
+  
+  <% if (mayor && mayor.mayor_signature) { %>
+    <input type="hidden" name="existing_mayor_signature" value="<%= mayor.mayor_signature %>">
+    <img id="mayor-signature" src="<%= mayor.mayor_signature %>" alt="Mayor Signature" style="max-height:80px; margin-top:5px;">
+  <% } %>
+</div>
+
+        <div class="col-md-6">
+          
+          <input type="date" name="term_start" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <input type="date" name="term_end" class="form-control">
+        </div>
+      </div>
           <div class="col-12">
             <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Submit</button>
-            <button type="button" class="btn btn-print" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Form</button>
+            <button type="button" id="printFormBtn" class="btn btn-print" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Form</button>
           </div>
         </div>
       </form>
@@ -526,326 +558,276 @@ body {
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Existing lists from backend
-    const fisherfolkList = <%- JSON.stringify(fisherfolk) %>;
-    const vesselList = <%- JSON.stringify(vessels) %>;
+document.addEventListener('DOMContentLoaded', () => {
+  // ==== CLOUDINARY + UPLOAD SIGNATURE HANDLING ====
+const signatureInput = document.querySelector('input[name="mayor_signature"]');
+const existingSignatureUrl = "<%= mayor?.mayor_signature || '' %>";
 
-    // Existing DOM elements
-    const fisherfolkSelect = document.getElementById('fisherfolk_id');
-    const addressInput = document.getElementById('address');
-    const vesselSelect = document.getElementById('vesselId'); // make sure matches HTML id
-    const vesselTypeSelect = document.getElementById('vessel_type');
-    const fishingVesselSelect = document.getElementById('fishing_vessel_id');
-    const dateInput = document.getElementById('date');
-    const fvrNoSelect = document.getElementById('fvr_no'); // renamed for clarity
+let finalSignatureForPrint = existingSignatureUrl; // default = Cloudinary stored file
 
-    // Set current date
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
+// If you have a small preview <img>, update it:
+const mayorPreview = document.getElementById("mayor_signature_preview");
+if (mayorPreview && existingSignatureUrl) {
+  mayorPreview.src = existingSignatureUrl;
+}
 
-    // 🔹 New: Autofill from FVR No.
-    fvrNoSelect.addEventListener('change', function () {
-      const selectedFvrNo = this.value.trim().toLowerCase();
+// Handle newly uploaded signature
+if (signatureInput) {
+  signatureInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
 
-      console.log('Selected FVR No:', selectedFvrNo); // Debug log to console
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      finalSignatureForPrint = e.target.result; // Base64 for print
+      if (mayorPreview) mayorPreview.src = finalSignatureForPrint;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-      if (!selectedFvrNo) {
-        fisherfolkSelect.value = '';
-        addressInput.value = '';
-        vesselSelect.value = '';
-        fishingVesselSelect.value = '';
-        vesselTypeSelect.value = '';
-        return;
-      }
-      const matchedVessel = vesselList.find(v => v.fvr_no && v.fvr_no.toLowerCase() === selectedFvrNo);
-      if (matchedVessel) {
-        vesselSelect.value = String(matchedVessel.id);
-        vesselTypeSelect.value = matchedVessel.vessel_type || '';
-        fishingVesselSelect.value = String(matchedVessel.id);
+  // ===== Data from backend =====
+  const fisherfolkList = <%- JSON.stringify(fisherfolk) %>;
+  const vesselList = <%- JSON.stringify(vessels) %>;
 
-        const matchedFisherfolk = fisherfolkList.find(f => f.id === Number(matchedVessel.fisherfolk_id));
-        if (matchedFisherfolk) {
-          fisherfolkSelect.value = String(matchedFisherfolk.id);
-          addressInput.value = matchedFisherfolk.address || '';
-        } else {
-          fisherfolkSelect.value = '';
-          addressInput.value = '';
-        }
-      } else {
-        fisherfolkSelect.value = '';
-        addressInput.value = '';
-        vesselSelect.value = '';
-        fishingVesselSelect.value = '';
-        vesselTypeSelect.value = '';
-        console.warn('No vessel matched FVR No:', selectedFvrNo);
-      }
-    });
+  // ===== DOM elements =====
+  const fisherfolkSelect = document.getElementById('fisherfolk_id');
+  const addressInput = document.getElementById('address');
+  const vesselSelect = document.getElementById('vesselId');
+  const vesselTypeSelect = document.getElementById('vessel_type');
+  const fishingVesselSelect = document.getElementById('fishing_vessel_id');
+  const dateInput = document.getElementById('date');
+  const fvrNoSelect = document.getElementById('fvr_no');
+  const sidebarToggle = document.getElementById("sidebarToggle");
+  const sidebar = document.querySelector(".sidebar");
 
-    // Existing: Update form when fisherfolk changes
-    fisherfolkSelect.addEventListener('change', function () {
-      const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(this.value));
-      if (selectedFisherfolk) {
-        addressInput.value = selectedFisherfolk.address || '';
-        vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
-        vesselTypeSelect.value = selectedVessel?.vessel_type || '';
-      } else {
-        addressInput.value = '';
-        vesselSelect.value = '';
-        fishingVesselSelect.value = '';
-        vesselTypeSelect.value = '';
-      }
-    });
+  // ===== Initialize date =====
+  dateInput.value = new Date().toISOString().split('T')[0];
 
-    // Existing: Update vessel type on vessel change
-    vesselSelect.addEventListener('change', function () {
-      const selectedVessel = vesselList.find(v => v.id === Number(this.value));
-      if (selectedVessel) {
-        vesselTypeSelect.value = selectedVessel.vessel_type || '';
-        fishingVesselSelect.value = this.value;
-      } else {
-        vesselTypeSelect.value = '';
-        fishingVesselSelect.value = '';
-      }
-    });
+  // ===== Autofill from FVR No. =====
+  fvrNoSelect.addEventListener('change', function () {
+    const selectedFvrNo = this.value.trim().toLowerCase();
 
-    // Existing: Initialize form state
-    if (fisherfolkSelect.value) {
-      const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(fisherfolkSelect.value));
-      if (selectedFisherfolk) {
-        addressInput.value = selectedFisherfolk.address || '';
-        vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
-        const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
-        vesselTypeSelect.value = selectedVessel?.vessel_type || '';
-      }
+    if (!selectedFvrNo) {
+      fisherfolkSelect.value = '';
+      addressInput.value = '';
+      vesselSelect.value = '';
+      fishingVesselSelect.value = '';
+      vesselTypeSelect.value = '';
+      return;
     }
 
-    // Disable form inputs during print to show values only
-    window.addEventListener('beforeprint', () => {
-      const inputs = document.querySelectorAll('#admeasurementForm input, #admeasurementForm select, #admeasurementForm textarea');
-      inputs.forEach(input => input.setAttribute('disabled', 'true'));
+    const matchedVessel = vesselList.find(v => v.fvr_no && v.fvr_no.toLowerCase() === selectedFvrNo);
+    if (matchedVessel) {
+      vesselSelect.value = String(matchedVessel.id);
+      vesselTypeSelect.value = matchedVessel.vessel_type || '';
+      fishingVesselSelect.value = String(matchedVessel.id);
 
-      const blue = '#004fa3';
-      function check(val, expected) {
-        return val === expected ? "☑" : "☐";
+      const matchedFisherfolk = fisherfolkList.find(f => f.id === Number(matchedVessel.fisherfolk_id));
+      if (matchedFisherfolk) {
+        fisherfolkSelect.value = String(matchedFisherfolk.id);
+        addressInput.value = matchedFisherfolk.address || '';
+      } else {
+        fisherfolkSelect.value = '';
+        addressInput.value = '';
       }
+    } else {
+      fisherfolkSelect.value = '';
+      addressInput.value = '';
+      vesselSelect.value = '';
+      fishingVesselSelect.value = '';
+      vesselTypeSelect.value = '';
+      console.warn('No vessel matched FVR No:', selectedFvrNo);
+    }
+  });
 
-      const printContent = document.createElement('div');
-      printContent.className = 'form-container';
-      printContent.innerHTML = `
-        <style>
-          .official-form {
-            font-family: Arial, sans-serif;
-            color: ${blue};
-            font-size: 12px;
-            border: 2px solid ${blue};
-            padding: 10px;
-          }
-          .center { text-align: center; }
-          .bold { font-weight: bold; }
-          table { width: 100%; border-collapse: collapse;}
-          td, th {
-            border: 1px solid ${blue};
-            padding: 3px;
-            vertical-align: top;
-          }
-          .annex { text-align: left; font-size: 12px; margin-bottom: 5px; color: ${blue}; }
-        </style>
+  // ===== Update form when fisherfolk changes =====
+  fisherfolkSelect.addEventListener('change', function () {
+    const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(this.value));
+    if (selectedFisherfolk) {
+      addressInput.value = selectedFisherfolk.address || '';
+      vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+      fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+      const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
+      vesselTypeSelect.value = selectedVessel?.vessel_type || '';
+    } else {
+      addressInput.value = '';
+      vesselSelect.value = '';
+      fishingVesselSelect.value = '';
+      vesselTypeSelect.value = '';
+    }
+  });
 
-        <div class="annex">ANNEX B: Certified Standard Admeasurement Form</div>
-        <div class="official-form">
+  // ===== Update vessel type on vessel change =====
+  vesselSelect.addEventListener('change', function () {
+    const selectedVessel = vesselList.find(v => v.id === Number(this.value));
+    if (selectedVessel) {
+      vesselTypeSelect.value = selectedVessel.vessel_type || '';
+      fishingVesselSelect.value = this.value;
+    } else {
+      vesselTypeSelect.value = '';
+      fishingVesselSelect.value = '';
+    }
+  });
 
-          <div class="center bold">Republic of the Philippines</div>
-          <div class="center bold">Province of Oriental Mindoro</div>
-          <div class="center bold">City of Calapan</div>
-          <div class="center bold">OFFICE OF THE CITY MAYOR</div>
-          <div class="center bold" style="font-size:16px;  font-family: Times New Roman, 'Times',serif;">FISHERIES MANAGEMENT OFFICE</div>
+  // ===== Initialize form state =====
+  if (fisherfolkSelect.value) {
+    const selectedFisherfolk = fisherfolkList.find(f => f.id === Number(fisherfolkSelect.value));
+    if (selectedFisherfolk) {
+      addressInput.value = selectedFisherfolk.address || '';
+      vesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+      fishingVesselSelect.value = selectedFisherfolk.vessel_id ? String(selectedFisherfolk.vessel_id) : '';
+      const selectedVessel = vesselList.find(v => v.id === Number(vesselSelect.value));
+      vesselTypeSelect.value = selectedVessel?.vessel_type || '';
+    }
+  }
 
-          <table>
-            <tr>
-              <td class="center bold">CERTIFIED STANDARD <br> ADMEASUREMENT FORM</td>
-              <td>FVR NO.<br>${document.getElementById('fvr_no')?.value || ''}</td>
-              <td>DATE<br>${new Date(document.getElementById('date')?.value).toLocaleDateString('en-PH') || ''}</td>
-            </tr>
-            <tr>
-              <td>NAME OF OWNER (Surname, First Name, M.I.)<br>
-              ${document.querySelector('#fisherfolk_id option:checked')?.text || ''}</td>
-              <td colspan="2">ADDRESS (No. of Street, Barangay, Municipality/City, Province)<br>
-              ${document.getElementById('address')?.value || ''}, Calapan City, Oriental Mindoro</td>
-            </tr>
-            <tr>
-              <td>NAME OF FISHING VESSEL<br>${document.querySelector('#vesselId option:checked')?.text || ''}</td>
-              <td colspan="2">VESSEL TYPE<br>
-                ${check(document.getElementById('vessel_type')?.value, 'Non-motorized')} Non-motorized &nbsp;
-                ${check(document.getElementById('vessel_type')?.value, 'Motorized')} Motorized
-              </td>
-            </tr>
-          </table>
+// ===== Print formatting =====
+  window.addEventListener('beforeprint', () => {
+    // 1. Lock inputs
+    const inputs = document.querySelectorAll('#admeasurementForm input, #admeasurementForm select, #admeasurementForm textarea');
+    inputs.forEach(input => input.setAttribute('disabled', 'true'));
 
-          <table>
-             <tr><td colspan="3" class="bold center">FISHING VESSEL DIMENSIONS AND TONNAGES</td></tr>
-            <tr>
-              <td>LENGTH (METERS)
-                <br>
-                <br>
-                  ${document.getElementById('length_meters')?.value || ''}
-              </td>
+    // 2. Get Mayor Name from the Input Field (Fixes the crash)
+    const mayorNameInput = document.querySelector('input[name="mayor_name"]');
+    const mayorName = mayorNameInput ? mayorNameInput.value : "";
 
-              <td>BREADTH (METERS)
-                <br>
-                <br>
-                  ${document.getElementById('breadth_meters')?.value || ''}
-              </td>
+    // 3. Handle Signature Image (Fixes the crash)
+    // Since it's a file input, we create a temporary URL to display it
+    const signatureInput = document.querySelector('input[name="mayor_signature"]');
+    let signatureImgTag = ""; 
+    
+    if (signatureInput && signatureInput.files && signatureInput.files[0]) {
+        const tempSrc = URL.createObjectURL(signatureInput.files[0]);
+        signatureImgTag = `<img src="${tempSrc}" alt="Mayor Signature" style="max-height:80px;"><br>`;
+    } else {
+        // Fallback if no file is selected
+        signatureImgTag = `<div style="height:50px; border-bottom:1px solid #000; width:200px; margin:0 auto;"></div>`;
+    }
 
-              <td>DEPTH (METERS)
-                <br>
-                <br>
-                  ${document.getElementById('depth_meters')?.value || ''}
-              </td>
+    const blue = '#004fa3';
+    function check(val, expected) { return val === expected ? "☑" : "☐"; }
 
-            </tr>
+    const printContent = document.createElement('div');
+    printContent.className = 'form-container';
+    
+    // 4. Update the HTML Template
+    printContent.innerHTML = `
+      <style>
+        .official-form { font-family: Arial, sans-serif; color: ${blue}; font-size: 12px; border: 2px solid ${blue}; padding: 10px; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { border: 1px solid ${blue}; padding: 3px; vertical-align: top; }
+        .annex { text-align: left; font-size: 12px; margin-bottom: 5px; color: ${blue}; }
+      </style>
 
-            <tr>
-              <td >GROSS TONNAGE
-                <br>
-                <br>
-                  ${document.getElementById('gross_tonnage')?.value || ''}
-              </td>
+      <div class="annex">ANNEX B: Certified Standard Admeasurement Form</div>
+      <div class="official-form">
+        <div class="center bold">Republic of the Philippines</div>
+        <div class="center bold">Province of Oriental Mindoro</div>
+        <div class="center bold">City of Calapan</div>
+        <div class="center bold">OFFICE OF THE CITY MAYOR</div>
+        <div class="center bold" style="font-size:16px; font-family: Times New Roman, 'Times', serif;">FISHERIES MANAGEMENT OFFICE</div>
 
-              <td colspan="2">NET TONNAGE
-                <br>
-                <br>
-                  ${document.getElementById('net_tonnage')?.value || ''}
-              </td>
-              
-            </tr>
-          </table>
-
-          <table>
-            <tr><td colspan="3" class="bold center">PARTICULARS OF PROPULSION SYSTEM</td></tr>
-            <tr>
-              <td>ENGINE MAKE
-                <br>
-                <br>
-                  ${document.getElementById('engine_make')?.value || ''}
-              </td>
-
-              <td>SERIAL NUMBER
-                <br>
-                <br>
-                  ${document.getElementById('serial_number')?.value || ''}
-              </td>
-
-              <td>HORSE POWER
-                <br>
-                <br>
-                  ${document.getElementById('horse_power')?.value || ''}
-              </td>
-
-            </tr>
-
-            <tr>
-              <td>NO. OF CYLINDERS
-                <br>
-                <br>
-                  ${document.getElementById('number_of_cylinders')?.value || ''}
-              </td>
-
-              <td>PLACE OF INSPECTION
-                <br>
-                <br>
-                  ${document.getElementById('place_of_inspection')?.value || ''}
-              </td>
-
-              <td>DATE OF INSPECTION
-                <br>
-                <br>
-                  ${new Date(document.getElementById('date_of_inspection')?.value).toLocaleDateString('en-PH') || ''}
-              </td>
-
-            </tr>
-          </table>
-
-          <table>
-            <tr>
-              <td colspan="2" class="bold center">I HEREBY CERTIFY THAT ALL <br> INFORMATION CONTAINED <br> HEREIN IS TRUE AND CORRECT <br> AND THAT ACTUAL INSPECTION <br> OF THE FISHING VESSEL WAS <br> CONDUCTED.</td>
-              <td>
-                <div class="center">
-                  <br><br>________________________________________________<br>
-                  PRINTED NAME & SIGNATURE OF ADMEASURING OFFICER
-                  <br><br>
-                </div>
-
-                <div class="left">
-                  MOBILE NO.: ${document.getElementById('mobile_no')?.value || ''}
-                </div>
-              </td>
-              
-            </tr>
-          </table>
-
-          <table>
-            <tr><td colspan="5" class="bold center">REMARKS, FINDINGS AND RECOMMENDATIONS<br></td></tr>
-
-            <tr>
-              <td colspan="5">
-                <br> ${document.getElementById('remarks')?.value || ''}</td>
-            </tr> 
-          
+        <table>
           <tr>
-              <td colspan="4">
-                  <div style="margin:50px;">
-                    
-                  </div>
-              </td>
-          
-              <td  class="bold center"> <br> <br>
-                  ATTY. DOY C. LEACHON <br> City Mayor
-              </td>
-
+            <td class="center bold">CERTIFIED STANDARD <br> ADMEASUREMENT FORM</td>
+            <td>FVR NO.<br>${document.getElementById('fvr_no')?.value || ''}</td>
+            <td>DATE<br>${document.getElementById('date')?.value ? new Date(document.getElementById('date').value).toLocaleDateString('en-PH') : ''}</td>
           </tr>
-          </table>
+          <tr>
+            <td>NAME OF OWNER (Surname, First Name, M.I.)<br>${document.querySelector('#fisherfolk_id option:checked')?.text || ''}</td>
+            <td colspan="2">ADDRESS (No. of Street, Barangay, Municipality/City, Province)<br>${document.getElementById('address')?.value || ''}, Calapan City, Oriental Mindoro</td>
+          </tr>
+          <tr>
+            <td>NAME OF FISHING VESSEL<br>${document.querySelector('#vesselId option:checked')?.text || ''}</td>
+            <td colspan="2">VESSEL TYPE<br>
+              ${check(document.getElementById('vessel_type')?.value, 'Non-motorized')} Non-motorized &nbsp;
+              ${check(document.getElementById('vessel_type')?.value, 'Motorized')} Motorized
+            </td>
+          </tr>
+        </table>
 
+        <table>
+          <tr><td colspan="3" class="bold center">FISHING VESSEL DIMENSIONS AND TONNAGES</td></tr>
+          <tr>
+            <td>LENGTH (METERS)<br><br>${document.getElementById('length_meters')?.value || ''}</td>
+            <td>BREADTH (METERS)<br><br>${document.getElementById('breadth_meters')?.value || ''}</td>
+            <td>DEPTH (METERS)<br><br>${document.getElementById('depth_meters')?.value || ''}</td>
+          </tr>
+          <tr>
+            <td>GROSS TONNAGE<br><br>${document.getElementById('gross_tonnage')?.value || ''}</td>
+            <td colspan="2">NET TONNAGE<br><br>${document.getElementById('net_tonnage')?.value || ''}</td>
+          </tr>
+        </table>
 
-        </div>
-          `;
-      document.body.appendChild(printContent);
-    });
+        <table>
+          <tr><td colspan="3" class="bold center">PARTICULARS OF PROPULSION SYSTEM</td></tr>
+          <tr>
+            <td>ENGINE MAKE<br><br>${document.getElementById('engine_make')?.value || ''}</td>
+            <td>SERIAL NUMBER<br><br>${document.getElementById('serial_number')?.value || ''}</td>
+            <td>HORSE POWER<br><br>${document.getElementById('horse_power')?.value || ''}</td>
+          </tr>
+          <tr>
+            <td>NO. OF CYLINDERS<br><br>${document.getElementById('number_of_cylinders')?.value || ''}</td>
+            <td>PLACE OF INSPECTION<br><br>${document.getElementById('place_of_inspection')?.value || ''}</td>
+            <td>DATE OF INSPECTION<br><br>${document.getElementById('date_of_inspection')?.value ? new Date(document.getElementById('date_of_inspection').value).toLocaleDateString('en-PH') : ''}</td>
+          </tr>
+        </table>
 
-    window.addEventListener('afterprint', () => {
-      const inputs = document.querySelectorAll('#admeasurementForm input, #admeasurementForm select, #admeasurementForm textarea');
-      inputs.forEach(input => {
-        input.removeAttribute('disabled');
-      });
-      const printContent = document.querySelector('.form-container');
-      if (printContent) printContent.remove();
-    });
+        <table>
+          <tr>
+            <td colspan="2" class="bold center">I HEREBY CERTIFY THAT ALL <br> INFORMATION CONTAINED <br> HEREIN IS TRUE AND CORRECT <br> AND THAT ACTUAL INSPECTION <br> OF THE FISHING VESSEL WAS <br> CONDUCTED.</td>
+            <td>
+              <div class="center"><br><br>________________________________________________<br>PRINTED NAME & SIGNATURE OF ADMEASURING OFFICER<br><br></div>
+              <div class="left">MOBILE NO.: __________________</div>
+            </td>
+          </tr>
+        </table>
+
+        <table>
+          <tr><td colspan="5" class="bold center">REMARKS, FINDINGS AND RECOMMENDATIONS<br></td></tr>
+          <tr><td colspan="5"><br>${document.getElementById('remarks')?.value || ''}</td></tr>
+          <tr>
+            <td colspan="4"><div style="margin:50px;"></div></td>
+            <td class="bold center">
+                <br><br>
+                <img id="print-signature-preview">
+                ${finalSignatureForPrint ? `<img src="${finalSignatureForPrint}" alt="Mayor Signature" style="max-height:80px;"><br>` : `<div style="height:50px; border-bottom:1px solid #000; width:200px; margin:0 auto;"></div>`}
+            ${mayorName} <br> City Mayor
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+    
+    document.body.appendChild(printContent);
+    
   });
+
+
+
+
+  window.addEventListener('afterprint', () => {
+    const inputs = document.querySelectorAll('#admeasurementForm input, #admeasurementForm select, #admeasurementForm textarea');
+    inputs.forEach(input => input.removeAttribute('disabled'));
+    const printContent = document.querySelector('.form-container');
+    if (printContent) printContent.remove();
+  });
+
+  // ===== Sidebar toggle =====
+  sidebarToggle.addEventListener("click", function() {
+    sidebar.classList.toggle("active");
+  });
+
+  document.addEventListener("click", function(e) {
+    if (window.innerWidth <= 991 && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+      sidebar.classList.remove("active");
+    }
+  });
+});
 </script>
-
-
-  <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const sidebar = document.querySelector(".sidebar");
-
-    sidebarToggle.addEventListener("click", function() {
-      sidebar.classList.toggle("active");
-    });
-
-    // Optional: Close sidebar when clicking outside (on mobile/tablet)
-    document.addEventListener("click", function(e) {
-      if (window.innerWidth <= 991 && 
-          !sidebar.contains(e.target) && 
-          !sidebarToggle.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-  });
-</script
 
 
 </body>

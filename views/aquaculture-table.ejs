@@ -563,8 +563,12 @@ document.getElementById('printBtn').addEventListener('click', function() {
     const container = document.querySelector('.main-container');
     const printContainer = container.cloneNode(true);
 
-    // Remove interactive elements and pagination
-    printContainer.querySelectorAll('.btn, .dropdown, .pagination').forEach(el => el.remove());
+   // Remove interactive elements and pagination
+printContainer.querySelectorAll('.btn, .dropdown, .pagination').forEach(el => el.remove());
+
+// Remove the Actions column completely
+printContainer.querySelectorAll('th:nth-child(8), td:nth-child(8)').forEach(el => el.remove());
+
 
     const printWindow = window.open('', '_blank', 'width=1200,height=800');
 

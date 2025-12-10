@@ -1,12 +1,17 @@
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const FishingVesselModel = require('../models/fishingVesselModel');
+const MayorModel = require('../models/mayorModel');
+
 
 async function showRegistrationForm(req, res) {
   const fisherfolkList = await FishingVesselModel.getFisherfolkList();
   const user = req.session.user || req.user || { name: 'Admin' };
-  res.render('fishingVesselForm', { user, fisherfolkList });
+  const latestMayor = await MayorModel.getMayorInfo(); // fetch latest mayor info from admeasurement_forms
+
+  res.render('fishingVesselForm', { user, fisherfolkList, latestMayor });
 }
+
 async function submitRegistration(req, res) {
   try {
     req.body.submitted_by = req.user?.name || 'Admin'; // fallback

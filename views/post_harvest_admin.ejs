@@ -276,38 +276,70 @@
       background-color: #4b5563;
     }
 
-    /* Print Styles */
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      .table-container, .table-container * {
-        visibility: visible;
-      }
-      .table-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-      }
-      .table-container table {
-        font-size: 10pt; /* Standard readable font size */
-        border-collapse: collapse;
-        table-layout: fixed; /* Ensure columns fit page width */
-        width: 100%;
-      }
-      .table-container th, .table-container td {
-        border: 1px solid #000; /* Simple black border for print */
-        padding: 0.3rem; /* Reduced padding for standard fit */
-        background: none !important; /* Remove background colors */
-        color: #000 !important; /* Ensure text is black */
-        word-wrap: break-word; /* Allow text wrapping */
-        width: 11.11%; /* Even distribution (100% / 9 columns) */
-      }
-      .table tbody tr:hover {
-        background: none !important; /* Remove hover effect */
-      }
-    }
+/* REPLACE YOUR EXISTING @media print BLOCK WITH THIS */
+@media print {
+  /* 1. Hide everything by default using display:none to remove whitespace */
+  body {
+    visibility: hidden;
+  }
+  
+  /* Hide specific UI elements completely */
+  .navbar, .sidebar, .section-header, .pagination, .btn, .card-header, .alert {
+    display: none !important;
+  }
+
+  /* 2. Make the table container visible and position it at the very top */
+  .table-container {
+    visibility: visible !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 3. Ensure contents of the table are visible */
+  .table-container * {
+    visibility: visible !important;
+  }
+
+  /* 4. CRITICAL FIX: Override JS Pagination to show ALL rows */
+  .table tbody tr {
+    display: table-row !important;
+  }
+
+  /* 5. Table Styling for Print */
+  .table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: auto !important; /* Let columns adjust to content */
+    font-size: 10pt;
+  }
+
+  .table th, .table td {
+    border: 1px solid #000 !important;
+    padding: 5px !important;
+    color: #000 !important;
+    background: white !important;
+    word-wrap: break-word;
+    white-space: normal !important; /* Allow text to wrap */
+  }
+
+  /* Remove max-width limits from screen view to prevent cutting off text */
+  .table td {
+    max-width: none !important; 
+  }
+
+  /* 6. Hide the Actions column (Last Header and Last Cell in every row) */
+  .table th:last-child,
+  .table td:last-child {
+    display: none !important;
+    border: none !important;
+  }
+}
+
 
     /* Responsive Design */
     @media (max-width: 1200px) {
@@ -357,6 +389,13 @@
         padding: 0.4rem 0.8rem;
         font-size: 0.9rem;
       }
+      .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center; /* optional: center the buttons */
+}
+
     }
   </style>
 </head>
@@ -483,7 +522,7 @@
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th scope="col">ID</th>
+               
                   <th scope="col">License Number</th>
                   <th scope="col">Date Registered</th>
                   <th scope="col">Name</th>
@@ -491,7 +530,9 @@
                   <th scope="col">Contact Info</th>
                   <th scope="col">Processing Method</th>
                   <th scope="col">Processing Location</th>
+                  
                   <th scope="col">Civil Status</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
             <tbody>
@@ -509,27 +550,37 @@
       <td><%= record.processing_method %></td>
       <td><%= record.processing_location %></td>
       <td><%= record.civil_status %></td>
-     <td>
-  <button type="button" class="btn btn-outline-success btn-sm edit-btn"
-          data-id="<%= record.id %>"
-          data-license="<%= record.license_number %>"
-          data-date="<%= new Date(record.date_registered).toISOString().split('T')[0] %>"
-          data-first="<%= record.first_name %>"
-          data-middle="<%= record.middle_name || '' %>"
-          data-last="<%= record.last_name %>"
-          data-address="<%= record.address %>"
-          data-contact="<%= record.contact_info %>"
-          data-method="<%= record.processing_method %>"
-          data-location="<%= record.processing_location %>"
-          data-civil="<%= record.civil_status %>">
-    <i class="fas fa-edit"></i> Edit
-      <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
-          data-id="<%= record.id %>"
-          data-name="<%= record.first_name %> <%= record.last_name %>">
-    <i class="fas fa-trash"></i> Delete
-  </button>
-  </button>
+<td style="display:flex; flex-direction:column; gap:10px; justify-content:center; align-items:center;">
+
+    <!-- Edit Button -->
+    <button type="button"
+      class="btn btn-outline-success btn-sm edit-btn"
+      data-id="<%= record.id %>"
+      data-license="<%= record.license_number %>"
+      data-date="<%= new Date(record.date_registered).toISOString().split('T')[0] %>"
+      data-first="<%= record.first_name %>"
+      data-middle="<%= record.middle_name || '' %>"
+      data-last="<%= record.last_name %>"
+      data-address="<%= record.address %>"
+      data-contact="<%= record.contact_info %>"
+      data-method="<%= record.processing_method %>"
+      data-location="<%= record.processing_location %>"
+      data-civil="<%= record.civil_status %>">
+      <i class="fas fa-edit"></i> Edit
+    </button>
+
+    <!-- Delete Button -->
+    <button type="button"
+      class="btn btn-outline-danger btn-sm delete-btn"
+      data-id="<%= record.id %>"
+      data-name="<%= record.first_name %> <%= record.last_name %>">
+      <i class="fas fa-trash"></i> Delete
+    </button>
+
 </td>
+
+
+
 
 
     </tr>

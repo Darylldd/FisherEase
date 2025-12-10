@@ -702,10 +702,16 @@ document.addEventListener('DOMContentLoaded', () => {
           <td colspan="3">${document.getElementById('remarks')?.value || ''}</td>
 
           
+<td colspan="3" class="bold center">
+  <br>
+  <%= latestMayor?.mayor_name || 'City Mayor' %> <br>
+  <% if (latestMayor?.mayor_signature) { %>
+    <img src="<%= latestMayor.mayor_signature %>" alt="Mayor's Signature" style="max-width:150px; height:auto;">
+  <% } %>
+  <br> City Mayor
+</td>
 
-          <td colspan="3" class="bold center"> <br>
-              ATTY. DOY C. LEACHON <br> City Mayor
-          </td>
+
 
           </tr>
          </table>

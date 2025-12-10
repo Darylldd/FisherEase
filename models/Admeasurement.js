@@ -2,14 +2,15 @@ const db = require('./db');
 
 class AdmeasurementModel {
   static async create(data) {
-   const query = `
-  INSERT INTO admeasurement_forms (
-    fvr_no, date, owner_name, address, vessel_name, vessel_type,
-    length_meters, breadth_meters, depth_meters, gross_tonnage, net_tonnage,
-    engine_make, serial_number, horse_power, number_of_cylinders,
-    place_of_inspection, date_of_inspection,
-    remarks, fishing_vessel_id, fisherfolk_id
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+const query = `
+INSERT INTO admeasurement_forms (
+  fvr_no, date, owner_name, address, vessel_name, vessel_type,
+  length_meters, breadth_meters, depth_meters, gross_tonnage, net_tonnage,
+  engine_make, serial_number, horse_power, number_of_cylinders,
+  place_of_inspection, date_of_inspection,
+  remarks, fishing_vessel_id, fisherfolk_id,
+  mayor_name, mayor_signature, term_start, term_end
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 const values = [
@@ -32,8 +33,13 @@ const values = [
   data.date_of_inspection,
   data.remarks,
   data.fishing_vessel_id,
-  data.fisherfolk_id 
+  data.fisherfolk_id,
+  data.mayor_name,
+  data.mayor_signature,
+  data.term_start,
+  data.term_end
 ];
+
     return db.query(query, values);
   }
 
